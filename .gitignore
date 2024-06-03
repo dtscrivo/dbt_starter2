@@ -2,3 +2,7 @@
 target/
 dbt_packages/
 logs/
+.user.yml
+env.bat
+dbt.env
+dbt_starter2.code-workspace
