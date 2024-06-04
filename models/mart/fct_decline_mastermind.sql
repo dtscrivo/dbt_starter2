@@ -129,7 +129,6 @@ WHERE true
 
 )
 
-base as (
   SELECT c.* 
   , date_diff(c.date_charge, c.date_pi_created, day) as days_to_charge
   , case when date(c.date_pi_created) < date('2024-04-01') then 1 else 0 end as gravy
