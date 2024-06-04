@@ -23,7 +23,7 @@ Select d.deal_id as id_deal
    , property_hs_is_deal_split as is_split
    , DATE(property_hs_lastmodifieddate)  as date_lastmodified
    , property_hs_latest_meeting_activity as latest_meeting_activity
-   , concat(property_first_name_of_contact_record, " ", property_last_name_of_contact_record) as name_property
+   , concat(property_first_name_of_contact_record, " ", property_last_name_of_contact_record) as name_client
    , property_variance_score_deal_record_ as variance_score
    , property_ws_ticket_type as ticket_type
    , property_hs_num_associated_active_deal_registrations as num_active_registrations
