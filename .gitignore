@@ -6,3 +6,4 @@ logs/
 env.bat
 dbt.env
 dbt_starter2.code-workspace
+circle.py
