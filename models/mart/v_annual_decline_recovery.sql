@@ -172,6 +172,7 @@ SELECT b.id_invoice
   , b.failure_message
   , b.outcome_reason
   , s.id
+  , TIMESTAMP(date_pi_created) as date_pi_created
 FROM base b
 LEFT JOIN subs s
   on b.subscription_id = s.id
