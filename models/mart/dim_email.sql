@@ -1,3 +1,5 @@
+{{ config(materialized='table') }}
+
 WITH contact AS (
   SELECT
     id as contact_id,
