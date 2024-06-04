@@ -1,3 +1,5 @@
+-- open invoice id's for annual MM sub payment failures
+
 {{ config(materialized='view') }}
 
 with charge as (
@@ -179,5 +181,5 @@ WHERE true
   and first_charge_fail = 1
   and invoice_status = "open"
   and s.id IS NULL
-  and outcome_reason IN ('insufficient_funds', 'try_again_later', 'generic_decline', 'card_velocity_exceeded')
+--  and outcome_reason IN ('insufficient_funds', 'try_again_later', 'generic_decline', 'card_velocity_exceeded')
  -- and outcome_reason = "card_velocity_exceeded"
