@@ -1,2 +1,2 @@
 
-select 'awesome' as my_test_clmt
+select 'awesome' as my_test_clme
