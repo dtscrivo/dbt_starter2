@@ -1,3 +1,5 @@
+{{ config(materialized='table') }}
+
 WITH contact AS (
   SELECT
     analytics.fnEmail(property_email) AS property_email,
