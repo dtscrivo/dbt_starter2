@@ -1,33 +1,46 @@
-{{ config(materialized='table') }}
-
 WITH contact AS (
   SELECT
-    id as contact_id,
-    date(property_createdate) as property_createdate,
-    analytics.fnEmail(property_email) as property_email,
-    analytics.fnEmail(property_email_2) as property_email_2,
-    analytics.fnEmail(property_hs_additional_emails) as property_hs_additional_emails,
-    property_email_status,
-    is_deleted
+    analytics.fnEmail(property_email) AS property_email,
+    analytics.fnEmail(property_email_2) AS property_email_2,
+    analytics.fnEmail(property_hs_additional_emails) AS property_hs_additional_emails
   FROM
     `bbg-platform.hubspot2.contact`
 )
 
+, combined_contacts AS (
+  SELECT
+    COALESCE(a.property_email, b.property_hs_additional_emails, c.property_email_2) AS email_all,
+    COALESCE(a.property_email, b.property_email, c.property_email) AS email_prime
+  FROM
+    contact a
+  FULL OUTER JOIN
+    contact b
+  ON
+    a.property_email = b.property_hs_additional_emails
+  FULL OUTER JOIN
+    contact c
+  ON
+    a.property_email = c.property_email_2
+  WHERE
+    COALESCE(a.property_email, b.property_hs_additional_emails, c.property_email_2) IS NOT NULL
+)
+
+, numbered_contacts AS (
+  SELECT
+    email_all,
+    email_prime,
+    ROW_NUMBER() OVER (PARTITION BY email_all, email_prime ORDER BY email_all) AS email_all_number
+  FROM
+    combined_contacts
+)
+
 SELECT
-  coalesce(a.contact_id, b.contact_id, c.contact_id) as contact_id,
-  coalesce(a.property_createdate, b.property_createdate, c.property_createdate) as dt,
-  coalesce(a.property_email, b.property_hs_additional_emails, c.property_email_2) as email_all,
-  coalesce(a.property_email, b.property_email, c.property_email) AS email_prime,
-  coalesce(a.property_email_status, b.property_email_status, c.property_email_status) as status_all,
-  coalesce(a.is_deleted, b.is_deleted, c.is_deleted) as is_deleted_all
+  email_all,
+  email_prime,
+       ROW_NUMBER() OVER (PARTITION BY email_prime ORDER BY email_all) AS email_number
 FROM
-  contact a
-FULL OUTER JOIN
-  contact b
-ON
-  a.property_email = b.property_hs_additional_emails
-FULL OUTER JOIN
-  contact c
-ON
-  a.property_email = c.property_email_2
-WHERE coalesce(a.property_email, b.property_hs_additional_emails, c.property_email_2) is not null
+  numbered_contacts
+WHERE TRUE
+ -- AND email_prime = "camillaasker14@gmail.com"
+  AND email_all_number = 1
+ORDER BY email_prime
