@@ -1,3 +1,5 @@
+{{ config(materialized='table') }}
+
 with payment_source as (
   SELECT  
   h.id_deal
