@@ -8,3 +8,14 @@ dbt.env
 dbt_starter2.code-workspace
 circle.py
 Python Scripts
+comments_fetch.log
+posts.csv
+bbg-platform-9b535c1b7c76.json
+comments_with_extracted.csv
+comments.csv
+member_tags.csv
+members.csv
+spaces.csv
+load_comments_posts.py
+load_csv_bigquery.py
+load_members_spaces_tags.py
