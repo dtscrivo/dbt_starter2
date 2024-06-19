@@ -183,6 +183,7 @@ SELECT customer_email
    , case when wire is not null then 1 else 0 end as is_wire
    , CEIL(DATE_DIFF(DATE(date_refund), DATE(date_closed), DAY) / 7) as refund_mob
    , id_deal
+   , date_closed
    , date_charge
    , case when amount_refund IS NOT NULL then 1 else 0 end as refunded
    , date_refund
