@@ -18,8 +18,16 @@ qualify row_number() over (partition by payment_intent_id order by created desc)
 
 )
 
+, subs AS(
+SELECT s.id
+  , s.created
+  , s.status
+FROM `bbg-platform.stripe_mastermind.subscription_history` s
+qualify row_number() over(partition by s.id order by created desc) = 1
+)
+
 , charges as (
-  SELECT  pi.*
+SELECT  pi.*
   , TIMESTAMP_SUB(pi.created, INTERVAL 7 HOUR) as date_pi_created
   , c.payment_intent_id
   , c.charge_num
@@ -36,34 +44,33 @@ qualify row_number() over (partition by payment_intent_id order by created desc)
   , cu.email
 --  , d.deal_id
 --  , d.property_product_name as product_hs
-  , pr.name as product
   , cu.name
   , i.id as id_invoice
   , c.createdd as date_charge
 --  , c.id = charge_id
 --  , su.status as status_subscription
-  , c.outcome_reason
+  , hosted_invoice_url
+  , invoice_pdf
+  , il.price_id
+  , pr.unit_amount/100 as price
+  , p.name as product
+  , p.id as product_id
+  , s.status as subscription_status
 FROM `bbg-platform.stripe_mastermind.payment_intent` pi
 LEFT JOIN charge c
   on pi.id = c.payment_intent_id
 LEFT JOIN `bbg-platform.stripe_mastermind.invoice` i 
   on pi.id = i.payment_intent_id
+LEFT JOIN `bbg-platform.stripe_mastermind.invoice_line_item` il
+  on i.id = il.invoice_id
+LEFT JOIN `bbg-platform.stripe_mastermind.price` pr
+  on il.price_id = pr.id
+LEFT JOIN `bbg-platform.stripe_mastermind.product` p
+  on pr.product_id = p.id
 LEFT JOIN `bbg-platform.stripe_mastermind.customer` cu
   on pi.customer_id = cu.id
---LEFT JOIN `bbg-platform.hubspot2.deal` d
---  on pi.id = d.property_payment_intent_id
-LEFT JOIN `bbg-platform.stripe_mastermind.subscription_item` si
-  on i.subscription_id = si.subscription_id
-LEFT JOIN `bbg-platform.stripe_mastermind.plan` pl
-  on si.plan_id = pl.id
-LEFT JOIN `bbg-platform.stripe_mastermind.product` pr
-  on pl.product_id = pr.id
-
---LEFT JOIN `bbg-platform.stripe_mastermind.subscription_history` su
---  on i.subscription_id = su.id
---    and su.ended_at is not null
- --   and su.start is not null
-   -- and row_number() over (partition by su.id order by ended_at asc) = 1
+LEFT JOIN subs s
+  on i.subscription_id = s.id
 WHERE true
   --and pi.id = "pi_3LHEs1ISjDEJDDVR0rMUQ6F5"
   --and i.subscription_id = "sub_1MRN4nISjDEJDDVR3IQVKk6V"
