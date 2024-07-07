@@ -2,6 +2,7 @@
 
 {{ config(materialized='table') }}
 
+with charges as (
 with charge as (
 SELECT payment_intent_id
   , TIMESTAMP_SUB(created, INTERVAL 7 HOUR) as createdd
@@ -11,51 +12,52 @@ SELECT payment_intent_id
   , id
   , outcome_reason
 FROM `bbg-platform.stripe_mastermind.charge`
-WHERE true
-  --and payment_intent_id = "pi_3Ma1jwISjDEJDDVR15x1pyVV"
-  and status IS NOT null
+--WHERE payment_intent_id = "pi_3Ma1jwISjDEJDDVR15x1pyVV"
 qualify row_number() over (partition by payment_intent_id order by created desc) = 1
-
 )
 
 , subs AS(
 SELECT s.id
-  , s.created
+  , TIMESTAMP_SUB(s.created, INTERVAL 7 HOUR) as date_sub_created
   , s.status
 FROM `bbg-platform.stripe_mastermind.subscription_history` s
-qualify row_number() over(partition by s.id order by created desc) = 1
+where cast(_fivetran_end as string) LIKE "9999%"
+--qualify row_number() over(partition by s.id order by created desc) = 1
 )
 
-, charges as (
-SELECT  pi.*
+SELECT  pi.id as id_payment_intent
+  , pi.amount/100 as pi_amount
+  , pi.amount_received/100 as pi_amount_received
+  , pi.customer_id as id_customer
+  , pi.description
+  , pi.payment_method_id as id_payment_method_id
+  , pi.status as status_payment_intent
   , TIMESTAMP_SUB(pi.created, INTERVAL 7 HOUR) as date_pi_created
-  , c.payment_intent_id
   , c.charge_num
   , c.charge_success_num
-  , c.status as charge_status
-  , i.status as invoice_status
+  , c.status as status_charge
+  , i.status as status_invoice
   , case when c.status = "succeeded" and charge_num = 1 then 'success' else 'fail' end as first_payment
   , case when c.status IS NULL then "no-charge"
     when c.status = "succeeded" and charge_num = 1 then 'first_charge_success'
     when c.status = "succeeded" and charge_num != 1 then 'fail_recovered'
     else "fail_not_recovered" 
      end as category
-  , i.subscription_id
+  , i.subscription_id as id_subscription
   , cu.email
---  , d.deal_id
---  , d.property_product_name as product_hs
   , cu.name
   , i.id as id_invoice
   , c.createdd as date_charge
---  , c.id = charge_id
---  , su.status as status_subscription
+  , c.id as id_charge
   , hosted_invoice_url
   , invoice_pdf
-  , il.price_id
+  , il.price_id as price_id
   , pr.unit_amount/100 as price
   , p.name as product
-  , p.id as product_id
-  , s.status as subscription_status
+  , p.id as id_product
+  , s.status as status_subscription
+  , s.date_sub_created
+  , c.outcome_reason
 FROM `bbg-platform.stripe_mastermind.payment_intent` pi
 LEFT JOIN charge c
   on pi.id = c.payment_intent_id
@@ -71,12 +73,16 @@ LEFT JOIN `bbg-platform.stripe_mastermind.customer` cu
   on pi.customer_id = cu.id
 LEFT JOIN subs s
   on i.subscription_id = s.id
+
 WHERE true
   --and pi.id = "pi_3LHEs1ISjDEJDDVR0rMUQ6F5"
-  --and i.subscription_id = "sub_1MRN4nISjDEJDDVR3IQVKk6V"
+  --and i.subscription_id = "sub_1PLAEwISjDEJDDVRS967ZTnI"
   --and i.id = "in_1P5XxIISjDEJDDVRa8ng8gDp"
-  and i.subscription_id IS NOT NULL
-  and pi.description != "Subscription creation"
+ -- and cu.email = "seanamaura3@gmail.com"
+   --and pr.unit_amount/100 = 997
+ORDER BY pi.created desc
+ -- and i.subscription_id IS NOT NULL
+ -- and pi.description != "Subscription creation"
 )
 
 , tickets AS (
@@ -157,10 +163,10 @@ FROM charges c
 LEFT JOIN tickets t
   on lower(c.email) = lower(t.ticket_email)
 LEFT JOIN chargenum cn
-  on c.payment_intent_id = cn.payment_intent_id
+  on c.id_payment_intent = cn.payment_intent_id
   and cn.charge_num = 1
 LEFT JOIN chargenum cn2
-  on c.payment_intent_id = cn2.payment_intent_id
+  on c.id_payment_intent = cn2.payment_intent_id
   and cn2.charge_num = 2
-WHERE date(c.date_pi_created) > date('2023-04-01')
+--WHERE date(c.date_pi_created) > date('2023-04-01')
 

@@ -19,3 +19,5 @@ spaces.csv
 load_comments_posts.py
 load_csv_bigquery.py
 load_members_spaces_tags.py
+circle
+models/staging/circle/load_comments_posts.py
