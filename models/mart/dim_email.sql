@@ -2,9 +2,9 @@
 
 WITH contact AS (
   SELECT
-    analytics.fnEmail(property_email) AS property_email,
-    analytics.fnEmail(property_email_2) AS property_email_2,
-    analytics.fnEmail(property_hs_additional_emails) AS property_hs_additional_emails
+    lower(analytics.fnEmail(property_email)) AS property_email,
+    lower(analytics.fnEmail(property_email_2)) AS property_email_2,
+    lower(analytics.fnEmail(property_hs_additional_emails)) AS property_hs_additional_emails
   FROM
     `bbg-platform.hubspot2.contact`
 )
@@ -43,6 +43,6 @@ SELECT
 FROM
   numbered_contacts
 WHERE TRUE
-  AND email_prime = "amanda.l.mahaffey@gmail.com"
+--  AND email_prime = "amanda.l.mahaffey@gmail.com"
   AND email_all_number = 1
 ORDER BY email_prime
