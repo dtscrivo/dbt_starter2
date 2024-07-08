@@ -11,18 +11,18 @@ WITH contact AS (
 
 , combined_contacts AS (
   SELECT
-    COALESCE(a.property_email, b.property_hs_additional_emails, c.property_email_2) AS email_all,
+    COALESCE(b.property_hs_additional_emails, a.property_email, c.property_email_2) AS email_all,
     COALESCE(a.property_email, b.property_email, c.property_email) AS email_prime
   FROM
     contact a
   FULL OUTER JOIN
     contact b
   ON
-    a.property_email = b.property_hs_additional_emails
+    a.property_email = b.property_email
   FULL OUTER JOIN
     contact c
   ON
-    a.property_email = c.property_email_2
+    a.property_email = c.property_email
   WHERE
     COALESCE(a.property_email, b.property_hs_additional_emails, c.property_email_2) IS NOT NULL
 )
@@ -43,6 +43,6 @@ SELECT
 FROM
   numbered_contacts
 WHERE TRUE
- -- AND email_prime = "camillaasker14@gmail.com"
+ -- AND email_prime = "amanda.l.mahaffey@gmail.com"
   AND email_all_number = 1
 ORDER BY email_prime
