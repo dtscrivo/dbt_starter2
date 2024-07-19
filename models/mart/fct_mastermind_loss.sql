@@ -15,6 +15,7 @@ SELECT c.id as charge_id
   , e.fraud_type
   , e.actionable
   , bt.fee / 100 as fee
+  , c.amount / 100 as amount_charge
   , d.amount / 100 as amount_dispute
   , r.amount / 100 as amount_refund
   , bt.description
@@ -26,7 +27,7 @@ SELECT c.id as charge_id
   , pr.id as id_pricing
   , p.name as product
   , pr.unit_amount / 100 as price
-  , pr.type
+  , pr.type as type_product
   , case when d.created is not null then 1 else 0 end as is_dispute
   , case when d.created is not null and d.status = "lost" then 1 else 0 end as is_dispute_lost
   , case when d.created is not null and d.status = "won" then 1 else 0 end as is_dispute_won
