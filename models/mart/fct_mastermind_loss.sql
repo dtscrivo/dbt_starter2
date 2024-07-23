@@ -1,11 +1,13 @@
 {{ config(materialized='table') }}
 
+
 SELECT c.id as charge_id
   , datetime(c.created, 'America/Phoenix') as date_charge
   , datetime(e.created, 'America/Phoenix') as date_fraud_warning
   , datetime(d.created, 'America/Phoenix') as date_dispute
   , datetime(bt.created, 'America/Phoenix') as date_balance_trans
   , datetime(r.created, 'America/Phoenix') as date_refund
+ , datetime(i.created, 'America/Phoenix') as date_invoice
   , coalesce(date_diff(d.created,e.created,day), 9999) as dob_warning_to_dispute
   , coalesce(date_diff(r.created,c.created,day), 9999) as dob_refund
   , coalesce(r.amount/100, d.amount/100) as amount
@@ -55,6 +57,8 @@ LEFT JOIN `bbg-platform.stripe_mastermind.product` p
   on pr.product_id = p.id
 LEFT JOIN `bbg-platform.stripe_mastermind.refund` r
   on c.id = r.charge_id
+LEFT JOIN `bbg-platform.stripe_mastermind.invoice` i
+  on c.invoice_id = i.id
 WHERE c.status = "succeeded"
   and (d.created IS NOT NULL or e.created is not null or r.created is not null)
  -- and cu.email = "eviegonline@gmail.com"

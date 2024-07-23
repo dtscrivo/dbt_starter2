@@ -355,5 +355,6 @@ SELECT *
   , case when amount_refund = amount_collected then 1 else 0 end as full_refund
   , date_diff(date_refund, date_closed, day) as refund_dob
   , case when name_product_plantype LIKE "%Hybrid%" then 1 else 0 end as VIP
+  , case when status_deal IN ('Active', 'Declined', 'Save Requested') then 1 else 0 end as num_active 
 from hubspot h
 GROUP BY ALL
