@@ -1,5 +1,8 @@
 {{ config(materialized='table') }}
 
+  
+
+
   with charge as (
 SELECT c.payment_intent_id
   , TIMESTAMP_SUB(c.created, INTERVAL 7 HOUR) as createdd
@@ -89,6 +92,7 @@ SELECT  pi.id as id_payment_intent
   , right(coalesce(hsp.property_pricing_id, il.price_id),1) as plan_type
  -- , s.id as id_subscription
  , datetime(d.property_closedate,'America/Phoenix') as date_closed
+  , d.property_product_name as name_product_plantype
 FROM `bbg-platform.stripe_mindmint.payment_intent` pi
 LEFT JOIN charge c
   on pi.id = c.payment_intent_id
