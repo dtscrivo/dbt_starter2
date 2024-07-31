@@ -1,6 +1,5 @@
 {{ config(materialized='table') }}
 
-
   with charge as (
 SELECT c.payment_intent_id
   , TIMESTAMP_SUB(c.created, INTERVAL 7 HOUR) as createdd
@@ -77,18 +76,19 @@ SELECT  pi.id as id_payment_intent
   , case when c.processor IS NULL AND s.funnel_id IS NULL THEN "payment_gateway"
        when c.processor IS NULL AND s.funnel_id IS NOT NULL THEN "click_funnel"
        else c.processor end as processor
-  , row_number() over(partition by cu.email,deal_id, i.subscription_id order by pi.created asc) as num_payment
+  , row_number() over(partition by cu.email,c.deal_id, i.subscription_id order by pi.created asc) as num_payment
   , c.statement_descriptor
   , c.metadata as metadata_charge
   , hsp.property_hs_folder_name
   , c.refunded
   , hsp.property_name
-  , deal_id as id_deal
+  , c.deal_id as id_deal
   , date_refund
   , amount_refund
   , concat(cu.email,coalesce(p.id, hsp.property_product_id),coalesce(hsp.property_pricing_id, il.price_id)) as joinkey
   , right(coalesce(hsp.property_pricing_id, il.price_id),1) as plan_type
  -- , s.id as id_subscription
+ , datetime(d.property_closedate,'America/Phoenix') as date_closed
 FROM `bbg-platform.stripe_mindmint.payment_intent` pi
 LEFT JOIN charge c
   on pi.id = c.payment_intent_id
@@ -106,6 +106,8 @@ LEFT JOIN subs s
   on i.subscription_id = s.id
 LEFT JOIN `bbg-platform.hubspot2.product` hsp
   on c.object_id = cast(hsp.property_hs_object_id as string)
+LEFT JOIN `bbg-platform.hubspot2.deal` d
+  on c.deal_id = cast(d.deal_id as string)
 WHERE true
   and pi.status = "succeeded"
  -- and email = "sab2611@hotmail.com"
