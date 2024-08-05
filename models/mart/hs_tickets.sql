@@ -79,7 +79,8 @@ SELECT t.id as id_ticket
    , pp.amount_received
    , pp.amount_refunded
    , pp.payments
-   , row_number() over(partition by d.deal_id, pipeline order by t.property_createdate desc) as recency
+   , row_number() over(partition by d.deal_id, p.pipeline_id order by t.property_createdate desc) as recency
+
 FROM `bbg-platform.hubspot2.ticket` t
 LEFT JOIN `bbg-platform.hubspot2.ticket_deal` d
   on t.id = d.ticket_id
