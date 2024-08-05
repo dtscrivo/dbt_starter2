@@ -101,3 +101,4 @@ WHERE true
   --and p.label = "Backend Saves"
  -- and d.deal_id = 9642643135
  --  and t.property_email_address_of_contact = "rdiamond@maxibrace.com"
+  qualify row_number() over(partition by d.deal_id, pipeline order by t.property_createdate desc)=1
