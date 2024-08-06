@@ -279,21 +279,11 @@ LEFT JOIN wires w
  -- and m.deal_id is not null
 --LEFT JOIN paynum pn2 
 --  on cast(m.merged_deal_id as string) = pn2.deal_id
-WHERE d.customer_email NOT LIKE '%graziosi.com' AND d.customer_email NOT LIKE '%@mastermind.com'
+WHERE true
 --  and d.id_deal = 11311572982
-   and d.name_product_plantype LIKE "%The Action Academy%"
-   or d.name_product_plantype LIKE "%Business Academy%"
    and d.is_deleted = FALSE
-   and d.customer_email NOT LIKE "%@deangraziosi.com"
-   and d.customer_email NOT LIKE "%@mastermind.com"
-   and d.customer_email NOT LIKE "%armartin%"
-   and d.customer_email NOT LIKE "%mailinator%"
+   and analytics.fnEmail_IsTest(customer_email) = false
 )
-
-
-
-
-
 
 
 SELECT *
