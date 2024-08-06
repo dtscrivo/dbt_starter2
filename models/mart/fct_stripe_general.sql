@@ -123,9 +123,9 @@ LEFT JOIN `hubspot2.deal_pipeline_stage` ps
   on cast(d2.deal_pipeline_stage_id as string) = ps.stage_id
 WHERE true
   and analytics.fnEmail_IsTest(email) = false
-  and s.funnel_id = '13216474'
+--  and s.funnel_id = '13216474'
 --  and pi.status = "succeeded"
-  and pr.id IN ('MBA_pif_9497_1', 'MBA_pp_1497_7')
+ -- and pr.id IN ('MBA_pif_9497_1', 'MBA_pp_1497_7')
 --  and email = "gmc@holisten.no"
 --  and c.refunded = false
 -- and coalesce(p.name, c.statement_descriptor, pi.description) LIKE "%Business Academy%"
