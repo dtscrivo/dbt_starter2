@@ -30,13 +30,18 @@ WITH events AS (
         MAX(case when name like "%Fayetteville%" and name like "Registered%" then 1 else 0 end) as fayetteville_registered,
         MAX(case when name like "%Fayetteville%" and name like "Invited%" then 1 else 0 end) as fayetteville_invited,
         MAX(case when name like "%In-Person%" and name like "Attended%" then 1 else 0 end) as inperson_attended,
-        MAX(case when name like "%In-Person%" and name like "Registered%" then 1 else 0 end) as inperson_registered
-    FROM 
-        `bbg-platform.hubspot2.contact_list` l
-    LEFT JOIN 
-        `bbg-platform.hubspot2.contact_list_member` m ON l.id = m.contact_list_id
-    LEFT JOIN 
-        `bbg-platform.hubspot2.contact` c ON m.contact_id = c.id
+        MAX(case when name like "%In-Person%" and name like "Registered%" then 1 else 0 end) as inperson_registered,
+        MAX(case when name like "%World Summit%" and name like "Registered%" then 1 else 0 end) as inperson_registered,
+        MAX(case when title = 'RSVP - 2024 World Summit' then 1 else 0 end) as world_summit_24_registered
+    FROM `bbg-platform.hubspot2.contact` c
+    LEFT JOIN `bbg-platform.hubspot2.contact_list_member` m
+      on c.id = m.contact_id
+    LEFT JOIN `bbg-platform.hubspot2.contact_list` l
+      on m.contact_list_id = l.id
+    LEFT JOIN `bbg-platform.hubspot2.contact_form_submission` s
+      on c.id = s.contact_id
+
+
     GROUP BY 
         property_email
 )
