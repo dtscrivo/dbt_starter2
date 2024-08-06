@@ -1,9 +1,7 @@
 {{ config(materialized='table') }}
 
   
-
-
-  with charge as (
+ with charge as (
 SELECT c.payment_intent_id
   , TIMESTAMP_SUB(c.created, INTERVAL 7 HOUR) as createdd
   , c.status
@@ -93,6 +91,8 @@ SELECT  pi.id as id_payment_intent
  -- , s.id as id_subscription
  , datetime(d.property_closedate,'America/Phoenix') as date_closed
   , d.property_product_name as name_product_plantype
+  , concat(o.first_name," ",o.last_name) as name_owner
+  , d.property_setter_name as name_setter
 FROM `bbg-platform.stripe_mindmint.payment_intent` pi
 LEFT JOIN charge c
   on pi.id = c.payment_intent_id
@@ -112,6 +112,8 @@ LEFT JOIN `bbg-platform.hubspot2.product` hsp
   on c.object_id = cast(hsp.property_hs_object_id as string)
 LEFT JOIN `bbg-platform.hubspot2.deal` d
   on c.deal_id = cast(d.deal_id as string)
+LEFT JOIN `bbg-platform.hubspot2.owner` o
+  ON d.owner_id= o.owner_id
 WHERE true
   and pi.status = "succeeded"
  -- and email = "sab2611@hotmail.com"
