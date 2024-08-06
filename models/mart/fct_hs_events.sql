@@ -2,7 +2,7 @@
 
 WITH events AS (
     SELECT 
-        property_email,
+        analytics.fnEmail(property_email) as email,
         MAX(case when name like "%Phoenix%" and name like "Attended%" then 1 else 0 end) as phoenix_attended,
         MAX(case when name like "%Phoenix%" and name like "Registered%" then 1 else 0 end) as phoenix_registered,
         MAX(case when name like "%DC%" and name like "Attended%" then 1 else 0 end) as dc_attended,
@@ -42,4 +42,3 @@ WITH events AS (
 )
 SELECT *
 FROM events
---WHERE property_email = 'klara.nemes@gmail.com'
