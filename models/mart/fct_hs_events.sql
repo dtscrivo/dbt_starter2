@@ -3,35 +3,43 @@
 WITH events AS (
     SELECT 
         analytics.fnEmail(property_email) as email,
-        MAX(case when name like "%Phoenix%" and name like "Attended%" then 1 else 0 end) as phoenix_attended,
-        MAX(case when name like "%Phoenix%" and name like "Registered%" then 1 else 0 end) as phoenix_registered,
-        MAX(case when name like "%DC%" and name like "Attended%" then 1 else 0 end) as dc_attended,
-        MAX(case when name like "%DC%" and name like "Registered%" then 1 else 0 end) as dc_registered,
-        MAX(case when name like "%Atlanta%" and name like "Attended%" then 1 else 0 end) as atlanta_attended,
-        MAX(case when name like "%Atlanta%" and name like "Registered%" then 1 else 0 end) as atlanta_registered,
-        MAX(case when name like "%Philadelphia%" and name like "Attended%" then 1 else 0 end) as philadelphia_attended,
-        MAX(case when name like "%Philadelphia%" and name like "Registered%" then 1 else 0 end) as philadelphia_registered,
-        MAX(case when name like "%Dallas%" and name like "Attended%" then 1 else 0 end) as dallas_attended,
-        MAX(case when name like "%Dallas%" and name like "Registered%" then 1 else 0 end) as dallas_registered,
-        MAX(case when name like "%San Antonio%" and name like "Attended%" then 1 else 0 end) as san_antonio_attended,
-        MAX(case when name like "%San Antonio%" and name like "Registered%" then 1 else 0 end) as san_antonio_registered,
-        MAX(case when name like "%Baltimore%" and name like "Attended%" then 1 else 0 end) as baltimore_attended,
-        MAX(case when name like "%Baltimore%" and name like "Registered%" then 1 else 0 end) as baltimore_registered,
-        MAX(case when name like "%Tampa%" and name like "Attended%" then 1 else 0 end) as tampa_attended,
-        MAX(case when name like "%Tampa%" and name like "Registered%" then 1 else 0 end) as tampa_registered,
-        MAX(case when name like "%Charlotte%" and name like "Attended%" then 1 else 0 end) as charlotte_attended,
-        MAX(case when name like "%Charlotte%" and name like "Registered%" then 1 else 0 end) as charlotte_registered,
-        MAX(case when name like "%Raleigh%" and name like "Attended%" then 1 else 0 end) as raleigh_attended,
-        MAX(case when name like "%Raleigh%" and name like "Registered%" then 1 else 0 end) as raleigh_registered,
-        MAX(case when name like "%Greensboro%" and name like "Attended%" then 1 else 0 end) as greensboro_attended,
-        MAX(case when name like "%Greensboro%" and name like "Registered%" then 1 else 0 end) as greensboro_registered,
-        MAX(case when name like "%Greensboro%" and name like "Invited%" then 1 else 0 end) as greensboro_invited,
-        MAX(case when name like "%Fayetteville%" and name like "Attended%" then 1 else 0 end) as fayetteville_attended,
-        MAX(case when name like "%Fayetteville%" and name like "Registered%" then 1 else 0 end) as fayetteville_registered,
-        MAX(case when name like "%Fayetteville%" and name like "Invited%" then 1 else 0 end) as fayetteville_invited,
-        MAX(case when name like "%In-Person%" and name like "Attended%" then 1 else 0 end) as inperson_attended,
-        MAX(case when name like "%In-Person%" and name like "Registered%" then 1 else 0 end) as inperson_registered,
-        MAX(case when title = 'RSVP - 2024 World Summit' then 1 else 0 end) as world_summit_24_registered
+        -- PREVIEW EVENTS
+        -- vpe = virtual
+        -- ippe = in-person
+        MAX(case when name = "Registered - Mastermind Preview Event In-Person (Phoenix 8.21.24-8.25.24)" then 1 else 0 end) as reg_ippe_phoenix_8212024,
+        MAX(case when name = "Attended - Mastermind Preview Event In-Person (Phoenix 8.21.24-8.25.24)" then 1 else 0 end) as att_ippe_phoenix_8212024,
+        MAX(case when name = "Attended - Mastermind Preview Event In-Person (Charlotte 7.31.24-8.5.24)" then 1 else 0 end) as att_ippe_charlotte_7312024,
+        MAX(case when name = "Registered - Mastermind Preview Event In-Person (Charlotte 7.31.24-8.5.24)" then 1 else 0 end) as reg_ippe_charlotte_7312024,
+        MAX(case when name = "Attended - Mastermind Preview Event (Dallas 2.24.24)" then 1 else 0 end) as att_vpe_dallas_2242024,
+        MAX(case when name = "Registered - Mastermind Preview Event (Washington DC 3.27.24)" then 1 else 0 end) as reg_vpe_dc_3272024,
+        MAX(case when name = "Registered - Mastermind Preview Event (Philadelphia 3.27.24)" then 1 else 0 end) as reg_vpe_philadelphia_3272024,
+        MAX(case when name = "Attended - Mastermind Preview Event (Dallas 2.22.24)" then 1 else 0 end) as att_vpe_dallas_2222024,
+        MAX(case when name = "Attended - Mastermind Preview Event (Philadelphia 3.27.24)" then 1 else 0 end) as att_vpe_philadelphia_3272024,
+        MAX(case when name = "Registered - Mastermind Preview Event (Atlanta 3.14.24)" then 1 else 0 end) as reg_vpe_atlanta_3142024,
+        MAX(case when name = "Attended - Mastermind Preview Event (Atlanta 3.14.24)" then 1 else 0 end) as att_vpe_atlanta_3142024,
+        MAX(case when name = "Attended - Mastermind Preview Event (Washington DC 3.27.24)" then 1 else 0 end) as att_vpe_dc_3272024,
+        MAX(case when name = "Attended - Mastermind Preview Event (San Antonio 2.8.24)" then 1 else 0 end) as att_vpe_sanantonio_2082024,
+        MAX(case when name = "Registered - Mastermind Preview Event (Dallas 2.24.24)" then 1 else 0 end) as reg_vpe_dallas_2242024,
+        MAX(case when name = "Registered - Mastermind Preview Event (Dallas 2.22.24)" then 1 else 0 end) as reg_vpe_dallas_2222024,
+        MAX(case when name = "Registered - Mastermind Preview Event (San Antonio 2.8.24)" then 1 else 0 end) as reg_vpe_sanantonio_2082024,
+        MAX(case when name = "Attended - Mastermind Preview Event" then 1 else 0 end) as att_vpe,
+        MAX(case when name = "Registered - Mastermind Preview Event" then 1 else 0 end) as reg_vpe,
+        MAX(case when name = "Attended - Mastermind Preview Event In-Person" then 1 else 0 end) as att_ippe,
+        MAX(case when name = "Attended - Mastermind Preview Event In-Person (Tampa 4.10.24-4.14.24)" then 1 else 0 end) as att_ippe_tampa_4102024,
+        MAX(case when name = "Registered - Mastermind Preview Event In-Person (Tampa 4.10.24-4.14.24)" then 1 else 0 end) as reg_ippe_tampa_4102024,
+        MAX(case when name = "Registered - Mastermind Preview Event In-Person" then 1 else 0 end) as reg_inpe,
+        MAX(case when name = "Attended - Mastermind Preview Event (No City 3.27.24)" then 1 else 0 end) as att_vpe__nocity_3272024,
+        MAX(case when name = "Registered - Mastermind Preview Event In-Person (Baltimore 7.14.24-7.16.24)" then 1 else 0 end) as reg_ippe_baltimore_7142024,
+        MAX(case when name = "Attended - Mastermind Preview Event In-Person (Baltimore 7.14.24-7.16.24)" then 1 else 0 end) as att_ippe_baltimore_7142024,
+        MAX(case when name = "Attended - Mastermind Preview Event In-Person (Washington DC 7.10.24-7.13.24)" then 1 else 0 end) as att_ippe_dc_7102024,
+        MAX(case when name = "Registered - Mastermind Preview Event In-Person (Washington DC 7.10.24-7.13.24)" then 1 else 0 end) as reg_ippe_dc_7102024,
+
+        -- Launch
+        MAX(case when title = 'RSVP - 2024 World Summit' then 1 else 0 end) as rsvp_world_summit_8032024,
+
+        -- Program
+        MAX(case when name = "Program - Mastermind Business Academy (8.29.24 In-Person)" then 1 else 0 end) as att_ip_mba_8292024,
+        MAX(case when name = "Program - Mastermind Business Academy (6.27.24 In-Person)" then 1 else 0 end) as att_ip_mba_6272024,
     FROM `bbg-platform.hubspot2.contact` c
     LEFT JOIN `bbg-platform.hubspot2.contact_list_member` m
       on c.id = m.contact_id
