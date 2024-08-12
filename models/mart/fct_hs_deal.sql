@@ -97,7 +97,7 @@ Select d.deal_id as id_deal
           when property_product_name = "Mastermind Business Academy ($1417.00*6)" then "MBA_vip_pp_1833_6"
           else property_pricing_id end as pricing_id
    , property_pricing_id
-   , property_amount
+   , property_amount_in_home_currency as amount_home_currency
 FROM `bbg-platform.hubspot2.deal` d
 LEFT JOIN `bbg-platform.hubspot2.merged_deal` m
    on d.deal_id = m.merged_deal_id
