@@ -10,7 +10,7 @@ WITH initial_payments AS (
         , amount_collected
         , name_product
     FROM
-        `dbt_tscrivo.fct_deal_payments`
+        `dbt_tscrivo.fct_invoice_mindmint`
     WHERE
         num_payment = 1
         AND SAFE_CAST(plan_type AS INT64) IS NOT NULL -- Ensuring only valid integer values
