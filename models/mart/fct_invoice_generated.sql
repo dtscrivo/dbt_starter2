@@ -3,6 +3,7 @@
 WITH initial_payments AS (
     SELECT
         email,
+        id_customer,
         id_price,
         date(date_charge) AS initial_date,
         case when id_price = 'MBA_pif_inpersonpackage_5997' then 1 else SAFE_CAST(plan_type AS INT64) end AS plan_type -- Using SAFE_CAST to avoid errors
@@ -18,6 +19,7 @@ WITH initial_payments AS (
 generated_payments AS (
     SELECT
         email,
+        id_customer,
         id_price,
         initial_date,
         plan_type,
@@ -32,6 +34,7 @@ generated_payments AS (
 )
 SELECT
     email,
+    id_customer,
     id_price,
     payment_date,
     payment_number
