@@ -1,6 +1,8 @@
 {{ config(materialized='table') }}
 
   
+
+  
  with charge as (
 SELECT c.payment_intent_id
   , TIMESTAMP_SUB(c.created, INTERVAL 7 HOUR) as createdd
@@ -93,6 +95,7 @@ SELECT  pi.id as id_payment_intent
   , d.property_product_name as name_product_plantype
   , concat(o.first_name," ",o.last_name) as name_owner
   , d.property_setter_name as name_setter
+  , TIMESTAMP_SUB(i.created, INTERVAL 7 HOUR) as date_invoice
 FROM `bbg-platform.stripe_mindmint.payment_intent` pi
 LEFT JOIN charge c
   on pi.id = c.payment_intent_id

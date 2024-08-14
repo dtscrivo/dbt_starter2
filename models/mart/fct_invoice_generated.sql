@@ -5,7 +5,7 @@ WITH initial_payments AS (
         email,
         id_customer,
         id_price,
-        date(date_charge) AS initial_date,
+        date(date_invoice) AS initial_date,
         case when id_price = 'MBA_pif_inpersonpackage_5997' then 1 else SAFE_CAST(plan_type AS INT64) end AS plan_type -- Using SAFE_CAST to avoid errors
         , amount_collected
         , name_product
