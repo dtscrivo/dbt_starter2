@@ -48,4 +48,4 @@ FROM
 ORDER BY
     email,
     id_price,
-    payment_date;
+    payment_date
