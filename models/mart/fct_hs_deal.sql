@@ -262,12 +262,12 @@ SELECT *
   , CEIL(date_diff(date_ticket_resolved, DATE(date_ticket_created), day) / 7) as wob_ticket_resolved_from_received
   , CEIL(date_diff(current_date(), DATE(date_ticket_created), day) / 7) as wob_ticket_age
   , CEIL(date_diff(date(date_ticket_resolved), DATE(date_closed), day) / 7) as wob_ticket_resolved_from_sale
-
+  , CEIL(DATE_DIFF(CURRENT_DATE(), DATE(date_ticket_created), DAY) / 7) as wob_ticket_age
 
   , date_diff(current_date, DATE(date_closed), day) as dob_deal_age
   , date_diff(date(date_ticket_resolved), DATE(date_closed), day) as dob_ticket_resolved
-
-
+  , date_diff(date(date_ticket_created), DATE(date_closed), day) as dob_ticket_received
+  , date_diff(current_date, DATE(date_ticket_created), day) as dob_ticket_age
   , extract(month from date_closed) as order_month
   , FORMAT_DATE('%y%m', date_closed) order_cohort_month
 
