@@ -65,8 +65,8 @@ SELECT t.id as id_ticket
  --  , t.property_hs_last_email_activity
  --  , t.property_hs_last_email_date as date_last_email
    , concat(o.first_name, " ", o.last_name) as ticket_owner
-   , ps.label as pipeline_stage
-   , p.label as pipeline
+   , ps.label as ticket_pipeline_stage
+   , p.label as ticket_pipeline
    , n.num_notes_engagement
    , n.note_preview
    , h.property_closedate as date_closed
@@ -103,6 +103,7 @@ LEFT JOIN `bbg-platform.hubspot2.owner` se
 --  on d.deal_id = pp.id_deal
 WHERE true
   and h.deal_id IS NOT NULL
+  and t._fivetran_deleted = false
   --and p.label = "Backend Saves"
  -- and d.deal_id = 9642643135
  --  and t.property_email_address_of_contact = "rdiamond@maxibrace.com"
