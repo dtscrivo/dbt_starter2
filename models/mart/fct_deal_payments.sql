@@ -24,7 +24,7 @@ SELECT c.payment_intent_id
     on cast(json_extract_scalar(c.metadata, "$.deal_id") as string) = cast(m.merged_deal_id as string)
   LEFT JOIN `bbg-platform.stripe_mindmint.refund` r
     on c.id = r.charge_id
-  WHERE c.status = "succeeded"
+ -- WHERE c.status = "succeeded"
 --WHERE payment_intent_id = "pi_3Ma1jwISjDEJDDVR15x1pyVV"
 qualify row_number() over (partition by c.payment_intent_id order by c.created desc) = 1
 )
@@ -118,7 +118,7 @@ LEFT JOIN `bbg-platform.hubspot2.deal` d
 LEFT JOIN `bbg-platform.hubspot2.owner` o
   ON d.owner_id= o.owner_id
 WHERE true
-  and pi.status = "succeeded"
+--  and pi.status = "succeeded"
  -- and email = "sab2611@hotmail.com"
 --  and c.refunded = false
 -- and coalesce(p.name, c.statement_descriptor, pi.description) LIKE "%Business Academy%"
