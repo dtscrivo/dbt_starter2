@@ -74,7 +74,7 @@ Select d.deal_id as id_deal
           when property_product_name = "The Action Academy (Launchpad Not Included) (4 Pay)" then "taa_pp_nolp_1637_4"
           when property_product_name = "The Action Academy TCA Dropout Or Transfer Package (PIF)" then "taa_pif_nolp_5997_1"
           when property_product_name = "Mastermind Business Academy ($1417.00*6)" then "MBA_vip_pp_1833_6"
-          else property_pricing_id end as pricing_id
+          else property_pricing_id end as id_price
    , property_pricing_id
    , property_amount_in_home_currency as amount_hs
    , d.owner_id as id_owner
