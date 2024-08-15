@@ -260,7 +260,6 @@ SELECT *
   , CEIL(DATE_DIFF(CURRENT_DATE(), DATE(date_closed), DAY) / 7) as wob_deal_age
   , CEIL(DATE_DIFF(DATE(date_ticket_created), DATE(date_closed), DAY) / 7) as wob_ticket_received
   , CEIL(date_diff(date_ticket_resolved, DATE(date_ticket_created), day) / 7) as wob_ticket_resolved_from_received
-  , CEIL(date_diff(current_date(), DATE(date_ticket_created), day) / 7) as wob_ticket_age
   , CEIL(date_diff(date(date_ticket_resolved), DATE(date_closed), day) / 7) as wob_ticket_resolved_from_sale
   , CEIL(DATE_DIFF(CURRENT_DATE(), DATE(date_ticket_created), DAY) / 7) as wob_ticket_age
 
