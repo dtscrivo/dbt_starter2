@@ -30,9 +30,17 @@ SELECT i.id as id_invoice
  -- , s.funnel_name as name_funnel
   , row_number() over(partition by cu.email, il.price_id order by i.created asc) as num_payment
  -- , right(il.price_id,1) as plan_type
- ,     WHEN REGEXP_CONTAINS(SUBSTR(il.price_id, -2), r'^\d{2}$') THEN SUBSTR(il.price_id, -2)
-    -- If not, just take the last character (rightmost)
-    ELSE SUBSTR(il.price_id, -1) as plan_type
+  , CASE 
+    -- First condition: check if the name contains "@"
+    WHEN p.name LIKE "%@%" THEN '1'
+    ELSE
+      CASE
+        -- Check if both of the last two characters are numeric
+        WHEN REGEXP_CONTAINS(SUBSTR(il.price_id, -2), r'^\d{2}$') THEN SUBSTR(il.price_id, -2)
+        -- If one or both are non-numeric, take the last character only
+        ELSE SUBSTR(il.price_id, -1)
+      END
+  END AS plan_type
  -- , s.id as id_subscription
   , TIMESTAMP_SUB(i.created, INTERVAL 7 HOUR) as date_invoice
 FROM `bbg-platform.stripe_mindmint.invoice` i 
