@@ -118,7 +118,7 @@ LEFT JOIN `bbg-platform.hubspot2.deal` d
 LEFT JOIN `bbg-platform.hubspot2.owner` o
   ON d.owner_id= o.owner_id
 WHERE true
---  and pi.status = "succeeded"
+  and pi.status = "succeeded"
  -- and email = "sab2611@hotmail.com"
 --  and c.refunded = false
 -- and coalesce(p.name, c.statement_descriptor, pi.description) LIKE "%Business Academy%"
