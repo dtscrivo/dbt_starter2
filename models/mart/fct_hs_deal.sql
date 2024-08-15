@@ -193,7 +193,7 @@ SELECT d.*
    , t.status_retention
    , pp.amount_refund
  --  , hsp.property_price as amount_product_price
-  , right(d.pricing_id, 1) as num_plan_payments
+  , right(d.id_price, 1) as num_plan_payments
   , cf.id_funnel
   , case when coalesce(pn.processor, cf.processor) = "inperson" then "inperson"
          --when cf.funnel_id = "13216474" then "clickfunnel"
@@ -201,7 +201,7 @@ SELECT d.*
          when coalesce(pn.processor, cf.processor) = "gateway" then "gateway"
          else "gateway" end as payment_source
   , cf.id as id_subscription
--- , d.pricing_id
+-- , d.id_price
 -- , d.property_amount
   , coalesce(pp.amount_collected, si.amount_paid) as amount_collected
   , coalesce(pn.num_payments, si.payment_num) as num_payments_made
@@ -221,7 +221,7 @@ LEFT JOIN `bbg-platform.dbt_tscrivo.fct_hs_tickets` t
   and t.recency = 1
   and t.id_pipeline = 42858454 -- backend save pipeline
 --LEFT JOIN `bbg-platform.hubspot2.product` hsp
- -- on d.pricing_id = cast(hsp.property_pricing_id as string)
+ -- on d.id_price = cast(hsp.property_pricing_id as string)
 LEFT JOIN clickfunnel cf
   on d.email = cf.email
 LEFT JOIN paynum pn
