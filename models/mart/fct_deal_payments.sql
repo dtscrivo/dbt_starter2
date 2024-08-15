@@ -79,7 +79,7 @@ SELECT  pi.id as id_payment_intent
   , case when c.processor IS NULL AND s.funnel_id IS NULL THEN "payment_gateway"
        when c.processor IS NULL AND s.funnel_id IS NOT NULL THEN "click_funnel"
        else c.processor end as processor
-  , row_number() over(partition by cu.email,c.deal_id, i.subscription_id order by pi.created asc) as num_payment
+  , row_number() over(partition by cu.email,coalesce(hsp.property_pricing_id, il.price_id) order by pi.created asc) as num_payment
   , c.statement_descriptor
   , c.metadata as metadata_charge
   , hsp.property_hs_folder_name
