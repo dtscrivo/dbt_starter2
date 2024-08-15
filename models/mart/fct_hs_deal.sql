@@ -11,7 +11,7 @@ Select d.deal_id as id_deal
    , property_product_status as status_deal
    , property_dealname as name_deal
    , DATE(property_createdate) as date_created
-   , property_email_address_of_contact as customer_email
+   , analytics.fnEmail(property_email_address_of_contact) as customer_email
    , property_initial_meeting_type as initial_meeting_type
    , property_hs_analytics_source as analytics_source
    , property_dealtype as customer_type
@@ -356,4 +356,5 @@ SELECT *
   , case when pipeline_stage IN ('Current Declines', 'Closed Won')and name_deal NOT LIKE "%In-Person%" then 1 else 0 end as is_active
 
 from hubspot h
+WHERE analytics.fnEmail_IsTest(customer_email) = false
 GROUP BY ALL
