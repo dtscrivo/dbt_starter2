@@ -9,6 +9,7 @@ WITH initial_payments AS (
         case when id_price = 'MBA_pif_inpersonpackage_5997' then 1 else SAFE_CAST(plan_type AS INT64) end AS plan_type -- Using SAFE_CAST to avoid errors
         , amount_collected
         , name_product
+        , status_invoice
     FROM
         `dbt_tscrivo.fct_invoice_mindmint`
     WHERE
@@ -28,6 +29,7 @@ generated_payments AS (
         n + 1 AS payment_number
         , amount_collected
         , name_product
+        , status_invoice
     FROM
         initial_payments,
         UNNEST(GENERATE_ARRAY(0, plan_type - 1)) AS n
@@ -38,6 +40,7 @@ SELECT
     id_price,
     payment_date,
     payment_number
+    , status_invoice
     , amount_collected
     , name_product
     , 1 as is_generated
