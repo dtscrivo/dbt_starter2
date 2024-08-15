@@ -347,5 +347,13 @@ SELECT *
   , case when name_product_plantype LIKE "%Hybrid%" then 1 else 0 end as VIP
   , case when status_deal IN ('Active', 'Declined', 'Save Requested') then 1 else 0 end as num_active
   , case when status_deal = "Paused" then 1 else 0 end as num_paused
+  , case when date_closed IS NOT NULL and pipeline_stage NOT IN ("Cancelled", "Cancelled Student", "Paused") then 1 else 0 end as active
+
+  , case when pipeline_stage IN ('Cancelled', 'Paused Student', 'Current Declines', 'Cancelled Student', 'Closed Won')and name_deal NOT LIKE "%In-Person%" then 1 else 0 end as is_buyer
+  , case when pipeline_stage IN ('Cancelled', 'Cancelled Student')and name_deal NOT LIKE "%In-Person%" then 1 else 0 end as is_cancelled
+  , case when pipeline_stage IN ('Paused Student')and name_deal NOT LIKE "%In-Person%" then 1 else 0 end  as is_paused
+  , case when pipeline_stage IN ('Paused Student', 'Current Declines', 'Closed Won')and name_deal NOT LIKE "%In-Person%" then 1 else 0 end as is_enrolled
+  , case when pipeline_stage IN ('Current Declines', 'Closed Won')and name_deal NOT LIKE "%In-Person%" then 1 else 0 end as is_active
+
 from hubspot h
 GROUP BY ALL
