@@ -93,7 +93,7 @@ LEFT JOIN `bbg-platform.hubspot2.owner` o
 LEFT JOIN `bbg-platform.hubspot2.owner` se
   ON d.property_member_success_advisor = se.owner_id
 LEFT JOIN `bbg-platform.hubspot2.owner` sa
-  ON d.property_save_owner = se.owner_id
+  ON d.property_save_owner = sa.owner_id
 WHERE m.merged_deal_id IS NULL
    and is_deleted = FALSE
 qualify row_number() over (partition by property_email_address_of_contact,property_dealname order by property_closedate desc) = 1
