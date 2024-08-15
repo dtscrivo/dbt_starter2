@@ -265,6 +265,7 @@ SELECT *
 
   , date_diff(current_date, DATE(date_closed), day) as dob_deal_age
   , date_diff(date(date_ticket_resolved), DATE(date_closed), day) as dob_ticket_resolved
+  , date_diff(date(date_ticket_resolved), DATE(date_ticket_created), day) as dob_ticket_resolved
   , date_diff(date(date_ticket_created), DATE(date_closed), day) as dob_ticket_received
   , date_diff(current_date, DATE(date_ticket_created), day) as dob_ticket_age
   , extract(month from date_closed) as order_month
