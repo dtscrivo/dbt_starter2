@@ -51,7 +51,7 @@ SELECT
 FROM
     generated_payments
  --   where email = 'adiyb@adiybmuhammad.com'
- where id_price = 'taa_pp_lp_935_7'
+-- where id_price = 'taa_pp_lp_935_7'
 
 ORDER BY
     email,
