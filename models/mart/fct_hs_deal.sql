@@ -8,7 +8,7 @@ Select d.deal_id as id_deal
    , concat(o.first_name," ",o.last_name) as name_owner
    , concat(se.first_name," ",se.last_name) as name_success_advisor
    , concat(sa.first_name," ",sa.last_name) as name_save_owner
-   , cast(portal_id as string) as id_portal
+ --  , cast(portal_id as string) as id_portal
    , property_product_name as name_product
    , property_product_status as status_deal
    , property_dealname as name_deal
@@ -16,24 +16,24 @@ Select d.deal_id as id_deal
    , analytics.fnEmail(property_email_address_of_contact) as email
    , property_initial_meeting_type as initial_meeting_type
    , property_dealtype as type_deal
-   , DATE(property_estimated_contract_end_date) as date_contractended
-   , property_hs_is_closed as is_closed
-   , property_hs_is_closed_won as is_closed_won
+ --  , DATE(property_estimated_contract_end_date) as date_contractended
+ --  , property_hs_is_closed as is_closed
+ --  , property_hs_is_closed_won as is_closed_won
    , property_hs_is_deal_split as is_split
    , DATE(property_hs_lastmodifieddate)  as date_lastmodified
-   , property_hs_latest_meeting_activity as latest_meeting_activity
+--   , property_hs_latest_meeting_activity as latest_meeting_activity
    , concat(property_first_name_of_contact_record, " ", property_last_name_of_contact_record) as name_client
-   , property_ws_ticket_type as ticket_type
-   , property_hs_num_associated_deal_splits as num_splits
+ --  , property_ws_ticket_type as ticket_type
+ --  , property_hs_num_associated_deal_splits as num_splits
    , property_hs_num_of_associated_line_items as num_lineitems
-   , property_oncehub_booking_id as id_booking
+ --  , property_oncehub_booking_id as id_booking
    , property_oncehub_meeting_type as meeting_type
    , property_offer_made as is_offermade
    , property_objection_reason as objection_reason
    , property_setter_name as name_setter
-   , property_hs_was_imported as is_imported
+--   , property_hs_was_imported as is_imported
    , property_payment_status as status_payment
-   , property_contract_status as status_contract
+--   , property_contract_status as status_contract
    , case when contains_substr(property_product_name, "PIF") then "PIF" ELSE "PP" END as pay_type
    , property_wire_payment_ as is_wire
    , property_upgrade_deal_ as is_upgrade
@@ -246,7 +246,7 @@ WHERE true
 
 
 SELECT *
-  , count(*) as num_sales
+--  , count(*) as num_sales
   , case when date_ticket_created IS NOT NULL then 1 ELSE 0 end as num_requests
   , case when date_ticket_resolved IS NOT NULL AND status_retention = "Cancelled" then 1 else 0 end as num_cancel
   , case when date_ticket_resolved IS NOT NULL AND status_retention = "Saved" then 1 else 0 end as num_saved
@@ -257,16 +257,15 @@ SELECT *
 --  , DATE_ADD(cast(date_ticket_resolved as date), INTERVAL MOD(5 - EXTRACT(DAYOFWEEK FROM date_ticket_created) + 7, 7) DAY) AS resolved_week
 
 
-  , CEIL(DATE_DIFF(CURRENT_DATE(), DATE(date_closed), DAY) / 7) as age_wob
-  , CEIL(DATE_DIFF(DATE(date_ticket_created), DATE(date_closed), DAY) / 7) as received_wob
-  , CEIL(date_diff(date_ticket_resolved, DATE(date_ticket_created), day) / 7) as resolved_wob_since_request
-  , date_diff(date(date_ticket_created), DATE(date_closed), day) as received_dob
-  , CEIL(date_diff(current_date(), DATE(date_ticket_created), day) / 7) as received_age_wob
-  , CEIL(date_diff(date(date_ticket_resolved), DATE(date_closed), day) / 7) as resolved_wob
+  , CEIL(DATE_DIFF(CURRENT_DATE(), DATE(date_closed), DAY) / 7) as wob_deal_age
+  , CEIL(DATE_DIFF(DATE(date_ticket_created), DATE(date_closed), DAY) / 7) as wob_ticket_received
+  , CEIL(date_diff(date_ticket_resolved, DATE(date_ticket_created), day) / 7) as wob_ticket_resolved_from_received
+  , CEIL(date_diff(current_date(), DATE(date_ticket_created), day) / 7) as wob_ticket_age
+  , CEIL(date_diff(date(date_ticket_resolved), DATE(date_closed), day) / 7) as wob_ticket_resolved_from_sale
 
 
-  , date_diff(current_date, DATE(date_closed), day) as dob
-  , date_diff(date(date_ticket_resolved), DATE(date_closed), day) as dob_resolved
+  , date_diff(current_date, DATE(date_closed), day) as dob_deal_age
+  , date_diff(date(date_ticket_resolved), DATE(date_closed), day) as dob_ticket_resolved
 
 
   , extract(month from date_closed) as order_month
@@ -274,14 +273,14 @@ SELECT *
 
 --friday
 
-  , DATE_ADD(cast(date_ticket_resolved as date), INTERVAL MOD(5 - EXTRACT(DAYOFWEEK FROM date_ticket_resolved) + 8, 7) DAY) AS resolved_week
-  , DATE_ADD(cast(date_closed as date), INTERVAL MOD(5 - EXTRACT(DAYOFWEEK FROM date_closed) + 8, 7) DAY) AS order_week
+  , DATE_ADD(cast(date_ticket_resolved as date), INTERVAL MOD(5 - EXTRACT(DAYOFWEEK FROM date_ticket_resolved) + 8, 7) DAY) AS week_resolved
+  , DATE_ADD(cast(date_closed as date), INTERVAL MOD(5 - EXTRACT(DAYOFWEEK FROM date_closed) + 8, 7) DAY) AS week_order
  -- , case when pay_type = "PIF" AND num_payments_made > 1 then 1 else 0 end as extra_pif
-  , DATE_ADD(cast(date_ticket_created as date), INTERVAL MOD(5 - EXTRACT(DAYOFWEEK FROM date_ticket_created) + 8, 7) DAY) AS requested_week
+  , DATE_ADD(cast(date_ticket_created as date), INTERVAL MOD(5 - EXTRACT(DAYOFWEEK FROM date_ticket_created) + 8, 7) DAY) AS week_requested
 
 
-  , CEIL(DATE_DIFF(CURRENT_DATE(), DATE('2024-03-06'), DAY) / 7) as kbb_wob
-  , case when date(date_closed) > DATE('2024-01-01') then 1 else 0 end as current_year
+  , CEIL(DATE_DIFF(CURRENT_DATE(), DATE('2024-03-06'), DAY) / 7) as wob_kbb
+  , case when extract(year from date(date_closed)) = extract(year from CURRENT_DATE) then 1 else 0 end as is_current_year
 
 
   , case when name_product LIKE "%The Action Academy%" then "TAA" 
@@ -289,9 +288,9 @@ SELECT *
          else "" end as program
 
   , case when pay_type = "PIF" AND num_payments_made > 1 then 1 else 0 end as pif2
-  , date_diff(date_charge, date_closed, day) as charge_dob
+  , date_diff(date_charge, date_closed, day) as dob_charge
 
-  , date_diff(date_first_charge, date_closed, day) as first_charge_dob
+  , date_diff(date_first_charge, date_closed, day) as dob_first_charge
 
   , date_diff(date_charge,date_first_charge, day) as first_to_last_dob
 
@@ -300,13 +299,13 @@ SELECT *
          when id_funnel = '13216474' and FORMAT_DATE('%y%m', date_closed) = '2408' then "ws24"
          else null end as event
 
-  , DATE_ADD(cast(date_charge as date), INTERVAL MOD(5 - EXTRACT(DAYOFWEEK FROM date_charge) + 8, 7) DAY) AS charge_week
+  , DATE_ADD(cast(date_charge as date), INTERVAL MOD(5 - EXTRACT(DAYOFWEEK FROM date_charge) + 8, 7) DAY) AS week_charge
 
-  , CEIL(DATE_DIFF(CURRENT_DATE(), DATE(date_closed), DAY) / 30) as age_mob
-  , CEIL(date_diff(date(date_ticket_resolved), DATE(date_closed), day) / 30) as resolved_mob
+  , CEIL(DATE_DIFF(CURRENT_DATE(), DATE(date_closed), DAY) / 30) as mob_deal_age
+  , CEIL(date_diff(date(date_ticket_resolved), DATE(date_closed), day) / 30) as mob_resolved
 
-  , case when amount_refund = amount_collected then 1 else 0 end as full_refund
-  , date_diff(date_refund, date_closed, day) as refund_dob
+
+  , date_diff(date_refund, date_closed, day) as dob_refund
   , case when name_product LIKE "%Hybrid%" then 1 else 0 end as VIP
 
   , case when pipeline_stage IN ('Cancelled', 'Paused Student', 'Current Declines', 'Cancelled Student', 'Closed Won')and name_deal NOT LIKE "%In-Person%" then 1 else 0 end as is_buyer
@@ -314,7 +313,8 @@ SELECT *
   , case when pipeline_stage IN ('Paused Student')and name_deal NOT LIKE "%In-Person%" then 1 else 0 end  as is_paused
   , case when pipeline_stage IN ('Paused Student', 'Current Declines', 'Closed Won')and name_deal NOT LIKE "%In-Person%" then 1 else 0 end as is_enrolled
   , case when pipeline_stage IN ('Current Declines', 'Closed Won')and name_deal NOT LIKE "%In-Person%" then 1 else 0 end as is_active
-
+  , case when amount_refund is not null then 1 else 0 end as is_refund
+  , case when amount_refund = amount_collected then 1 else 0 end as is_full_refund
 from hubspot h
 WHERE analytics.fnEmail_IsTest(email) = false
 group by all
