@@ -37,7 +37,7 @@ SELECT
     id_customer,
     id_price,
     payment_date,
-    payment_num
+    payment_number
     , "generated" as status_invoice
     , amount_collected
     , name_product
