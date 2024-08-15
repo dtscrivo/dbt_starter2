@@ -15,6 +15,7 @@ SELECT i.id as id_invoice
   , amount_paid as amount_collected
   , i.status as status_invoice
   , i.subscription_id as id_subscription
+  , customer_id as id_customer
   , cu.email
   , cu.name
   , i.id as id_charge
