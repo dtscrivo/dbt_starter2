@@ -12,7 +12,7 @@ where cast(_fivetran_end as string) LIKE "9999%"
 )
 
 SELECT i.id as id_invoice
-  , amount_paid as amount_collected
+  , amount_paid / 100 as amount_collected
   , i.status as status_invoice
   , i.subscription_id as id_subscription
   , customer_id as id_customer

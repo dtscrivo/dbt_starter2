@@ -6,7 +6,7 @@ WITH initial_payments AS (
         id_customer,
         id_price,
         date(date_invoice) AS initial_date,
-        case when id_price = 'MBA_pif_inpersonpackage_5997' then 1 else SAFE_CAST(plan_type AS INT64) end AS plan_type -- Using SAFE_CAST to avoid errors
+        case when id_price IN ('MBA_pif_inpersonpackage_5997', 'bf22') then 1 else SAFE_CAST(plan_type AS INT64) end AS plan_type -- Using SAFE_CAST to avoid errors
         , amount_collected
         , name_product
     FROM
@@ -44,7 +44,7 @@ SELECT
     , 1 as is_generated
 FROM
     generated_payments
-   -- where email = '1livinginpurpose@gmail.com'
+   -- where email = 'egyn98grl@hotmail.com'
 
 ORDER BY
     email,
