@@ -2,7 +2,7 @@
 
 WITH initial_payments AS (
     SELECT
-        email,
+        analytics.fnEmail(email) as email,
         id_customer,
         id_price,
         date(date_invoice) AS initial_date,

@@ -16,7 +16,7 @@ SELECT i.id as id_invoice
   , i.status as status_invoice
   , i.subscription_id as id_subscription
   , customer_id as id_customer
-  , cu.email
+  , analytics.fnEmail(cu.email) as email
   , cu.name
   , i.id as id_charge
   , hosted_invoice_url
@@ -56,3 +56,4 @@ LEFT JOIN `bbg-platform.stripe_mindmint.customer` cu
 LEFT JOIN subs s
   on i.subscription_id = s.id
 --WHERE p.name NOT LIKE "%@%"
+WHERE i.status != 'void'
