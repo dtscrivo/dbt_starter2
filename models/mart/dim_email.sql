@@ -1,48 +1,91 @@
 {{ config(materialized='table') }}
 
-WITH contact AS (
-  SELECT
-    lower(analytics.fnEmail(property_email)) AS property_email,
-    lower(analytics.fnEmail(property_email_2)) AS property_email_2,
-    lower(analytics.fnEmail(property_hs_additional_emails)) AS property_hs_additional_emails
-  FROM
+WITH email_data AS (
+  -- Step 1: Select the original columns
+  SELECT 
+    property_email AS email_prime,
+    property_email AS email_all
+  FROM 
     `bbg-platform.hubspot2.contact`
-)
 
-, combined_contacts AS (
-  SELECT
-    COALESCE(b.property_hs_additional_emails, c.property_email_2, a.property_email) AS email_all,
-    COALESCE(a.property_email, b.property_email, c.property_email) AS email_prime
-  FROM
-    contact a
-  FULL OUTER JOIN
-    contact b
-  ON
-    a.property_hs_additional_emails = b.property_email
-  FULL OUTER JOIN
-    contact c
-  ON
-    a.property_email = c.property_email
-  WHERE
-    COALESCE(a.property_email, b.property_hs_additional_emails, c.property_email_2) IS NOT NULL
-)
+  UNION ALL
 
-, numbered_contacts AS (
+  -- Step 2: Unpivot the property_email_2 and property_hs_additional_emails columns
   SELECT
-    email_all,
+    property_email AS email_prime,
+    property_email_2 AS email_all
+  FROM 
+    `bbg-platform.hubspot2.contact`
+  WHERE 
+    property_email_2 IS NOT NULL
+
+  UNION ALL
+
+  SELECT
+    property_email AS email_prime,
+    email AS email_all
+  FROM 
+    `bbg-platform.hubspot2.contact`,
+    UNNEST(SPLIT(property_hs_additional_emails, ',')) AS email
+  WHERE 
+    email IS NOT NULL
+
+  UNION ALL
+
+  -- Step 3: Include property_email as a row in email_all
+  SELECT
+    property_email AS email_prime,
+    property_email AS email_all
+  FROM 
+    `bbg-platform.hubspot2.contact`
+),
+
+-- Step 4: Exclude rows where email_all matches property_email_2 or property_hs_additional_emails
+final_data AS (
+  SELECT 
     email_prime,
-    ROW_NUMBER() OVER (PARTITION BY email_all, email_prime ORDER BY email_all) AS email_all_number
-  FROM
-    combined_contacts
+    email_all
+  FROM 
+    email_data
+  WHERE 
+    email_all NOT IN (
+      SELECT property_email_2 FROM `bbg-platform.hubspot2.contact` WHERE property_email_2 IS NOT NULL
+    ) 
+    AND email_all NOT IN (
+      SELECT email FROM `bbg-platform.hubspot2.contact`, UNNEST(SPLIT(property_hs_additional_emails, ',')) AS email
+      WHERE email IS NOT NULL
+    )
+  
+  UNION ALL
+
+  -- Step 5: Include all emails in email_all
+  SELECT 
+    property_email AS email_prime,
+    email AS email_all
+  FROM 
+    `bbg-platform.hubspot2.contact`,
+    UNNEST(SPLIT(property_hs_additional_emails, ',')) AS email
+  WHERE 
+    email IS NOT NULL
+
+  UNION ALL
+
+  SELECT
+    property_email AS email_prime,
+    property_email_2 AS email_all
+  FROM 
+    `bbg-platform.hubspot2.contact`
+  WHERE 
+    property_email_2 IS NOT NULL
 )
 
-SELECT
-  email_all,
+-- Step 6: Select distinct email_prime and email_all pairs
+SELECT 
   email_prime,
-       ROW_NUMBER() OVER (PARTITION BY email_prime ORDER BY email_all) AS email_number
-FROM
-  numbered_contacts
-WHERE TRUE
---  AND email_prime = "amanda.l.mahaffey@gmail.com"
-  AND email_all_number = 1
-ORDER BY email_prime
+  email_all
+FROM 
+  final_data
+GROUP BY 
+  email_prime, email_all
+ORDER BY 
+  email_prime, email_all
