@@ -81,8 +81,8 @@ final_data AS (
 
 -- Step 6: Select distinct email_prime and email_all pairs
 SELECT 
-  email_prime,
-  email_all
+  analytics.fnEmail(email_prime) as email_prime,
+  analytics.fnEmail(email_all) as email_all
 FROM 
   final_data
 GROUP BY 
