@@ -312,7 +312,7 @@ SELECT *
   , case when pipeline_stage IN ('Cancelled', 'Cancelled Student')and name_deal NOT LIKE "%In-Person%" then 1 else 0 end as is_cancelled
   , case when pipeline_stage IN ('Paused Student')and name_deal NOT LIKE "%In-Person%" then 1 else 0 end  as is_paused
   , case when pipeline_stage IN ('Paused Student', 'Current Declines', 'Closed Won')and name_deal NOT LIKE "%In-Person%" then 1 else 0 end as is_enrolled
-  , case when pipeline_stage IN ('Current Declines', 'Closed Won')and name_deal NOT LIKE "%In-Person%" then 1 else 0 end as is_active
+  , case when pipeline_stage IN ('Current Declines', 'Closed Won', 'Transferred')and name_deal NOT LIKE "%In-Person%" then 1 else 0 end as is_active
   , case when amount_refund is not null then 1 else 0 end as is_refund
   , case when amount_refund = amount_collected then 1 else 0 end as is_full_refund
 from hubspot h
