@@ -41,13 +41,13 @@ email_data AS (
     UNNEST(SPLIT(property_hs_additional_emails, ';')) AS email
 )
 SELECT
-  property_email AS email_prime,
-  email AS email_all
+  analytics.fnEmail(property_email) AS email_prime,
+  analytics.fnEmail(email) AS email_all
 FROM
   email_data
 UNION ALL
 SELECT
-  property_email AS email_prime,
-  property_email AS email_all
+  analytics.fnEmail(property_email) AS email_prime,
+  analytics.fnEmail(property_email) AS email_all
 FROM
   contact
