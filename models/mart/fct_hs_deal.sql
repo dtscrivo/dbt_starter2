@@ -12,7 +12,7 @@ Select d.deal_id as id_deal
    , property_product_name as name_product
    , property_product_status as status_deal
    , property_dealname as name_deal
-   , DATE(property_createdate) as date_deal_created
+   , DATE(d.property_createdate) as date_deal_created
    , analytics.fnEmail(property_email_address_of_contact) as email
    , property_initial_meeting_type as initial_meeting_type
    , property_dealtype as type_deal
@@ -20,7 +20,7 @@ Select d.deal_id as id_deal
  --  , property_hs_is_closed as is_closed
  --  , property_hs_is_closed_won as is_closed_won
    , property_hs_is_deal_split as is_split
-   , DATE(property_hs_lastmodifieddate)  as date_lastmodified
+   , DATE(d.property_hs_lastmodifieddate)  as date_lastmodified
 --   , property_hs_latest_meeting_activity as latest_meeting_activity
    , concat(property_first_name_of_contact_record, " ", property_last_name_of_contact_record) as name_client
  --  , property_ws_ticket_type as ticket_type
@@ -28,7 +28,7 @@ Select d.deal_id as id_deal
    , property_hs_num_of_associated_line_items as num_lineitems
  --  , property_oncehub_booking_id as id_booking
    , property_oncehub_meeting_type as meeting_type
-   , property_offer_made as is_offermade
+   , d.property_offer_made as is_offermade
    , property_objection_reason as objection_reason
    , property_setter_name as name_setter
 --   , property_hs_was_imported as is_imported
@@ -38,7 +38,7 @@ Select d.deal_id as id_deal
    , property_wire_payment_ as is_wire
    , property_upgrade_deal_ as is_upgrade
    , property_transfer_info as transfer_info
-   , property_offer_made as offer_made
+   , d.property_offer_made as offer_made
    , property_backend_cancellation_ as is_backend_cancellation
    , DATE(property_most_recent_save_request) as date_latest_save_request
    , property_oncehub_meeting_type as oncehub_meeting_type
@@ -47,7 +47,7 @@ Select d.deal_id as id_deal
    , property_transaction_id as id_hs_paymentintent
    , property_product_id as id_stripe_product
    , property_invoice_id as id_hs_invoice
-   , property_hs_merged_object_ids as merged_deals
+   , d.property_hs_merged_object_ids as merged_deals
    , property_decline_date as date_declined
    , property_initial_discovery_call_scheduled_for_date as date_initial_discovery_call_meeting
    , property_initial_meeting_date as date_discovery_call_meeting
@@ -58,7 +58,7 @@ Select d.deal_id as id_deal
    , property_deal_lead_source_sales_ as source_saleslead
    , property_last_reached_out
    , property_action_academy_success_path
-   , property_hubspot_owner_assigneddate as date_owner_assigned
+   , d.property_hubspot_owner_assigneddate as date_owner_assigned
    , property_product_id as id_product
    , property_hs_acv as amount_contract
    , property_future_contracted_value as amount_owed
@@ -81,6 +81,8 @@ Select d.deal_id as id_deal
    , cast(deal_pipeline_id as string) as id_pipeline
    , cast(deal_pipeline_stage_id as string) as id_pipeline_stage
    , property_member_success_advisor as id_success_advisor
+   , date(c.property_mba_orientation_date) as date_mba_orientation
+   , c.id as id_contact
 FROM `bbg-platform.hubspot2.deal` d
 LEFT JOIN `bbg-platform.hubspot2.merged_deal` m
    on d.deal_id = m.merged_deal_id
@@ -94,8 +96,12 @@ LEFT JOIN `bbg-platform.hubspot2.owner` se
   ON d.property_member_success_advisor = se.owner_id
 LEFT JOIN `bbg-platform.hubspot2.owner` sa
   ON d.property_save_owner = sa.owner_id
+LEFT JOIN `hubspot2.deal_contact` dc
+  ON d.deal_id = dc.deal_id
+LEFT JOIN `hubspot2.contact` c
+  ON dc.contact_id = c.id
 WHERE m.merged_deal_id IS NULL
-   and is_deleted = FALSE
+   and d.is_deleted = FALSE
 qualify row_number() over (partition by property_email_address_of_contact,property_dealname order by property_closedate desc) = 1
 )
 
@@ -223,7 +229,7 @@ LEFT JOIN `bbg-platform.dbt_tscrivo.fct_hs_tickets` t
 --LEFT JOIN `bbg-platform.hubspot2.product` hsp
  -- on d.id_price = cast(hsp.property_pricing_id as string)
 LEFT JOIN clickfunnel cf
-  on d.email = cf.email
+  on d.id_hs_sub = cf.id
 LEFT JOIN paynum pn
   on cast(d.id_deal as string) = cast(pn.deal_id as string)
   and pn.last_payment = 1
