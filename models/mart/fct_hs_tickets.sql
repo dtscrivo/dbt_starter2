@@ -81,7 +81,16 @@ SELECT t.id as id_ticket
  --  , pp.payments
    , concat(se.first_name," ",se.last_name) as name_sa
    , analytics.fnEmail(h.property_email_address_of_contact) as email
-   , row_number() over(partition by h.deal_id,t.property_hs_pipeline order by t.property_createdate desc) as recency
+   , ROW_NUMBER() OVER (
+    PARTITION BY h.deal_id, t.property_hs_pipeline 
+    ORDER BY 
+        CASE 
+            WHEN t.property_closed_date IS NULL THEN 1 
+            ELSE 0 
+        END,
+        t.property_createdate DESC, 
+        t.property_closed_date ASC
+) AS recency
    , row_number() over(partition by h.deal_id,t.property_hs_pipeline order by t.property_createdate asc) as ticket_number
 FROM `bbg-platform.hubspot2.ticket` t
 LEFT JOIN `bbg-platform.hubspot2.ticket_deal` d
@@ -104,7 +113,7 @@ LEFT JOIN `bbg-platform.hubspot2.owner` se
 WHERE true
   and h.deal_id IS NOT NULL
   and t._fivetran_deleted = false
+ -- and d.deal_id = 12070154231
   --and p.label = "Backend Saves"
  -- and d.deal_id = 9642643135
  --  and t.property_email_address_of_contact = "rdiamond@maxibrace.com"
-order by h.deal_id, t.property_hs_pipeline, t.property_createdate
