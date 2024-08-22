@@ -54,6 +54,7 @@ Select d.deal_id as id_deal
    , property_initial_meeting_type_create_date as date_initial_discovery_call_booked
    , property_closedate as date_closed
    , property_hs_date_entered_292741310 as date_paused
+   , property_hs_date_exited_292741310 as date_unpaused
    , property_hs_date_entered_38716614 as date_scheduled
    , property_deal_lead_source_sales_ as source_saleslead
    , property_last_reached_out
@@ -83,6 +84,7 @@ Select d.deal_id as id_deal
    , property_member_success_advisor as id_success_advisor
    , date(c.property_mba_orientation_date) as date_mba_orientation
    , c.id as id_contact
+   , d.property_amount
 FROM `bbg-platform.hubspot2.deal` d
 LEFT JOIN `bbg-platform.hubspot2.merged_deal` m
    on d.deal_id = m.merged_deal_id
@@ -253,9 +255,9 @@ WHERE true
 
 SELECT *
 --  , count(*) as num_sales
-  , case when date_ticket_created IS NOT NULL then 1 ELSE 0 end as num_requests
-  , case when date_ticket_resolved IS NOT NULL AND status_retention = "Cancelled" then 1 else 0 end as num_cancel
-  , case when date_ticket_resolved IS NOT NULL AND status_retention = "Saved" then 1 else 0 end as num_saved
+  , case when date_ticket_created IS NOT NULL then 1 ELSE 0 end as is_requests
+  , case when date_ticket_resolved IS NOT NULL AND status_retention = "Cancelled" then 1 else 0 end as is_cancel
+  , case when date_ticket_resolved IS NOT NULL AND status_retention = "Saved" then 1 else 0 end as is_saved
 
 -- thursday
 --  , DATE_ADD(cast(date_closed as date), INTERVAL MOD(5 - EXTRACT(DAYOFWEEK FROM date_closed) + 7, 7) DAY) AS order_week
@@ -265,13 +267,13 @@ SELECT *
 
   , CEIL(DATE_DIFF(CURRENT_DATE(), DATE(date_closed), DAY) / 7) as wob_deal_age
   , CEIL(DATE_DIFF(DATE(date_ticket_created), DATE(date_closed), DAY) / 7) as wob_ticket_received
-  , CEIL(date_diff(date_ticket_resolved, DATE(date_ticket_created), day) / 7) as wob_ticket_resolved_from_received
+  , CEIL(date_diff(date_ticket_resolved, DATE(date_ticket_created), day) / 7) as wob_ticket_time_to_resolve
   , CEIL(date_diff(date(date_ticket_resolved), DATE(date_closed), day) / 7) as wob_ticket_resolved_from_sale
   , CEIL(DATE_DIFF(CURRENT_DATE(), DATE(date_ticket_created), DAY) / 7) as wob_ticket_age
 
   , date_diff(current_date, DATE(date_closed), day) as dob_deal_age
   , date_diff(date(date_ticket_resolved), DATE(date_closed), day) as dob_ticket_resolved
-  , date_diff(date(date_ticket_resolved), DATE(date_ticket_created), day) as dob_ticket_resolved_from_received
+  , date_diff(date(date_ticket_resolved), DATE(date_ticket_created), day) as dob_ticket_time_to_resolve
   , date_diff(date(date_ticket_created), DATE(date_closed), day) as dob_ticket_received
   , date_diff(current_date, DATE(date_ticket_created), day) as dob_ticket_age
   , extract(month from date_closed) as order_month
