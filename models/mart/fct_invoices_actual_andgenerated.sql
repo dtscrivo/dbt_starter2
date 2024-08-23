@@ -9,7 +9,7 @@ SELECT email
   , date(date_pi_created) as payment_date
   , 0 as is_generated
   , status_charge
-  , amount_collected
+  , amount_charge as amount_collected
   , name_product
 FROM `dbt_tscrivo.fct_deal_payments`
 WHERE name_product NOT LIKE "%@%"

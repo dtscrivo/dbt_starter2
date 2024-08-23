@@ -7,7 +7,7 @@ with initial_payments AS (
         id_price,
         date(date_pi_created) AS date_invoice,
         case when id_price IN ('MBA_pif_inpersonpackage_5997', 'bf22') then 1 else SAFE_CAST(plan_type AS INT64) end AS plan_type -- Using SAFE_CAST to avoid errors
-        , amount_collected
+        , amount_charge as amount_collected
         , name_product
     FROM
         `dbt_tscrivo.fct_deal_payments`
