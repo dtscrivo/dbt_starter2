@@ -39,11 +39,11 @@ Select d.deal_id as id_deal
    , property_upgrade_deal_ as is_upgrade
    , property_transfer_info as transfer_info
    , d.property_offer_made as offer_made
-   , property_backend_cancellation_ as is_backend_cancellation
+ --  , property_backend_cancellation_ as is_backend_cancellation
    , DATE(property_most_recent_save_request) as date_latest_save_request
    , property_oncehub_meeting_type as oncehub_meeting_type
    , property_outbound_lead_source_deal_record_ as source_outbound_lead
-   , property_subscription_id as id_hs_sub
+   , property_subscription_id as id_hs_subscription
    , property_transaction_id as id_hs_paymentintent
    , property_product_id as id_stripe_product
    , property_invoice_id as id_hs_invoice
@@ -58,15 +58,16 @@ Select d.deal_id as id_deal
    , property_hs_date_entered_38716614 as date_scheduled
    , property_deal_lead_source_sales_ as source_saleslead
    , property_last_reached_out
-   , property_action_academy_success_path
+--   , property_action_academy_success_path
    , d.property_hubspot_owner_assigneddate as date_owner_assigned
-   , property_product_id as id_product
+--   , property_product_id as id_product
    , property_hs_acv as amount_contract
-   , property_future_contracted_value as amount_owed
-   , property_save_owner as id_save_owner
-   , property_taa_student_orientation_date as date_taa_orientation
+--   , property_future_contracted_value as amount_owed
+--   , property_save_owner as id_save_owner
+--   , property_taa_student_orientation_date as date_taa_orientation
    , property_hs_date_entered_63590844 as date_noshow_entered
    , property_hs_date_exited_63590844 as date_noshow_exit
+   , case when property_hs_date_entered_63590844 is not null and (property_hs_date_exited_63590844 is null OR property_hs_date_entered_63590844 != property_hs_date_exited_63590844) then 1 else 0 end as is_noshow
    , case when property_product_name = "1 × The Action Academy (at $1,637.00 / month)" then "taa_pp_nolp_1637_4"
           when property_product_name = "1 × The Action Academy (at $5,997.00 / month)" then "taa_pif_nolp_5997_1"
           when property_product_name = "The Action Academy (PIF)" then "taa_pif_nolp_5997_1"
@@ -77,14 +78,14 @@ Select d.deal_id as id_deal
           when property_product_name = "Mastermind Business Academy ($1417.00*6)" then "MBA_vip_pp_1833_6"
           else property_pricing_id end as id_price
    , property_pricing_id
-   , property_amount_in_home_currency as amount_hs
+--   , property_amount_in_home_currency as amount_hs
    , d.owner_id as id_owner
    , cast(deal_pipeline_id as string) as id_pipeline
    , cast(deal_pipeline_stage_id as string) as id_pipeline_stage
    , property_member_success_advisor as id_success_advisor
    , date(c.property_mba_orientation_date) as date_mba_orientation
    , c.id as id_contact
-   , d.property_amount
+   , d.property_amount as amount_hubspot
 FROM `bbg-platform.hubspot2.deal` d
 LEFT JOIN `bbg-platform.hubspot2.merged_deal` m
    on d.deal_id = m.merged_deal_id
@@ -317,12 +318,11 @@ SELECT *
   , case when name_product LIKE "%Hybrid%" then 1 else 0 end as VIP
 
   , case when pipeline_stage IN ('Cancelled', 'Paused Student', 'Current Declines', 'Cancelled Student', 'Closed Won')and name_deal NOT LIKE "%In-Person%" then 1 else 0 end as is_buyer
-  , case when pipeline_stage IN ('Cancelled', 'Cancelled Student')and name_deal NOT LIKE "%In-Person%" then 1 else 0 end as is_cancelled
-  , case when pipeline_stage IN ('Paused Student')and name_deal NOT LIKE "%In-Person%" then 1 else 0 end  as is_paused
-  , case when pipeline_stage IN ('Paused Student', 'Current Declines', 'Closed Won')and name_deal NOT LIKE "%In-Person%" then 1 else 0 end as is_enrolled
-  , case when pipeline_stage IN ('Current Declines', 'Closed Won', 'Transferred')and name_deal NOT LIKE "%In-Person%" then 1 else 0 end as is_active
-  , case when amount_refund is not null then 1 else 0 end as is_refund
-  , case when amount_refund = amount_collected then 1 else 0 end as is_full_refund
+  , case when pipeline_stage IN ('Cancelled', 'Cancelled Student') then 1 else 0 end as is_cancelled
+  , case when pipeline_stage IN ('Paused Student') then 1 else 0 end  as is_paused
+  , case when pipeline_stage IN ('Paused Student', 'Current Declines', 'Closed Won') then 1 else 0 end as is_enrolled
+  , case when pipeline_stage IN ('Current Declines', 'Closed Won', 'Transferred') then 1 else 0 end as is_active
+  , case when name_deal LIKE "%In-Person%" then 1 else 0 end as is_inperson
 from hubspot h
 WHERE analytics.fnEmail_IsTest(email) = false
 group by all

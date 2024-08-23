@@ -17,8 +17,15 @@ SELECT  e.id as id_engagement
   , coalesce(ec.property_hs_call_direction, ee.property_hs_email_direction) as direction
   , coalesce(ee.property_hs_email_subject, m.property_hs_meeting_title,t.property_hs_task_subject, ec.property_hs_call_title) as subject
   , coalesce(ec.property_hubspot_owner_id, ee.property_hubspot_owner_id, cc.property_hubspot_owner_id, m.property_hubspot_owner_id, n.property_hubspot_owner_id, t.property_hubspot_owner_id) as id_owner
-  , ec.property_hs_call_disposition as disposition
-  , case when ec.property_hs_call_disposition = "f240bbac-87c9-4f6e-bf70-924b57d47db7" then 1 else 0 end as call_connected
+  , case when ec.property_hs_call_disposition = "73a0d17f-1163-4015-bdd5-ec830791da20" then "no answer" 
+         when ec.property_hs_call_disposition = 'f240bbac-87c9-4f6e-bf70-924b57d47db7' then "connected"
+         when ec.property_hs_call_disposition = 'b2cf5968-551e-4856-9783-52b3da59a7d0' then "left voicemail"
+         when ec.property_hs_call_disposition = '9d9162e7-6cf3-4944-bf63-4dff82258764' then "busy"
+         when ec.property_hs_call_disposition = '2a2764ef-b09f-46fa-a8ec-3d49cbf7b647' then "contact hung up"
+         when ec.property_hs_call_disposition = '17b47fee-58de-441e-a44c-c6300d46f273' then "wrong number"
+         else ec.property_hs_call_disposition end
+         as disposition
+  , case when ec.property_hs_call_disposition = "f240bbac-87c9-4f6e-bf70-924b57d47db7" then 1 else 0 end as is_call_connected
   , co.property_outbound_lead_source as source_lead
   , co.property_hs_lead_status as status_lead
 FROM `bbg-platform.hubspot2.engagement` e

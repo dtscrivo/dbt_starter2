@@ -42,8 +42,8 @@ where cast(_fivetran_end as string) LIKE "9999%"
 )
 
 SELECT  pi.id as id_payment_intent
-  , pi.amount/100 as amount_pi
-  , pi.amount_received/100 as amount_collected
+--  , pi.amount/100 as amount_pi
+--  , pi.amount_received/100 as amount_collected
   , pi.customer_id as id_customer
   , pi.description
   , pi.payment_method_id as id_payment_method_id
@@ -90,7 +90,7 @@ SELECT  pi.id as id_payment_intent
   , date_refund
   , amount_refund
   , amount_charge
-  , amount_charge-amount_refund as amount_net
+  , case when p.amount_refund is null then p.amount_charge else (p.amount_charge - p.amount_refund) end as amount_net
   , concat(cu.email,coalesce(p.id, hsp.property_product_id),coalesce(hsp.property_pricing_id, il.price_id)) as joinkey
   , right(coalesce(hsp.property_pricing_id, il.price_id),1) as plan_type
  -- , s.id as id_subscription
