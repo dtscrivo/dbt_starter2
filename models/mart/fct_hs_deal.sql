@@ -26,7 +26,7 @@ Select d.deal_id as id_deal
  --  , property_ws_ticket_type as ticket_type
  --  , property_hs_num_associated_deal_splits as num_splits
    , property_hs_num_of_associated_line_items as num_lineitems
- --  , property_oncehub_booking_id as id_booking
+   , property_oncehub_booking_id as id_booking
    , property_oncehub_meeting_type as meeting_type
    , d.property_offer_made as is_offermade
    , property_objection_reason as objection_reason
