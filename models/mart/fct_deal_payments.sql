@@ -90,6 +90,7 @@ SELECT  pi.id as id_payment_intent
   , date_refund
   , amount_refund
   , amount_charge
+  , amount_charge-amount_refund as amount_net
   , concat(cu.email,coalesce(p.id, hsp.property_product_id),coalesce(hsp.property_pricing_id, il.price_id)) as joinkey
   , right(coalesce(hsp.property_pricing_id, il.price_id),1) as plan_type
  -- , s.id as id_subscription
