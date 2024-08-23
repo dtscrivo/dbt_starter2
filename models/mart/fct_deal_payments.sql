@@ -90,7 +90,7 @@ SELECT  pi.id as id_payment_intent
   , date_refund
   , amount_refund
   , amount_charge
-  , case when p.amount_refund is null then p.amount_charge else (p.amount_charge - p.amount_refund) end as amount_net
+  , case when c.amount_refund is null then c.amount_charge else (c.amount_charge - c.amount_refund) end as amount_net
   , concat(cu.email,coalesce(p.id, hsp.property_product_id),coalesce(hsp.property_pricing_id, il.price_id)) as joinkey
   , right(coalesce(hsp.property_pricing_id, il.price_id),1) as plan_type
  -- , s.id as id_subscription

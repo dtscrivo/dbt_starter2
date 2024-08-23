@@ -232,7 +232,7 @@ LEFT JOIN `bbg-platform.dbt_tscrivo.fct_hs_tickets` t
 --LEFT JOIN `bbg-platform.hubspot2.product` hsp
  -- on d.id_price = cast(hsp.property_pricing_id as string)
 LEFT JOIN clickfunnel cf
-  on d.id_hs_sub = cf.id
+  on d.id_hs_subscription = cf.id
 LEFT JOIN paynum pn
   on cast(d.id_deal as string) = cast(pn.deal_id as string)
   and pn.last_payment = 1
