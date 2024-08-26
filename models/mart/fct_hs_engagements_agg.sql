@@ -33,6 +33,7 @@ SELECT  e.id as id_engagement
   , case when ec.property_hs_call_disposition = "f240bbac-87c9-4f6e-bf70-924b57d47db7" then 1 else 0 end as is_call_connected
   , co.property_outbound_lead_source as source_lead
   , co.property_hs_lead_status as status_lead
+  , ec.property_hs_call_duration as call_duration
 FROM `bbg-platform.hubspot2.engagement` e
 LEFT JOIN `bbg-platform.hubspot2.engagement_email` ee
   on e.id = ee.engagement_id
