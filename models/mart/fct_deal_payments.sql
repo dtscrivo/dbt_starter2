@@ -104,11 +104,16 @@ SELECT  pi.id as id_payment_intent
   --     when id_funnel = '13216474' and FORMAT_DATE('%y%m', date_closed) = '2408' then "ws24"
   --     else null end as event
   , hsp2.id as id_hs_object
-  ,   case when lower(name_deal) LIKE ('%hybrid%') then "Hybrid"
-         when lower(name_deal) LIKE ('%virtual%') then "Virtual"
-         when lower(name_deal) LIKE ('%affirm%') then "Affirm"
-         when lower(name_deal) LIKE ('%lite%') then "Lite"
-         when lower(name_deal) LIKE ('%in-person%') then "In-Person"
+  ,   case when lower(property_dealname
+  ) LIKE ('%hybrid%') then "Hybrid"
+         when lower(property_dealname
+         ) LIKE ('%virtual%') then "Virtual"
+         when lower(property_dealname
+         ) LIKE ('%affirm%') then "Affirm"
+         when lower(property_dealname
+         ) LIKE ('%lite%') then "Lite"
+         when lower(property_dealname
+         ) LIKE ('%in-person%') then "In-Person"
          else "Virtual" end as product_type
 FROM `bbg-platform.stripe_mindmint.payment_intent` pi
 LEFT JOIN charge c
