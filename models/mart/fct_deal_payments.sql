@@ -5,7 +5,7 @@
 with base as (
 with charge as (
 SELECT c.payment_intent_id
-  , TIMESTAMP_SUB(c.created, INTERVAL 7 HOUR) as createdd
+  , DATETIME(c.created, 'America/Phoenix') as createdd
   , c.status
   , row_number() over (partition by c.payment_intent_id order by c.created asc) as charge_num
   , row_number() over (partition by c.payment_intent_id order by c.created desc) as charge_success_num
@@ -17,7 +17,7 @@ SELECT c.payment_intent_id
   , json_extract_scalar(c.metadata, "$.product_id") as object_id
   , refunded
   , coalesce(cast(m.deal_id as string), json_extract_scalar(c.metadata, "$.deal_id")) as deal_id
-  , r.created as date_refund
+  , DATETIME(r.created, 'America/Phoenix') as date_refund
   , r.amount/100 as amount_refund
   , c.amount/100 as amount_charge
   FROM `bbg-platform.stripe_mindmint.charge` c
@@ -104,6 +104,12 @@ SELECT  pi.id as id_payment_intent
   --     when id_funnel = '13216474' and FORMAT_DATE('%y%m', date_closed) = '2408' then "ws24"
   --     else null end as event
   , hsp2.id as id_hs_object
+  ,   case when lower(name_deal) LIKE ('%hybrid%') then "Hybrid"
+         when lower(name_deal) LIKE ('%virtual%') then "Virtual"
+         when lower(name_deal) LIKE ('%affirm%') then "Affirm"
+         when lower(name_deal) LIKE ('%lite%') then "Lite"
+         when lower(name_deal) LIKE ('%in-person%') then "In-Person"
+         else "Virtual" end as product_type
 FROM `bbg-platform.stripe_mindmint.payment_intent` pi
 LEFT JOIN charge c
   on pi.id = c.payment_intent_id
