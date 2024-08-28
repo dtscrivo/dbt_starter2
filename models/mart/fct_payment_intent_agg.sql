@@ -1,6 +1,6 @@
 {{ config(materialized='table') }}
 
-  WITH mindmint_charge AS (
+      WITH mindmint_charge AS (
   SELECT c.payment_intent_id
   , DATETIME(c.created, 'America/Phoenix') as date_charge
   , c.status
@@ -136,6 +136,8 @@ where cast(_fivetran_end as string) LIKE "9999%"
   , hp.property_hs_folder_name as group_product
   , DATETIME(property_closedate, 'America/Phoenix') as date_closed
   , ps.label as pipeline_stage
+  , s.funnel_id
+  , c.metadata
   FROM `bbg-platform.stripe_mastermind.payment_intent` pi
   LEFT JOIN mastermind_charge c ON pi.id = c.payment_intent_id
   LEFT JOIN `bbg-platform.stripe_mastermind.invoice` i ON pi.id = i.payment_intent_id
@@ -177,7 +179,7 @@ UNION ALL
     c.charge_num,
     c.charge_success_num,
     c.status AS status_charge,
-    "no invoice" AS status_invoice,
+    case when i.status is null then "no invoice" else i.status end AS status_invoice,
     CASE
       WHEN c.status = "succeeded" AND charge_num = 1 THEN 'success'
       ELSE 'fail'
@@ -188,43 +190,47 @@ UNION ALL
       WHEN c.status = "succeeded" AND charge_num != 1 THEN 'fail_recovered'
       ELSE "fail_not_recovered"
     END AS category,
-    "no invoice" AS id_subscription_invoice,
+    case when i.subscription_id is null then "no invoice" else i.subscription_id end AS id_subscription_invoice,
     analytics.fnEmail(cu.email) as email,
     cu.name,
-    "no invoice" AS id_invoice,
+    case when i.id is null then "no invoice" else i.id end AS id_invoice,
     c.id AS id_charge,
-    "no invoice" as hosted_invoice_url ,
-    "no invoice" as invoice_pdf,
-    p.property_pricing_id AS price_id,
-    p.property_price AS price,
-    p.property_name AS product,
-    p.property_product_id AS id_product,
-    "no sub" AS status_subscription,
+    case when hosted_invoice_url is null then "no invoice" else i.hosted_invoice_url end as hosted_invoice_url ,
+    case when i.invoice_pdf is null then "no invoice" else i.invoice_pdf end as invoice_pdf,
+    coalesce(p.property_pricing_id, il.price_id) AS price_id,
+    coalesce(p.property_price,pr.unit_amount/100) AS price,
+    coalesce(p.property_name,pro.name) AS product,
+    coalesce(p.property_product_id,pro.id) AS id_product,
+    case when s.status is null then "no sub" else s.status end AS status_subscription,
     -- date('9999-12-31') as date_sub_created,
     c.outcome_reason,
-    property_recurringbillingfrequency as recurring_interval,
-    "no sub" as id_subscription,
+    coalesce(p.property_recurringbillingfrequency,pr.recurring_interval) as recurring_interval,
+    case when s.id is null then "no sub" else s.id end as id_subscription,
     -- "DATETIME(i.next_payment_attempt, 'America/Phoenix')" AS next_attempt
   case when c.status = 'succeeded' then (dense_rank() over(partition by email, c.object_id, c.status order by pi.created)) else null end as num_payment,
   case when c.status = 'succeeded' then (dense_rank() over(partition by email, c.object_id, c.status order by pi.created desc)) else null end as recency,
   dense_rank() over(partition by email, p.property_product_id order by pi.created) as num_attempt
   , "BBG" as stripe_account
-  , p.property_hs_folder_name as group_product
+  , coalesce(p.property_hs_folder_name, p2.property_hs_folder_name) as group_product
   , DATETIME(d.property_closedate, 'America/Phoenix') as date_closed
   , ps.label as pipeline_stage
+  , s.funnel_id
+  , c.metadata
   FROM `bbg-platform.stripe_mindmint.payment_intent` pi
   LEFT JOIN mindmint_charge c ON pi.id = c.payment_intent_id
-  -- LEFT JOIN `bbg-platform.stripe_mindmint.invoice` i ON pi.id = i.payment_intent_id
-  -- LEFT JOIN `bbg-platform.stripe_mindmint.invoice_line_item` il ON i.id = il.invoice_id
-  -- LEFT JOIN `bbg-platform.stripe_mindmint.price` pr ON il.price_id = pr.id
-  -- LEFT JOIN `bbg-platform.stripe_mindmint.product` p ON pr.product_id = p.id
+  LEFT JOIN `bbg-platform.stripe_mindmint.invoice` i ON pi.id = i.payment_intent_id
+  LEFT JOIN `bbg-platform.stripe_mindmint.invoice_line_item` il ON i.id = il.invoice_id
+  LEFT JOIN `bbg-platform.stripe_mindmint.price` pr ON il.price_id = pr.id
+  LEFT JOIN `bbg-platform.stripe_mindmint.product` pro ON pr.product_id = pro.id
   LEFT JOIN `bbg-platform.stripe_mindmint.customer` cu ON pi.customer_id = cu.id
-  -- LEFT JOIN mindmint_subs s ON i.subscription_id = s.id
+  LEFT JOIN mindmint_subs s ON i.subscription_id = s.id
   LEFT JOIN `hubspot2.product` p
     on c.object_id = cast(p.id as string)
   LEFT JOIN `hubspot2.deal` d
     on c.deal_id = cast(d.deal_id as string)
   LEFT JOIN `bbg-platform.hubspot2.deal_pipeline_stage` ps
   ON cast(d.deal_pipeline_stage_id as string) = ps.stage_id
+  LEFT JOIN `hubspot2.product` p2
+    on il.price_id = p2.property_pricing_id
   WHERE TRUE
     and analytics.fnEmail_IsTest(cu.email) = false
