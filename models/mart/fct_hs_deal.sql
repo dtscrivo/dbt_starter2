@@ -317,12 +317,12 @@ SELECT *
   , date_diff(date_refund, date_closed, day) as dob_refund
   , case when name_product LIKE "%Hybrid%" then 1 else 0 end as VIP
 
-  , case when pipeline_stage IN ('Cancelled', 'Paused Student', 'Current Declines', 'Cancelled Student', 'Closed Won')and name_deal NOT LIKE "%In-Person%" then 1 else 0 end as is_buyer
-  , case when pipeline_stage IN ('Cancelled', 'Cancelled Student') then 1 else 0 end as is_cancelled
-  , case when pipeline_stage IN ('Paused Student') then 1 else 0 end  as is_paused
-  , case when pipeline_stage IN ('Paused Student', 'Current Declines', 'Closed Won') then 1 else 0 end as is_enrolled
-  , case when pipeline_stage IN ('Current Declines', 'Closed Won', 'Transferred') then 1 else 0 end as is_active
-  , case when name_deal LIKE "%In-Person%" then 1 else 0 end as is_inperson
+  , case when lower(pipeline_stage) IN ('cancelled', 'paused student', 'current declines', 'cancelled student', 'closed won')and name_deal NOT LIKE "%In-Person%" then 1 else 0 end as is_buyer
+  , case when lower(pipeline_stage) LIKE '%cancelled%' then 1 else 0 end as is_cancelled
+  , case when lower(pipeline_stage) IN ('paused student') then 1 else 0 end  as is_paused
+  , case when lower(pipeline_stage) IN ('paused student', 'current declines', 'closed Won') then 1 else 0 end as is_enrolled
+  , case when lower(pipeline_stage) IN ('current declines', 'closed Won', 'transferred') then 1 else 0 end as is_active
+  , case when lower(name_deal) LIKE "%in-person%" then 1 else 0 end as is_inperson
 from hubspot h
 WHERE analytics.fnEmail_IsTest(email) = false
 group by all
