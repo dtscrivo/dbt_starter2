@@ -250,7 +250,7 @@ LEFT JOIN wires w
 --  on cast(m.merged_deal_id as string) = pn2.deal_id
 WHERE true
 --  and d.id_deal = 11311572982
-   and (analytics.fnEmail_IsTest(d.email) = false or d.property_email_address_of_contact = 'chrisj@remotestaff.com')
+   and (analytics.fnEmail_IsTest(d.email) = false or d.email = 'chrisj@remotestaff.com')
 )
 
 
@@ -324,5 +324,5 @@ SELECT *
   , case when lower(pipeline_stage) IN ('current declines', 'closed won', 'transferred') then 1 else 0 end as is_active
   , case when lower(name_deal) LIKE "%in-person%" then 1 else 0 end as is_inperson
 from hubspot h
-WHERE (analytics.fnEmail_IsTest(email) = false or d.property_email_address_of_contact = 'chrisj@remotestaff.com')
+WHERE (analytics.fnEmail_IsTest(email) = false or email = 'chrisj@remotestaff.com')
 group by all
