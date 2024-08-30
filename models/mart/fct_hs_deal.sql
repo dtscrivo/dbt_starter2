@@ -321,7 +321,7 @@ SELECT *
   , case when lower(pipeline_stage) LIKE '%cancelled%' then 1 else 0 end as is_cancelled
   , case when lower(pipeline_stage) IN ('paused student') then 1 else 0 end  as is_paused
   , case when lower(pipeline_stage) IN ('paused student', 'current declines', 'closed won') then 1 else 0 end as is_enrolled
-  , case when lower(pipeline_stage) IN ('current declines', 'closed won', 'transferred') then 1 else 0 end as is_active
+  , case when lower(pipeline_stage) IN ('current declines', 'closed won') then 1 else 0 end as is_active
   , case when lower(name_deal) LIKE "%in-person%" then 1 else 0 end as is_inperson
 from hubspot h
 WHERE (analytics.fnEmail_IsTest(email) = false or email = 'chrisj@remotestaff.com')
