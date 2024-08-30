@@ -378,7 +378,7 @@ where cast(_fivetran_end as string) LIKE "9999%"
   , cast(d.deal_id as string) as id_deal
   -- , e.email_prime
   , d.property_createdate
-  , right(il.price_id,1) as plan_type
+  , right(il.price_id,1) as pay_type
   FROM `bbg-platform.stripe_mastermind.payment_intent` pi
   LEFT JOIN mastermind_charge c ON pi.id = c.payment_intent_id
   LEFT JOIN `bbg-platform.stripe_mastermind.invoice` i ON pi.id = i.payment_intent_id
@@ -463,7 +463,7 @@ UNION ALL
   , coalesce(cast(d2.deal_id as string),c.deal_id) as id_deal
   , d2.property_createdate
   -- , e.email_prime
-  , right(coalesce(p.property_pricing_id, il.price_id),1) as plan_type
+  , right(coalesce(p.property_pricing_id, il.price_id),1) as pay_type
   FROM `bbg-platform.stripe_mindmint.payment_intent` pi
   LEFT JOIN mindmint_charge c ON pi.id = c.payment_intent_id
   LEFT JOIN `bbg-platform.stripe_mindmint.invoice` i ON pi.id = i.payment_intent_id
