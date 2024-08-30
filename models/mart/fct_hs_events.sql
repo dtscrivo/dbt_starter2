@@ -96,8 +96,8 @@ WITH events AS (
         -- Program
         MAX(case when name = "Program - Mastermind Business Academy (8.29.24 In-Person)" then added_at else null end) as att_ip_mba_8292024,
         MAX(case when name = "Program - Mastermind Business Academy (6.27.24 In-Person)" then added_at else null end) as att_ip_mba_6272024,
-        MAX(case when name LIKE "%Preview Event%" and name LIKE "%In-Person%" and name like "Attended%") then added_at else null end as IPPE
-        MAX(case when name LIKE "%Preview Event%" and name NOT LIKE "%In-Person%" and name like "Attended%") then added_at else null end as VPE
+        MAX(case when name LIKE "%Preview Event%" and name LIKE "%In-Person%" and name like "Attended%" then added_at else null end) as IPPE,
+        MAX(case when name LIKE "%Preview Event%" and name NOT LIKE "%In-Person%" and name like "Attended%" then added_at else null end) as VPE
     FROM `bbg-platform.hubspot2.contact` c
     LEFT JOIN `bbg-platform.hubspot2.contact_list_member` m
       on c.id = m.contact_id
