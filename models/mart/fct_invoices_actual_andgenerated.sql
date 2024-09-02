@@ -1,7 +1,68 @@
 {{ config(materialized='table') }}
 
 WITH invoices as (
-WITH base as (
+with asdf as (
+  with initial_payments AS (
+    SELECT
+        analytics.fnEmail(email) as email,
+        id_customer,
+        id_price,
+        date(date_pi_created) AS date_invoice,
+        case when id_price IN ('MBA_pif_inpersonpackage_5997', 'bf22') then 1 else SAFE_CAST(plan_type AS INT64) end AS plan_type -- Using SAFE_CAST to avoid errors
+        , amount_charge as amount_collected
+        , name_product
+    FROM
+        `dbt_tscrivo.fct_deal_payments`
+    WHERE
+        num_payment = 1
+        AND SAFE_CAST(plan_type AS INT64) IS NOT NULL -- Ensuring only valid integer values
+        AND name_product not like "%@%"
+)
+
+
+
+
+
+
+, generated_payments AS (
+    SELECT
+        email,
+        id_customer,
+        id_price,
+        date_invoice,
+        plan_type,
+        -- Generate each payment date using the SEQUENCE function
+        DATE_ADD(date_invoice, INTERVAL n MONTH) AS payment_date,
+        n + 1 AS payment_number
+        , amount_collected
+        , name_product
+    FROM
+        initial_payments,
+        UNNEST(GENERATE_ARRAY(0, plan_type - 1)) AS n
+)
+SELECT
+    email,
+    id_customer,
+    id_price,
+    payment_date,
+    payment_number
+    , "generated" as status_invoice
+    , amount_collected
+    , name_product
+    , 1 as is_generated
+FROM
+    generated_payments
+ --   where email = 'adiyb@adiybmuhammad.com'
+-- where id_price = 'taa_pp_lp_935_7'
+
+ORDER BY
+    email,
+    id_price,
+    payment_date
+)
+
+
+, base as (
 SELECT email
   , id_customer
   , num_payment
@@ -9,9 +70,9 @@ SELECT email
   , date(date_pi_created) as payment_date
   , 0 as is_generated
   , status_charge
-  , amount_charge as amount_collected
+  , amount_collected
   , name_product
-FROM `dbt_tscrivo.fct_deal_payments`
+FROM `dbt_tscrivo.fct_payment_intent_agg`
 WHERE name_product NOT LIKE "%@%"
  -- and email = 'Egyn98grl@hotmail.com'
 
@@ -27,7 +88,7 @@ SELECT i.email
   , i.amount_collected
   , i.name_product
 
-FROM `dbt_tscrivo.fct_invoice_generated` i
+FROM asdf i
 WHERE true
   and date(payment_date) > current_date()
 )
@@ -37,7 +98,7 @@ WHERE true
   select date(date_pi_created) as first_payment_date
   , email
   , id_price
-  from `dbt_tscrivo.fct_deal_payments`
+  from `dbt_tscrivo.fct_payment_intent_agg`
   where num_payment = 1
 )
 
