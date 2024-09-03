@@ -15,6 +15,7 @@ SELECT Topic as topic
          else "guest" end as role
 FROM `bbg-platform.dbt_tscrivo_stage.meeting_details_export`
 WHERE TRUE
+  and Meeting_ID is not null
   and In_Waiting_Room = "No"
   and (Name_Original_Name not like "%Notetaker%" AND Name_Original_Name not like "%notes%")
   -- and topic = 'MBA: Coaching Hours: 5pm PST'
