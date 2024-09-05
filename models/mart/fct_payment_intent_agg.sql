@@ -395,6 +395,23 @@ where cast(_fivetran_end as string) LIKE "9999%"
   , d.property_createdate
   , right(il.price_id,1) as pay_type
   , c.amount_lost_dispute
+  , c.date_dispute
+  ,  CASE
+  -- When both `amount_refund` and `amount_lost_dispute` are not null
+  WHEN sum(p.amount_refund) IS NOT NULL AND sum(p.amount_lost_dispute) IS NOT NULL THEN 
+    SUM(p.amount_collected) - SUM(p.amount_refund) - SUM(p.amount_lost_dispute)
+  
+  -- When `amount_refund` is null and `amount_lost_dispute` is not null
+  WHEN sum(p.amount_refund) IS NULL AND sum(p.amount_lost_dispute) IS NOT NULL THEN 
+    SUM(p.amount_collected) - SUM(p.amount_lost_dispute)
+
+  -- When `amount_refund` is not null and `amount_lost_dispute` is null
+  WHEN sum(p.amount_refund) IS NOT NULL AND sum(p.amount_lost_dispute) IS NULL THEN 
+    SUM(p.amount_collected) - SUM(p.amount_refund)
+  
+  -- Else case: when both are null or other scenarios
+  ELSE SUM(p.amount_collected)
+END as amount_retained
   FROM `bbg-platform.stripe_mastermind.payment_intent` pi
   LEFT JOIN mastermind_charge c ON pi.id = c.payment_intent_id
   LEFT JOIN `bbg-platform.stripe_mastermind.invoice` i ON pi.id = i.payment_intent_id
@@ -481,6 +498,23 @@ UNION ALL
   -- , e.email_prime
   , right(coalesce(p.property_pricing_id, il.price_id),1) as pay_type
   , c.amount_lost_dispute
+  , c.date_dispute
+  ,  CASE
+  -- When both `amount_refund` and `amount_lost_dispute` are not null
+  WHEN sum(p.amount_refund) IS NOT NULL AND sum(p.amount_lost_dispute) IS NOT NULL THEN 
+    SUM(p.amount_collected) - SUM(p.amount_refund) - SUM(p.amount_lost_dispute)
+  
+  -- When `amount_refund` is null and `amount_lost_dispute` is not null
+  WHEN sum(p.amount_refund) IS NULL AND sum(p.amount_lost_dispute) IS NOT NULL THEN 
+    SUM(p.amount_collected) - SUM(p.amount_lost_dispute)
+
+  -- When `amount_refund` is not null and `amount_lost_dispute` is null
+  WHEN sum(p.amount_refund) IS NOT NULL AND sum(p.amount_lost_dispute) IS NULL THEN 
+    SUM(p.amount_collected) - SUM(p.amount_refund)
+  
+  -- Else case: when both are null or other scenarios
+  ELSE SUM(p.amount_collected)
+END as amount_retained
   FROM `bbg-platform.stripe_mindmint.payment_intent` pi
   LEFT JOIN mindmint_charge c ON pi.id = c.payment_intent_id
   LEFT JOIN `bbg-platform.stripe_mindmint.invoice` i ON pi.id = i.payment_intent_id
