@@ -255,12 +255,19 @@ UNION ALL
   , r.amount/100 as amount_refund
   , c.amount/100 as amount_charge
   , case when c.status = 'succeeded' then c.amount/100 else null end as amount_collected
+
+  , d.status as status_dispute
+  , d.reason as reason_dispute
+  , DATETIME(d.created, 'America/Phoenix') as date_dispute
+  , d.amount/100 as amount_dispute
+  , case when d.status = "lost" then d.amount/100 else null end as amount_lost_dispute
   FROM `bbg-platform.stripe_mindmint.charge` c
   LEFT JOIN `bbg-platform.hubspot2.merged_deal` m
     on cast(json_extract_scalar(c.metadata, "$.deal_id") as string) = cast(m.merged_deal_id as string)
   LEFT JOIN `bbg-platform.stripe_mindmint.refund` r
     on c.id = r.charge_id
-
+  LEFT JOIN `bbg-platform.stripe_mindmint.dispute` d
+    on c.id = d.charge_id
   -- WHERE c.status = "succeeded"
 --WHERE payment_intent_id = "pi_3Ma1jwISjDEJDDVR15x1pyVV"
 -- where json_extract_scalar(c.metadata, "$.product_id") is not null
@@ -285,11 +292,19 @@ SELECT c.payment_intent_id
   , r.amount/100 as amount_refund
   , c.amount/100 as amount_charge
   , case when c.status = 'succeeded' then c.amount/100 else null end as amount_collected
+
+  , d.status as status_dispute
+  , d.reason as reason_dispute
+  , DATETIME(d.created, 'America/Phoenix') as date_dispute
+  , d.amount/100 as amount_dispute
+  , case when d.status = "lost" then d.amount/100 else null end as amount_lost_dispute
   FROM `bbg-platform.stripe_mastermind.charge` c
   LEFT JOIN `bbg-platform.hubspot2.merged_deal` m
     on cast(json_extract_scalar(c.metadata, "$.deal_id") as string) = cast(m.merged_deal_id as string)
   LEFT JOIN `bbg-platform.stripe_mastermind.refund` r
     on c.id = r.charge_id
+  LEFT JOIN `bbg-platform.stripe_mastermind.dispute` d
+    on c.id = d.charge_id
   -- WHERE c.status = "succeeded"
 --WHERE payment_intent_id = "pi_3Ma1jwISjDEJDDVR15x1pyVV"
 qualify row_number() over (partition by c.payment_intent_id order by c.created desc) = 1
@@ -379,6 +394,7 @@ where cast(_fivetran_end as string) LIKE "9999%"
   -- , e.email_prime
   , d.property_createdate
   , right(il.price_id,1) as pay_type
+  , c.amount_lost_dispute
   FROM `bbg-platform.stripe_mastermind.payment_intent` pi
   LEFT JOIN mastermind_charge c ON pi.id = c.payment_intent_id
   LEFT JOIN `bbg-platform.stripe_mastermind.invoice` i ON pi.id = i.payment_intent_id
@@ -464,6 +480,7 @@ UNION ALL
   , d2.property_createdate
   -- , e.email_prime
   , right(coalesce(p.property_pricing_id, il.price_id),1) as pay_type
+  , c.amount_lost_dispute
   FROM `bbg-platform.stripe_mindmint.payment_intent` pi
   LEFT JOIN mindmint_charge c ON pi.id = c.payment_intent_id
   LEFT JOIN `bbg-platform.stripe_mindmint.invoice` i ON pi.id = i.payment_intent_id
