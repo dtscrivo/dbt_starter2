@@ -238,76 +238,87 @@ UNION ALL
 
 
      WITH mindmint_charge AS (
-  SELECT c.payment_intent_id
-  , DATETIME(c.created, 'America/Phoenix') as date_charge
-  , c.status
-  , row_number() over (partition by c.payment_intent_id order by c.created asc) as charge_num
-  , row_number() over (partition by c.payment_intent_id order by c.created desc) as charge_success_num
-  , c.id
-  , c.outcome_reason
-  , json_extract_scalar(c.metadata, "$.processor") as processor
-  , statement_descriptor
-  , c.metadata
-  , json_extract_scalar(c.metadata, "$.product_id") as object_id
-  , refunded
-  , coalesce(cast(m.deal_id as string), json_extract_scalar(c.metadata, "$.deal_id")) as deal_id
-  , DATETIME(r.created, 'America/Phoenix') as date_refund
-  , r.amount/100 as amount_refund
-  , c.amount/100 as amount_charge
-  , case when c.status = 'succeeded' then c.amount/100 else null end as amount_collected
-
-  , d.status as status_dispute
-  , d.reason as reason_dispute
-  , DATETIME(d.created, 'America/Phoenix') as date_dispute
-  , d.amount/100 as amount_dispute
-  , case when d.status = "lost" then d.amount/100 else null end as amount_lost_dispute
+  WITH charges_with_refunds AS (
+  SELECT 
+    c.payment_intent_id,
+    DATETIME(c.created, 'America/Phoenix') AS date_charge,
+    c.status,
+    ROW_NUMBER() OVER (PARTITION BY c.payment_intent_id ORDER BY c.created ASC) AS charge_num,
+    ROW_NUMBER() OVER (PARTITION BY c.payment_intent_id ORDER BY c.created DESC) AS charge_success_num,
+    c.id,
+    c.outcome_reason,
+    JSON_EXTRACT_SCALAR(c.metadata, "$.processor") AS processor,
+    c.statement_descriptor,
+    c.metadata,
+    JSON_EXTRACT_SCALAR(c.metadata, "$.product_id") AS object_id,
+    c.refunded,
+    COALESCE(CAST(m.deal_id AS STRING), JSON_EXTRACT_SCALAR(c.metadata, "$.deal_id")) AS deal_id,
+    DATETIME(MAX(r.created), 'America/Phoenix') AS date_refund,  -- Max refund date
+    SUM(r.amount/100) AS amount_refund,  -- Sum all refund amounts for this charge
+    c.amount/100 AS amount_charge,
+    CASE WHEN c.status = 'succeeded' THEN c.amount/100 ELSE NULL END AS amount_collected,
+    d.status AS status_dispute,
+    d.reason AS reason_dispute,
+    DATETIME(d.created, 'America/Phoenix') AS date_dispute,
+    d.amount/100 AS amount_dispute,
+    CASE WHEN d.status = 'lost' THEN d.amount/100 ELSE NULL END AS amount_lost_dispute
   FROM `bbg-platform.stripe_mindmint.charge` c
   LEFT JOIN `bbg-platform.hubspot2.merged_deal` m
-    on cast(json_extract_scalar(c.metadata, "$.deal_id") as string) = cast(m.merged_deal_id as string)
+    ON CAST(JSON_EXTRACT_SCALAR(c.metadata, "$.deal_id") AS STRING) = CAST(m.merged_deal_id AS STRING)
   LEFT JOIN `bbg-platform.stripe_mindmint.refund` r
-    on c.id = r.charge_id
+    ON c.id = r.charge_id
   LEFT JOIN `bbg-platform.stripe_mindmint.dispute` d
-    on c.id = d.charge_id
-  -- WHERE c.status = "succeeded"
---WHERE payment_intent_id = "pi_3Ma1jwISjDEJDDVR15x1pyVV"
--- where json_extract_scalar(c.metadata, "$.product_id") is not null
-qualify row_number() over (partition by c.payment_intent_id order by c.created desc) = 1
+    ON c.id = d.charge_id
+  WHERE c.id = 'ch_3PS6nPLYbD2uWeLi1p24nBqM'
+  GROUP BY 
+    c.payment_intent_id, c.created, c.status, c.id, c.outcome_reason, c.metadata, c.amount, 
+    c.refunded, m.deal_id, c.statement_descriptor, d.status, d.reason, d.created, d.amount
+)
+SELECT *
+FROM charges_with_refunds
+QUALIFY ROW_NUMBER() OVER (PARTITION BY payment_intent_id ORDER BY date_charge DESC) = 1
   )
 
   , mastermind_charge AS (
-SELECT c.payment_intent_id
-  , DATETIME(c.created, 'America/Phoenix') as date_charge
-  , c.status
-  , row_number() over (partition by c.payment_intent_id order by c.created asc) as charge_num
-  , row_number() over (partition by c.payment_intent_id order by c.created desc) as charge_success_num
-  , c.id
-  , c.outcome_reason
-  , json_extract_scalar(c.metadata, "$.processor") as processor
-  , statement_descriptor
-  , c.metadata
-  , json_extract_scalar(c.metadata, "$.product_id") as object_id
-  , refunded
-  , coalesce(cast(m.deal_id as string), json_extract_scalar(c.metadata, "$.deal_id")) as deal_id
-  , DATETIME(r.created, 'America/Phoenix') as date_refund
-  , r.amount/100 as amount_refund
-  , c.amount/100 as amount_charge
-  , case when c.status = 'succeeded' then c.amount/100 else null end as amount_collected
-
-  , d.status as status_dispute
-  , d.reason as reason_dispute
-  , DATETIME(d.created, 'America/Phoenix') as date_dispute
-  , d.amount/100 as amount_dispute
-  , case when d.status = "lost" then d.amount/100 else null end as amount_lost_dispute
+WITH charges_with_refunds AS (
+  SELECT 
+    c.payment_intent_id,
+    DATETIME(c.created, 'America/Phoenix') AS date_charge,
+    c.status,
+    ROW_NUMBER() OVER (PARTITION BY c.payment_intent_id ORDER BY c.created ASC) AS charge_num,
+    ROW_NUMBER() OVER (PARTITION BY c.payment_intent_id ORDER BY c.created DESC) AS charge_success_num,
+    c.id,
+    c.outcome_reason,
+    JSON_EXTRACT_SCALAR(c.metadata, "$.processor") AS processor,
+    c.statement_descriptor,
+    c.metadata,
+    JSON_EXTRACT_SCALAR(c.metadata, "$.product_id") AS object_id,
+    c.refunded,
+    COALESCE(CAST(m.deal_id AS STRING), JSON_EXTRACT_SCALAR(c.metadata, "$.deal_id")) AS deal_id,
+    DATETIME(MAX(r.created), 'America/Phoenix') AS date_refund,  -- Max refund date
+    SUM(r.amount/100) AS amount_refund,  -- Sum all refund amounts for this charge
+    c.amount/100 AS amount_charge,
+    CASE WHEN c.status = 'succeeded' THEN c.amount/100 ELSE NULL END AS amount_collected,
+    d.status AS status_dispute,
+    d.reason AS reason_dispute,
+    DATETIME(d.created, 'America/Phoenix') AS date_dispute,
+    d.amount/100 AS amount_dispute,
+    CASE WHEN d.status = 'lost' THEN d.amount/100 ELSE NULL END AS amount_lost_dispute
   FROM `bbg-platform.stripe_mastermind.charge` c
   LEFT JOIN `bbg-platform.hubspot2.merged_deal` m
-    on cast(json_extract_scalar(c.metadata, "$.deal_id") as string) = cast(m.merged_deal_id as string)
+    ON CAST(JSON_EXTRACT_SCALAR(c.metadata, "$.deal_id") AS STRING) = CAST(m.merged_deal_id AS STRING)
   LEFT JOIN `bbg-platform.stripe_mastermind.refund` r
-    on c.id = r.charge_id
+    ON c.id = r.charge_id
   LEFT JOIN `bbg-platform.stripe_mastermind.dispute` d
-    on c.id = d.charge_id
-  -- WHERE c.status = "succeeded"
---WHERE payment_intent_id = "pi_3Ma1jwISjDEJDDVR15x1pyVV"
-qualify row_number() over (partition by c.payment_intent_id order by c.created desc) = 1
+    ON c.id = d.charge_id
+  WHERE c.id = 'ch_3PS6nPLYbD2uWeLi1p24nBqM'
+  GROUP BY 
+    c.payment_intent_id, c.created, c.status, c.id, c.outcome_reason, c.metadata, c.amount, 
+    c.refunded, m.deal_id, c.statement_descriptor, d.status, d.reason, d.created, d.amount
+)
+SELECT *
+FROM charges_with_refunds
+QUALIFY ROW_NUMBER() OVER (PARTITION BY payment_intent_id ORDER BY date_charge DESC) = 1
   )
 
 
