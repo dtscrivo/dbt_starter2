@@ -267,6 +267,7 @@ UNION ALL
     ON CAST(JSON_EXTRACT_SCALAR(c.metadata, "$.deal_id") AS STRING) = CAST(m.merged_deal_id AS STRING)
   LEFT JOIN `bbg-platform.stripe_mindmint.refund` r
     ON c.id = r.charge_id
+    and r.status = "succeeded"
   LEFT JOIN `bbg-platform.stripe_mindmint.dispute` d
     ON c.id = d.charge_id
  -- WHERE c.id = 'ch_3PS6nPLYbD2uWeLi1p24nBqM'
@@ -310,6 +311,7 @@ WITH charges_with_refunds AS (
     ON CAST(JSON_EXTRACT_SCALAR(c.metadata, "$.deal_id") AS STRING) = CAST(m.merged_deal_id AS STRING)
   LEFT JOIN `bbg-platform.stripe_mastermind.refund` r
     ON c.id = r.charge_id
+    and r.status = "succeeded"
   LEFT JOIN `bbg-platform.stripe_mastermind.dispute` d
     ON c.id = d.charge_id
   --WHERE c.id = 'ch_3PS6nPLYbD2uWeLi1p24nBqM'
