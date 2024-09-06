@@ -408,19 +408,19 @@ where cast(_fivetran_end as string) LIKE "9999%"
   -- , e.email_prime
   , d.property_createdate
   , right(il.price_id,1) as pay_type
-  , c.amoun_dispute
+  , c.amount_dispute
   , c.date_dispute
   ,  CASE
-  -- When both `amount_refund` and `amoun_dispute` are not null
-  WHEN c.amount_refund IS NOT NULL AND c.amoun_dispute IS NOT NULL THEN 
+  -- When both `amount_refund` and `amount_dispute` are not null
+  WHEN c.amount_refund IS NOT NULL AND c.amount_dispute IS NOT NULL THEN 
     c.amount_collected - c.amount_refund - c.amount_dispute
 
-  -- When `amount_refund` is null and `amoun_dispute` is not null
-  WHEN c.amount_refund IS NULL AND c.amoun_dispute IS NOT NULL THEN 
+  -- When `amount_refund` is null and `amount_dispute` is not null
+  WHEN c.amount_refund IS NULL AND c.amount_dispute IS NOT NULL THEN 
     c.amount_collected - c.amount_dispute
 
-  -- When `amount_refund` is not null and `amoun_dispute` is null
-  WHEN c.amount_refund IS NOT NULL AND c.amoun_dispute IS NULL THEN 
+  -- When `amount_refund` is not null and `amount_dispute` is null
+  WHEN c.amount_refund IS NOT NULL AND c.amount_dispute IS NULL THEN 
     c.amount_collected - c.amount_refund
   
   -- Else case: when both are null or other scenarios
@@ -511,19 +511,19 @@ UNION ALL
   , d2.property_createdate
   -- , e.email_prime
   , right(coalesce(p.property_pricing_id, il.price_id),1) as pay_type
-  , c.amoun_dispute
+  , c.amount_dispute
   , c.date_dispute
   ,  CASE
-  -- When both `amount_refund` and `amoun_dispute` are not null
-  WHEN c.amount_refund IS NOT NULL AND c.amoun_dispute IS NOT NULL THEN 
+  -- When both `amount_refund` and `amount_dispute` are not null
+  WHEN c.amount_refund IS NOT NULL AND c.amount_dispute IS NOT NULL THEN 
     c.amount_collected - c.amount_refund - c.amount_dispute
 
-  -- When `amount_refund` is null and `amoun_dispute` is not null
-  WHEN c.amount_refund IS NULL AND c.amoun_dispute IS NOT NULL THEN 
+  -- When `amount_refund` is null and `amount_dispute` is not null
+  WHEN c.amount_refund IS NULL AND c.amount_dispute IS NOT NULL THEN 
     c.amount_collected - c.amount_dispute
 
-  -- When `amount_refund` is not null and `amoun_dispute` is null
-  WHEN c.amount_refund IS NOT NULL AND c.amoun_dispute IS NULL THEN 
+  -- When `amount_refund` is not null and `amount_dispute` is null
+  WHEN c.amount_refund IS NOT NULL AND c.amount_dispute IS NULL THEN 
     c.amount_collected - c.amount_refund
   
   -- Else case: when both are null or other scenarios
