@@ -260,7 +260,7 @@ UNION ALL
     d.status AS status_dispute,
     d.reason AS reason_dispute,
     DATETIME(d.created, 'America/Phoenix') AS date_dispute,
-    d.amount/100 AS amount_dispute,
+    d.amount/100 AS amount_dispute
   FROM `bbg-platform.stripe_mindmint.charge` c
   LEFT JOIN `bbg-platform.hubspot2.merged_deal` m
     ON CAST(JSON_EXTRACT_SCALAR(c.metadata, "$.deal_id") AS STRING) = CAST(m.merged_deal_id AS STRING)
@@ -303,8 +303,7 @@ WITH charges_with_refunds AS (
     d.status AS status_dispute,
     d.reason AS reason_dispute,
     DATETIME(d.created, 'America/Phoenix') AS date_dispute,
-    d.amount/100 AS amount_dispute,
-    CASE WHEN d.status = 'lost' THEN d.amount/100 ELSE NULL END AS amount_dispute
+    d.amount/100 AS amount_dispute
   FROM `bbg-platform.stripe_mastermind.charge` c
   LEFT JOIN `bbg-platform.hubspot2.merged_deal` m
     ON CAST(JSON_EXTRACT_SCALAR(c.metadata, "$.deal_id") AS STRING) = CAST(m.merged_deal_id AS STRING)
