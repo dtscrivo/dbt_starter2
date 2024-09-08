@@ -171,7 +171,7 @@ where true
  -- and c.id = 2701113180
 --  and source_via = 'customer'
 -- and name_mailbox = 'DG/ Mastermind.com Customer Support'
- and name_folder != 'Notifications'
+-- and name_folder != 'Notifications'
  -- and name_folder = 'Spam'
- and th.user_created_at is not null
+-- and th.user_created_at is not null
  group by all
