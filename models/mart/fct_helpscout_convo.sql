@@ -64,7 +64,7 @@ SELECT
   assigned_to_id,
   DATETIME(created_at, 'America/Phoenix') AS customer_created_at,
   DATETIME(next_created_at, 'America/Phoenix') AS user_created_at,
-  DATETIME_DIFF(next_created_at, created_at, MINUTE)/60 AS diff_in_minutes,
+  DATETIME_DIFF(next_created_at, created_at, MINUTE)/60 AS response_time_hours,
   row_number() over(partition by conversation_id order by created_at asc) as customer_thread_num,
   row_number() over(partition by conversation_id order by created_at desc) as customer_thread_recency
 FROM ranked_threads
@@ -135,7 +135,7 @@ select --c.*,
   , m.name_folder
   , m.type_folder
   , c.id
-  , th.diff_in_minutes as response_time
+  , th.response_time_hours
   , date_diff(c.closed_at, c.created_at, day) as days_to_close
   -- , case when customer_thread_num = 1 then user_created_at else null end as user_created_at
   -- , case when customer_thread_num = 1 then customer_created_at else null end as customer_created_at
@@ -144,7 +144,7 @@ select --c.*,
   , extract(dayofweek from th.user_created_at) as first_user_day
   , th.customer_created_at as first_customer_message
   , extract(dayofweek from th.customer_created_at) as first_customer_day
-  , avg(th2.diff_in_minutes) as avg_response_time
+  , avg(th2.response_time_hours) as avg_response_time
   , th3.customer_created_at as last_customer_message
   , th3.user_created_at as last_user_response
   , case when th3.user_created_at is null then 0 else 1 end as is_responded
@@ -157,7 +157,7 @@ select --c.*,
   , case when source_type = 'beacon-v2' then 1 else 0 end as is_beacon 
   , m.mailbox
   , cu.email_customer
-  , case when cu.email_customer = 'quarantine@ess.barracudanetworks.com' or cu.email_customer like "%no-reply%" or cu.email_customer like "%do_not_reply%" or cu.email_customer = 'postmaster@outlook.com' or cu.email_customer = 'support@gohighlevelassist.freshdesk.com' or cu.email_customer like '%@replies.mastermind.com' or cu.email_customer like "%@deangraziosi.com" or cu.email_customer like "%@mastermind.com" then 1 else 0 end as is_notification
+  , case when cu.email_customer like 'info@%' or cu.email_customer like "%systemmessage%" or cu.email_customer like "%noreply%" or cu.email_customer = 'quarantine@ess.barracudanetworks.com' or cu.email_customer like "%no-reply%" or cu.email_customer like "%do_not_reply%" or cu.email_customer = 'postmaster@outlook.com' or cu.email_customer = 'support@gohighlevelassist.freshdesk.com' or cu.email_customer like '%@replies.mastermind.com' or cu.email_customer like "%@deangraziosi.com" or cu.email_customer like "%@mastermind.com" then 1 else 0 end as is_notification
 from `bbg-platform.helpscout.conversation_history` c
 -- left join thread bc
 --   on c.id = bc.conversation_id
