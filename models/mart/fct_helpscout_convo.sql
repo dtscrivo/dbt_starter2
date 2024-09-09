@@ -157,6 +157,7 @@ select --c.*,
   , case when source_type = 'beacon-v2' then 1 else 0 end as is_beacon 
   , m.mailbox
   , cu.email_customer
+  , case when cu.email_customer like "%@deangraziosi.com" or cu.email_customer like "%@mastermind.com" then 1 else 0 end as is_notification
 from `bbg-platform.helpscout.conversation_history` c
 -- left join thread bc
 --   on c.id = bc.conversation_id
