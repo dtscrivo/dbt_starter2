@@ -42,6 +42,7 @@ WITH ranked_threads AS (
   SELECT
     conversation_id,
     created_at,
+    assigned_to_id, 
     source_via as thread_source,
     LEAD(created_at) OVER (
       PARTITION BY conversation_id 
@@ -59,6 +60,7 @@ WITH ranked_threads AS (
 )
 SELECT
   conversation_id,
+  assigned_to_id,
   DATETIME(created_at, 'America/Phoenix') AS customer_created_at,
   DATETIME(next_created_at, 'America/Phoenix') AS user_created_at,
   DATETIME_DIFF(next_created_at, created_at, MINUTE)/60 AS diff_in_minutes,
@@ -101,7 +103,6 @@ SELECT h.id as id_thread
   , row_number() over(partition by h.conversation_id, h.type order by h.created_at asc)
   , case when h.type = 'customer' then row_number() over(partition by h.conversation_id, h.type order by h.created_at asc) else null end as message_num_customer
   , case when h.type = 'message' then row_number() over(partition by h.conversation_id, h.type order by h.created_at asc) else null end as message_num_user
-
 FROM `bbg-platform.helpscout.conversation_thread_history` h
 -- LEFT JOIN user u
 --   on c.closed_by = u.id_user
@@ -145,8 +146,14 @@ select --c.*,
   , avg(th2.diff_in_minutes) as avg_response_time
   , th3.customer_created_at as last_customer_message
   , th3.user_created_at as last_user_response
-  , case when th3.user_created_at is null then 0 else 1 end as responded
+  , case when th3.user_created_at is null then 0 else 1 end as is_responded
  -- , th2.customer_thread_recency
+--  , u.first_name as assigned_to
+  , case when u.email_user is not null or (first_name is null AND closed_at is not null) then 1 else 0 end as is_support_handled
+  , case when first_name is null then 'Unassigned' else first_name end as assigned_to
+  , case when first_name is not null then 1 else 0 end as is_assigned
+  , case when closed_at is not null then 1 else 0 end as is_closed
+
 from `bbg-platform.helpscout.conversation_history` c
 -- left join thread bc
 --   on c.id = bc.conversation_id
@@ -164,10 +171,13 @@ left join threads th2
 left join threads th3
   on c.id = th3.conversation_id
   and th3.customer_thread_recency = 1
+left join user u
+  on th3.assigned_to_id = u.id_user
 where true
  and date(c.created_at) > date('2023-12-31')
+ and source_via = 'customer'
  -- and c.number = 408274
- -- and c.number = 677791
+ -- and c.number = 1262526
  -- and c.id = 2701113180
 --  and source_via = 'customer'
 -- and name_mailbox = 'DG/ Mastermind.com Customer Support'
@@ -175,3 +185,4 @@ where true
  -- and name_folder = 'Spam'
 -- and th.user_created_at is not null
  group by all
+qualify row_number() over(partition by number order by updated_at desc) = 1
