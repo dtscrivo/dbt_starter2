@@ -153,7 +153,7 @@ select --c.*,
   , case when first_name is null then 'Unassigned' else first_name end as assigned_to
   , case when first_name is not null then 1 else 0 end as is_assigned
   , case when closed_at is not null then 1 else 0 end as is_closed
-
+  , case when source_type = 'beacon-v2' then 1 else 0 end as is_beacon 
 from `bbg-platform.helpscout.conversation_history` c
 -- left join thread bc
 --   on c.id = bc.conversation_id
