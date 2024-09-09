@@ -515,7 +515,7 @@ UNION ALL
   , ps.label as pipeline_stage
   , s.funnel_id
   , c.metadata
-  , coalesce(cast(d2.deal_id as string),c.deal_id) as id_deal
+  , coalesce(c.deal_id, cast(d2.deal_id as string)) as id_deal
   , d2.property_createdate
   -- , e.email_prime
   , right(coalesce(p.property_pricing_id, il.price_id),1) as pay_type
