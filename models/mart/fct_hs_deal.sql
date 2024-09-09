@@ -294,6 +294,11 @@ SELECT *
 
   , case when name_product LIKE "%The Action Academy%" then "TAA" 
          when name_product LIKE "%Mastermind Business Academy%" then "MBA"
+         when name_product LIKE "%1:1 Coaching%" then "1:1"
+         when name_product LIKE "%The Edge%" then "Edge"
+         when name_product LIKE "%The Coaching Academy%" then "TCA"
+         when name_product LIKE "%High Ticket Coaching%" then "HTC"
+         when name_product LIKE "%High Ticket Academy%" then "HTA"
          else "" end as program
 
   , case when pay_type = "PIF" AND num_payments_made > 1 then 1 else 0 end as pif2
@@ -332,23 +337,33 @@ SELECT *
          then "Baltimore_8/3"
          when id_owner = 1426033370 AND (date(date_closed) > date('2024-07-26') AND date(date_closed) <= date('2024-07-28')) then "DC_7/28"
          when id_owner = 1426033370 AND (date(date_closed) > date('2024-07-19') AND date(date_closed) <= date('2024-07-21')) then "DC_7/20"
-         {# when id_owner IN (980534468,1426033370) AND (date(date_closed) > date('2024-09-05') AND date(date_closed) <= date('2024-09-11') AND (name_product like "%Mastermind Business Academy%" OR name_deal like "%The Edge (PIF) - Chad Anderson%")) then "Phoenix_9/6"
+         when id_owner IN (980534468,1426033370) AND (date(date_closed) > date('2024-09-05') AND date(date_closed) <= date('2024-09-11') AND (name_product like "%Mastermind Business Academy%" OR name_deal like "%The Edge (PIF) - Chad Anderson%")) then "Phoenix_9/6"
          when id_owner = 1426033370 AND (date(date_closed) > date('2024-09-19') AND date(date_closed) <= date('2024-09-22')) AND name_product like "%Mastermind Business Academy%" then "Workshop_9/20"
-         when id_owner = 1426033370 AND (date(date_closed) > date('2024-10-09') AND date(date_closed) <= date('2024-10-13')) AND name_product like "%Mastermind Business Academy%" then "Workshop_10/10" #}
+         when id_owner = 1426033370 AND (date(date_closed) > date('2024-10-09') AND date(date_closed) <= date('2024-10-13')) AND name_product like "%Mastermind Business Academy%" then "Workshop_10/10"
          else null end as workshop
 
 
-  , case when id_owner in (597349110,626163393,980534468,597349111,626162146,1018920904,1018935239,1211781353,143772806,1332303547,1066123713,746781400,1376975821,1332303546,2027067907) OR (case when id_owner = 1426033370 AND (date(date_closed) > date('2024-08-23') AND date(date_closed) < date('2024-08-28')) then "Charlotte"
+  , case when id_owner in (597349110,626163393,980534468,597349111,626162146,1018920904,1018935239,1211781353,143772806,1332303547,1066123713,746781400,1376975821,1332303546,2027067907,1153145590,1222041825,1278796899,1300856784,1696602043,285218002,285218005,411194086,493792977,746781399,767527108) OR
+   (case when id_owner = 1426033370 AND (date(date_closed) > date('2024-08-23') AND date(date_closed) < date('2024-08-28')) then "Charlotte"
          when id_owner = 1426033370 AND (date(date_closed) > date('2024-08-16') AND date(date_closed) <= date('2024-08-22')) then "Raleigh"
          when id_owner = 1426033370 AND (date(date_closed) > date('2024-08-02') AND date(date_closed) <= date('2024-08-04')) and (name_product like "%Hybrid (PIF)%" OR
                                    name_product like "%6 Pay%" OR name_product like "%Virtual%" OR name_product like "%4 Pay%")
          then "Baltimore"
          when id_owner = 1426033370 AND (date(date_closed) > date('2024-07-26') AND date(date_closed) <= date('2024-07-28')) then "DC"
          when id_owner = 1426033370 AND (date(date_closed) > date('2024-07-19') AND date(date_closed) <= date('2024-07-21')) then "DC"
-         {# when id_owner IN (980534468,1426033370) AND (date(date_closed) > date('2024-09-05') AND date(date_closed) <= date('2024-09-11') AND (name_product like "%Mastermind Business Academy%" OR name_deal like "%The Edge (PIF) - Chad Anderson%")) then "Phoenix"
+         when id_owner IN (980534468,1426033370) AND (date(date_closed) > date('2024-09-05') AND date(date_closed) <= date('2024-09-11') AND (name_product like "%Mastermind Business Academy%" OR name_deal like "%The Edge (PIF) - Chad Anderson%")) then "Phoenix"
          when id_owner = 1426033370 AND (date(date_closed) > date('2024-09-19') AND date(date_closed) <= date('2024-09-22')) AND name_product like "%Mastermind Business Academy%" then "Workshop_9/20"
-         when id_owner = 1426033370 AND (date(date_closed) > date('2024-10-09') AND date(date_closed) <= date('2024-10-13')) AND name_product like "%Mastermind Business Academy%" then "Workshop_10/10" #}
-         else null end is not null) then 1 else 0 end as team_sales
+         when id_owner = 1426033370 AND (date(date_closed) > date('2024-10-09') AND date(date_closed) <= date('2024-10-13')) AND name_product like "%Mastermind Business Academy%" then "Workshop_10/10"
+         else null end is not null) AND
+   (case when name_product LIKE "%The Action Academy%" then "TAA" 
+         when name_product LIKE "%Mastermind Business Academy%" then "MBA"
+         when name_product LIKE "%1:1 Coaching%" then "1:1"
+         when name_product LIKE "%The Edge%" then "Edge"
+         when name_product LIKE "%The Coaching Academy%" then "TCA"
+         when name_product LIKE "%High Ticket Coaching%" then "HTC"
+         when name_product LIKE "%High Ticket Academy%" then "HTA"
+         else "" end is not null)
+         then 1 else 0 end as team_sales
 
 
 from hubspot h

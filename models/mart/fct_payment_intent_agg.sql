@@ -237,6 +237,7 @@ UNION ALL
 
 
 
+
      WITH mindmint_charge AS (
   WITH charges_with_refunds AS (
   SELECT 
@@ -425,6 +426,14 @@ where cast(_fivetran_end as string) LIKE "9999%"
   -- Else case: when both are null or other scenarios
   ELSE c.amount_collected
 END as amount_retained
+    , case when p.name LIKE "%The Action Academy%" then "TAA" 
+         when p.name LIKE "%Mastermind Business Academy%" then "MBA"
+         when p.name LIKE "%1:1 Coaching%" then "1:1"
+         when p.name LIKE "%The Edge%" then "Edge"
+         when p.name LIKE "%The Coaching Academy%" then "TCA"
+         when p.name LIKE "%High Ticket Coaching%" then "HTC"
+         when p.name LIKE "%High Ticket Academy%" then "HTA"
+         else "" end as program
   FROM `bbg-platform.stripe_mastermind.payment_intent` pi
   LEFT JOIN mastermind_charge c ON pi.id = c.payment_intent_id
   LEFT JOIN `bbg-platform.stripe_mastermind.invoice` i ON pi.id = i.payment_intent_id
@@ -528,6 +537,14 @@ UNION ALL
   -- Else case: when both are null or other scenarios
   ELSE c.amount_collected
 END as amount_retained
+   , case when coalesce(p.property_name,pro.name) LIKE "%The Action Academy%" then "TAA" 
+         when coalesce(p.property_name,pro.name) LIKE "%Mastermind Business Academy%" then "MBA"
+         when coalesce(p.property_name,pro.name) LIKE "%1:1 Coaching%" then "1:1"
+         when coalesce(p.property_name,pro.name) LIKE "%The Edge%" then "Edge"
+         when coalesce(p.property_name,pro.name) LIKE "%The Coaching Academy%" then "TCA"
+         when coalesce(p.property_name,pro.name) LIKE "%High Ticket Coaching%" then "HTC"
+         when coalesce(p.property_name,pro.name) LIKE "%High Ticket Academy%" then "HTA"
+         else "" end as program
   FROM `bbg-platform.stripe_mindmint.payment_intent` pi
   LEFT JOIN mindmint_charge c ON pi.id = c.payment_intent_id
   LEFT JOIN `bbg-platform.stripe_mindmint.invoice` i ON pi.id = i.payment_intent_id
