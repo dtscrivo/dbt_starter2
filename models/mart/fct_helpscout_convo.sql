@@ -32,6 +32,7 @@ qualify row_number() over(partition by id order by updated_at desc) = 1
   , m.name as name_mailbox 
   , f.name as name_folder
   , f.type as type_folder
+  , m.email as mailbox
   from `bbg-platform.helpscout.mailbox_history` m
   LEFT JOIN `bbg-platform.helpscout.mailbox_folder_history` f
   on m.id = f.mailbox_id
@@ -154,6 +155,7 @@ select --c.*,
   , case when first_name is not null then 1 else 0 end as is_assigned
   , case when closed_at is not null then 1 else 0 end as is_closed
   , case when source_type = 'beacon-v2' then 1 else 0 end as is_beacon 
+  , m.mailbox
 from `bbg-platform.helpscout.conversation_history` c
 -- left join thread bc
 --   on c.id = bc.conversation_id
