@@ -366,7 +366,7 @@ SELECT *
          when name_product LIKE "%High Ticket Academy%" then "HTA"
          else "" end is not null)
          then 1 else 0 end as team_sales
-  ,   , case when lower(name_deal) LIKE ('%hybrid%') then "Hybrid"
+  ,   case when lower(name_deal) LIKE ('%hybrid%') then "Hybrid"
          when lower(name_deal) LIKE ('%virtual%') then "Virtual"
          when lower(name_deal) LIKE ('%affirm%') then "Affirm"
          when lower(name_deal) LIKE ('%lite%') then "Lite"
