@@ -371,7 +371,7 @@ SELECT *
          when lower(name_deal) LIKE ('%affirm%') then "Affirm"
          when lower(name_deal) LIKE ('%lite%') then "Lite"
          when lower(name_deal) LIKE ('%in-person%') then "In-Person"
-         when lower(name_deal) LIKE ('%Plus%') then "Plus"
+         when lower(name_deal) LIKE ('%plus%') then "Plus"
          else "Virtual" end as product_type
 
 from hubspot h
