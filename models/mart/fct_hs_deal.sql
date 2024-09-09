@@ -323,14 +323,19 @@ SELECT *
   , case when lower(pipeline_stage) IN ('paused student', 'current declines', 'closed won') then 1 else 0 end as is_enrolled
   , case when lower(pipeline_stage) IN ('current declines', 'closed won') then 1 else 0 end as is_active
   , case when lower(name_deal) LIKE "%in-person%" then 1 else 0 end as is_inperson
-  , case when id_owner = 1426033370 AND (date(date_closed) > date('2024-08-23') AND date(date_closed) < date('2024-08-28')) then "Charlotte"
-         when id_owner = 1426033370 AND (date(date_closed) > date('2024-08-16') AND date(date_closed) <= date('2024-08-22')) then "Raleigh"
+
+
+  , case when id_owner = 1426033370 AND (date(date_closed) > date('2024-08-23') AND date(date_closed) < date('2024-08-28')) then "Charlotte_8/24"
+         when id_owner = 1426033370 AND (date(date_closed) > date('2024-08-16') AND date(date_closed) <= date('2024-08-22')) then "Raleigh_8/17"
          when id_owner = 1426033370 AND (date(date_closed) > date('2024-08-02') AND date(date_closed) <= date('2024-08-04')) and (name_product like "%Hybrid (PIF)%" OR
                                    name_product like "%6 Pay%" OR name_product like "%Virtual%" OR name_product like "%4 Pay%")
-         then "Baltimore"
-         when id_owner = 1426033370 AND (date(date_closed) > date('2024-07-26') AND date(date_closed) <= date('2024-07-28')) then "DC"
-         when id_owner = 1426033370 AND (date(date_closed) > date('2024-07-19') AND date(date_closed) <= date('2024-07-21')) then "DC"
+         then "Baltimore_8/3"
+         when id_owner = 1426033370 AND (date(date_closed) > date('2024-07-26') AND date(date_closed) <= date('2024-07-28')) then "DC_7/28"
+         when id_owner = 1426033370 AND (date(date_closed) > date('2024-07-19') AND date(date_closed) <= date('2024-07-21')) then "DC_7/20"
+         when id_owner IN (980534468,1426033370) AND (date(date_closed) > date('2024-09-05') AND date(date_closed) <= date('2024-09-11') AND (name_product like "%Mastermind Business Academy%" OR name_deal like "%The Edge (PIF) - Chad Anderson%")) then "Phoenix_9/6"
          else null end as workshop
+
+
   , case when id_owner in (597349110,626163393,980534468,597349111,626162146,1018920904,1018935239,1211781353,143772806,1332303547,1066123713,746781400,1376975821,1332303546,2027067907) OR (case when id_owner = 1426033370 AND (date(date_closed) > date('2024-08-23') AND date(date_closed) < date('2024-08-28')) then "Charlotte"
          when id_owner = 1426033370 AND (date(date_closed) > date('2024-08-16') AND date(date_closed) <= date('2024-08-22')) then "Raleigh"
          when id_owner = 1426033370 AND (date(date_closed) > date('2024-08-02') AND date(date_closed) <= date('2024-08-04')) and (name_product like "%Hybrid (PIF)%" OR
@@ -339,6 +344,7 @@ SELECT *
          when id_owner = 1426033370 AND (date(date_closed) > date('2024-07-26') AND date(date_closed) <= date('2024-07-28')) then "DC"
          when id_owner = 1426033370 AND (date(date_closed) > date('2024-07-19') AND date(date_closed) <= date('2024-07-21')) then "DC"
          else null end is not null) then 1 else 0 end as team_sales
+
 
 from hubspot h
 WHERE (analytics.fnEmail_IsTest(email) = false or email = 'chrisj@remotestaff.com')
