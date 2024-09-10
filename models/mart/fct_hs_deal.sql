@@ -340,7 +340,7 @@ SELECT *
          when id_owner IN (980534468,1426033370) AND (date(date_closed) > date('2024-09-05') AND date(date_closed) <= date('2024-09-11') AND (name_product like "%Mastermind Business Academy%" OR name_deal like "%The Edge (PIF) - Chad Anderson%")) then "Phoenix_9/6"
          when id_owner = 1426033370 AND (date(date_closed) > date('2024-09-19') AND date(date_closed) <= date('2024-09-22')) AND name_product like "%Mastermind Business Academy%" then "Workshop_9/20"
          when id_owner = 1426033370 AND (date(date_closed) > date('2024-10-09') AND date(date_closed) <= date('2024-10-13')) AND name_product like "%Mastermind Business Academy%" then "Workshop_10/10"
-         when id_owner = 1426033370 AND EXTRACT(year from date_closed) = 2024 AND EXTRACT(month from date_closed)= 4 AND name_product like "%Mastermind Business Academy%" then "Tampa"
+         when id_owner = 1426033370 AND (EXTRACT(year from date_closed) = 2024 AND EXTRACT(month from date_closed)= 4) AND name_product like "%Mastermind Business Academy%" then "Tampa"
          else null end as workshop
 
 
@@ -356,7 +356,7 @@ SELECT *
          when id_owner IN (980534468,1426033370) AND (date(date_closed) > date('2024-09-05') AND date(date_closed) <= date('2024-09-11') AND (name_product like "%Mastermind Business Academy%" OR name_deal like "%The Edge (PIF) - Chad Anderson%")) then "Phoenix"
          when id_owner = 1426033370 AND (date(date_closed) > date('2024-09-19') AND date(date_closed) <= date('2024-09-22')) AND name_product like "%Mastermind Business Academy%" then "Workshop_9/20"
          when id_owner = 1426033370 AND (date(date_closed) > date('2024-10-09') AND date(date_closed) <= date('2024-10-13')) AND name_product like "%Mastermind Business Academy%" then "Workshop_10/10"
-         when id_owner = 1426033370 AND EXTRACT(year from date_closed) = 2024 AND EXTRACT(month from date_closed)= 4 AND name_product like "%Mastermind Business Academy%" then "Tampa"
+         when id_owner = 1426033370 AND (EXTRACT(year from date_closed) = 2024 AND EXTRACT(month from date_closed)= 4) AND name_product like "%Mastermind Business Academy%" then "Tampa"
          
          else null end) is not null 
     OR

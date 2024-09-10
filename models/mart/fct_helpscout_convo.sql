@@ -38,6 +38,7 @@ qualify row_number() over(partition by id order by updated_at desc) = 1
   on m.id = f.mailbox_id
 )
 
+-- groups threads by customer message and user response
 , threads as (
 WITH ranked_threads AS (
   SELECT
@@ -76,9 +77,7 @@ WHERE thread_source = 'customer'
 
 
 
-
-
-
+-- thread detail CTE: not currently in use
 , thread as (
 SELECT h.id as id_thread
   , h.conversation_id
@@ -167,11 +166,14 @@ from `bbg-platform.helpscout.conversation_history` c
 --   and bu.message_num_user = 1
 left join mailbox m
   on c.folder_id = m.id_folder
+-- first customer message & user response
 left join threads th
   on c.id = th.conversation_id
   and customer_thread_num = 1
+-- all message threads
 left join threads th2
   on c.id = th2.conversation_id
+-- last customer message & user response
 left join threads th3
   on c.id = th3.conversation_id
   and th3.customer_thread_recency = 1
