@@ -357,15 +357,19 @@ SELECT *
          when id_owner = 1426033370 AND (date(date_closed) > date('2024-10-09') AND date(date_closed) <= date('2024-10-13')) AND name_product like "%Mastermind Business Academy%" then "Workshop_10/10"
          else null end) is not null 
     OR
-   (case when name_product LIKE "%The Action Academy%" then "TAA" 
+   ((case when name_product LIKE "%The Action Academy%" then "TAA" 
          when name_product LIKE "%Mastermind Business Academy%" then "MBA"
          when name_product LIKE "%1:1 Coaching%" then "1:1"
          when name_product LIKE "%The Edge%" then "Edge"
          when name_product LIKE "%The Coaching Academy%" then "TCA"
          when name_product LIKE "%High Ticket Coaching%" then "HTC"
          when name_product LIKE "%High Ticket Academy%" then "HTA"
-         else null end) is not null
+         else null end) is not null and id_owner != 1426033370)
          
+    OR
+    ( case when id_owner = 1426033370 AND EXTRACT(year from date_closed) = 2024 AND EXTRACT(month from date_closed)= 4 then 1 else 0 end) = 1
+
+
          then 1 else 0 end as team_sales
 
 
