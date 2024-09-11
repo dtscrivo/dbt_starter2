@@ -1,5 +1,4 @@
-{{ config(materialized='table') }}
-
+with base as (
 with hubspot as (
   WITH deal_source AS (
 Select d.deal_id as id_deal
@@ -340,7 +339,7 @@ SELECT *
          when id_owner IN (980534468,1426033370) AND (date(date_closed) > date('2024-09-05') AND date(date_closed) <= date('2024-09-11') AND (name_product like "%Mastermind Business Academy%" OR name_deal like "%The Edge (PIF) - Chad Anderson%")) then "Phoenix_9/6"
          when id_owner = 1426033370 AND (date(date_closed) > date('2024-09-19') AND date(date_closed) <= date('2024-09-22')) AND name_product like "%Mastermind Business Academy%" then "Workshop_9/20"
          when id_owner = 1426033370 AND (date(date_closed) > date('2024-10-09') AND date(date_closed) <= date('2024-10-13')) AND name_product like "%Mastermind Business Academy%" then "Workshop_10/10"
-         when id_owner = 1426033370 AND (EXTRACT(year from date_closed) = 2024 AND EXTRACT(month from date_closed)= 4) AND name_product like "%Mastermind Business Academy%" then "Tampa"
+         when id_owner = 1426033370 AND (last_day(date(date_closed)) = date('2024-04-30')) AND name_product like "%Mastermind Business Academy%" then "Tampa"
          else null end as workshop
 
 
@@ -356,7 +355,7 @@ SELECT *
          when id_owner IN (980534468,1426033370) AND (date(date_closed) > date('2024-09-05') AND date(date_closed) <= date('2024-09-11') AND (name_product like "%Mastermind Business Academy%" OR name_deal like "%The Edge (PIF) - Chad Anderson%")) then "Phoenix"
          when id_owner = 1426033370 AND (date(date_closed) > date('2024-09-19') AND date(date_closed) <= date('2024-09-22')) AND name_product like "%Mastermind Business Academy%" then "Workshop_9/20"
          when id_owner = 1426033370 AND (date(date_closed) > date('2024-10-09') AND date(date_closed) <= date('2024-10-13')) AND name_product like "%Mastermind Business Academy%" then "Workshop_10/10"
-         when id_owner = 1426033370 AND (EXTRACT(year from date_closed) = 2024 AND EXTRACT(month from date_closed)= 4) AND name_product like "%Mastermind Business Academy%" then "Tampa"
+         when id_owner = 1426033370 AND last_day(date(date_closed)) = date('2024-04-30') AND name_product like "%Mastermind Business Academy%" then "Tampa"
          
          else null end) is not null 
     OR
@@ -377,9 +376,57 @@ SELECT *
          when lower(name_deal) LIKE ('%affirm%') then "Affirm"
          when lower(name_deal) LIKE ('%lite%') then "Lite"
          when lower(name_deal) LIKE ('%in-person%') then "In-Person"
-      --   when lower(name_deal) LIKE ('%plus%') then "Plus"
+         when lower(name_deal) LIKE ('%plus%') then "Plus"
          else "Virtual" end as product_type
 
 from hubspot h
 WHERE (analytics.fnEmail_IsTest(email) = false or email = 'chrisj@remotestaff.com')
+group by all
+)
+
+, payments as (
+  select amount_collected
+  , date_charge
+  , id_deal
+  , "charge" as type
+  , amount_pi
+  , id_payment_intent
+  , name_product
+from `bbg-platform.dbt_tscrivo.fct_payment_intent_agg`
+
+union all
+
+select -amount_dispute
+  , date_dispute
+  , id_deal
+  , "dispute" as type
+  , amount_pi
+  , id_payment_intent
+  , name_product
+from `bbg-platform.dbt_tscrivo.fct_payment_intent_agg`
+
+union all
+
+select -amount_refund
+  , date_refund
+  , id_deal
+  , "refund" as type
+  , amount_pi
+  , id_payment_intent
+  , name_product
+from `bbg-platform.dbt_tscrivo.fct_payment_intent_agg`
+)
+
+select sum(p.amount_collected)
+  , extract(year from p.date_charge)
+  , extract(month from p.date_charge)
+  , d.workshop
+ -- , p.type
+from payments p
+left join base d
+  on p.id_deal = cast(d.id_deal as string)
+where team_sales = 1
+  and extract(year from p.date_charge) = 2024
+  --and extract(month from p.date_charge) = 4
+  and workshop = "Tampa"
 group by all
