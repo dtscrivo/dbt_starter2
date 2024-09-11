@@ -133,7 +133,7 @@ select --c.*,
   , m.name_mailbox
   , m.name_folder
   , m.type_folder
-  , c.id
+  , c.id as id_conversation
   , th.response_time_hours
   , date_diff(c.closed_at, c.created_at, day) as days_to_close
   -- , case when customer_thread_num = 1 then user_created_at else null end as user_created_at

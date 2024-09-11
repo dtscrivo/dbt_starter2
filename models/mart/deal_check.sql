@@ -417,9 +417,9 @@ select -amount_refund
 from `bbg-platform.dbt_tscrivo.fct_payment_intent_agg`
 )
 
-select sum(p.amount_collected)
-  , extract(year from p.date_charge)
-  , extract(month from p.date_charge)
+select sum(p.amount_collected) as collected
+  , extract(year from p.date_charge) as month_
+  , extract(month from p.date_charge) as year_
   , d.workshop
  -- , p.type
 from payments p
