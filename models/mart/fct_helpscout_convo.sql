@@ -116,7 +116,7 @@ order by h.conversation_id desc
 )
 
 select --c.*,
-   datetime(c.updated_at, 'America/Phoenix') as date_convo_updated
+   datetime(c.updated_at, 'America/Phoenix') as updated_at
   , datetime(c.closed_at, 'America/Phoenix') as date_convo_closed
   , datetime(c.created_at, 'America/Phoenix') as date_convo
   , c.number
