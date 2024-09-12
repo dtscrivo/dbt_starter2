@@ -183,7 +183,7 @@ left join customer cu
   on c.primary_customer_id = cu.id_customer
 where true
  and date(c.created_at) > date('2023-12-31')
- and source_via = 'customer'
+-- and source_via = 'customer'
 
  -- and c.number = 408274
  -- and c.number = 1262526
