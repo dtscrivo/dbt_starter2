@@ -5,7 +5,7 @@ with customer as (
   select h.id as id_customer
   , DATETIME(updated_at, 'America/Phoenix') as date_customer_updated
   , DATETIME(created_at, 'America/Phoenix') as date_customer_created
-  , value as email_customer
+--  , value as email_customer
   , location as location_customer
   from `bbg-platform.helpscout.customer_history` h
  LEFT JOIN `bbg-platform.helpscout.customer_email_history` e
@@ -155,8 +155,8 @@ select --c.*,
   , case when closed_at is not null then 1 else 0 end as is_closed
   , case when source_type = 'beacon-v2' then 1 else 0 end as is_beacon 
   , m.mailbox
-  , cu.email_customer
-  , case when cu.email_customer like 'info@%' or cu.email_customer like "%systemmessage%" or cu.email_customer like "%noreply%" or cu.email_customer = 'quarantine@ess.barracudanetworks.com' or cu.email_customer like "%no-reply%" or cu.email_customer like "%do_not_reply%" or cu.email_customer = 'postmaster@outlook.com' or cu.email_customer = 'support@gohighlevelassist.freshdesk.com' or cu.email_customer like '%@replies.mastermind.com' or cu.email_customer like "%@deangraziosi.com" or cu.email_customer like "%@mastermind.com" then 1 else 0 end as is_notification
+--  , cu.email_customer
+--  , case when cu.email_customer like 'info@%' or cu.email_customer like "%systemmessage%" or cu.email_customer like "%noreply%" or cu.email_customer = 'quarantine@ess.barracudanetworks.com' or cu.email_customer like "%no-reply%" or cu.email_customer like "%do_not_reply%" or cu.email_customer = 'postmaster@outlook.com' or cu.email_customer = 'support@gohighlevelassist.freshdesk.com' or cu.email_customer like '%@replies.mastermind.com' or cu.email_customer like "%@deangraziosi.com" or cu.email_customer like "%@mastermind.com" then 1 else 0 end as is_notification
 from `bbg-platform.helpscout.conversation_history` c
 -- left join thread bc
 --   on c.id = bc.conversation_id
