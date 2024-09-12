@@ -360,13 +360,13 @@ SELECT *
          
          else null end) is not null 
     OR
-   ((case when name_product LIKE "%The Action Academy%" then "TAA" 
-         when name_product LIKE "%Mastermind Business Academy%" then "MBA"
-         when name_product LIKE "%1:1 Coaching%" then "1:1"
-         when name_product LIKE "%The Edge%" then "Edge"
-         when name_product LIKE "%The Coaching Academy%" then "TCA"
-         when name_product LIKE "%High Ticket Coaching%" then "HTC"
-         when name_product LIKE "%High Ticket Academy%" then "HTA"
+   ((case when name_product LIKE "%The Action Academy%" then "TAA"  -- all
+         when name_product LIKE "%Mastermind Business Academy%" then "MBA" -- all
+         when name_product LIKE "%1:1 Coaching%" then "1:1" -- all
+         when name_product LIKE "%The Edge%" then "Edge" -- team only
+         when name_product LIKE "%The Coaching Academy%" then "TCA" -- all
+         when name_product LIKE "%High Ticket Coaching%" then "HTC" --team
+         when name_product LIKE "%High Ticket Academy%" then "HTA" -- team
          else null end) is not null and id_owner != 1426033370)
 
          then 1 else 0 end as team_sales
