@@ -109,7 +109,7 @@ LEFT JOIN `bbg-platform.helpscout.conversation_history` c
 
 where true
   and t.type IN ('message', 'customer', 'lineitem')
-  and DATE(t.created_at) >= DATE('2024-01-01')
+  and DATE(t.created_at) >= DATE('2023-01-01')
  -- and c.number = 1253953
 --  and u2.team is not null
 qualify row_number() over(partition by t.conversation_id, t.id) = 1
