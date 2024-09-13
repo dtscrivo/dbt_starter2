@@ -222,7 +222,7 @@ left join thread bc
   on c.id = bc.conversation_id
 left join thread bc1
   on c.id = bc1.conversation_id
-  and message_num_customer = 1
+  and bc1.message_num_customer = 1
 --   and bc.message_num_customer = 1
 -- left join thread bu
 --   on c.id = bu.conversation_id
