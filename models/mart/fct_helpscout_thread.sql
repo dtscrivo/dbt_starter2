@@ -102,7 +102,7 @@ SELECT
          else coalesce(u2.name, "Not Assigned") end as assigned_to
   , case when t.assigned_to_id = 1 then "Unassigned" 
         --  when t.type = "lineitem" then "lineitem"
-         else coalesce(u2.team, "Not Assigned") end as team
+         else coalesce(u2.team, "Not Assigned") end as team_thread
 
   , action_text
   , case when lower(action_text) like "%assigned%" then "assigned" 
@@ -136,7 +136,7 @@ SELECT
   , m.name_folder
   , m.name_mailbox
   , c.number
-  , l.team
+  , l.team_convo
 FROM `bbg-platform.helpscout.conversation_thread_history` t
 LEFT JOIN `bbg-platform.helpscout.happiness_rating` h
   on t.id = h.thread_id
