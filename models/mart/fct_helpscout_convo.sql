@@ -19,8 +19,49 @@ qualify row_number() over(partition by customer_id order by customer_updated_at 
   select id as id_user
   , email as email_user
   , timezone as user_timezone
-  , first_name
-  from `bbg-platform.helpscout.user_history`
+  , first_name as name
+
+  , case when t.team_id = 793820 then 'Account Changes'
+when t.team_id = 789132 then 'Business Hub'
+when t.team_id = 741056 then 'Dev Requests'
+when t.team_id = 792871 then 'Enterprise'
+when t.team_id = 796834 then 'GG'
+when t.team_id = 798395 then 'KBB Workshops'
+when t.team_id = 797971 then 'Legacy Builder'
+when t.team_id = 801929 then 'MBA Students'
+when t.team_id = 796896 then 'MM Login Help'
+when t.team_id = 796996 then 'Notifications'
+when t.team_id = 796690 then 'Obvio Links'
+when t.team_id = 799135 then 'Plug N Play'
+when t.team_id = 804598 then 'Point Issues'
+when t.team_id = 722541 then 'Saves and Declines'
+when t.team_id = 719557 then 'Shipping'
+when t.team_id = 797096 then 'Tony Leadership Mastery'
+when t.team_id = 799141 then 'World Summit'
+when t.team_id = 720198 then 'Dev Requests'
+when t.team_id = 792032 then 'Unassigned'
+when t.team_id = 789553 then 'Unassigned'
+when t.team_id = 789553 then 'MBA Students'
+when t.team_id = 802907 then 'Saves and Declines'
+when t.team_id = 802904 then 'Saves and Declines'
+when t.team_id = 802905 then 'Saves and Declines'
+when t.team_id = 802903 then 'MBA Students'
+when t.team_id = 720197 then 'Saves and Declines'
+when t.team_id = 720189 then 'MBA Students'
+when t.team_id = 720184 then 'Saves and Declines'
+when t.team_id = 800463 then 'Saves and Declines'
+when t.team_id = 798573 then 'Saves and Declines'
+when t.team_id = 720018 then 'Business Hub'
+when t.team_id = 720186 then 'Business Hub'
+when t.team_id = 792033 then 'KBB Workshops'
+when t.team_id = 800462 then 'Business Hub'
+when t.team_id = 800670 then 'Business Hub'
+when t.team_id = 800464 then 'Business Hub'
+when t.team_id = 798063 then 'Saves and Declines'
+else u.first_name end as team
+  from `bbg-platform.helpscout.user_history` u
+  left join `bbg-platform.helpscout.team_user_history` t
+  on u.id = t.user_id
  -- where id = 802904
 qualify row_number() over(partition by id order by updated_at desc) = 1
 )
@@ -65,7 +106,7 @@ SELECT
   assigned_to_id,
   DATETIME(created_at, 'America/Phoenix') AS customer_created_at,
   DATETIME(next_created_at, 'America/Phoenix') AS user_created_at,
-  DATETIME_DIFF(next_created_at, created_at, MINUTE)/60 AS response_time_hours,
+  DATETIME_DIFF(next_created_at, created_at, hour) AS response_time_hours,
   row_number() over(partition by conversation_id order by created_at asc) as customer_thread_num,
   row_number() over(partition by conversation_id order by created_at desc) as customer_thread_recency
 FROM ranked_threads
@@ -74,33 +115,42 @@ WHERE thread_source = 'customer'
 -- and conversation_id = 2701113180
 )
 
+, cancels as (
+SELECT
+  id,
+  sum(case when closed_at is not null then 1 else 0 end) as num_cancelled
+FROM `helpscout.conversation_history`
+GROUP BY ALL
 
 
+-- and conversation_id = 2701113180
+)
 
--- thread detail CTE: not currently in use
+
+-- thread detail CTE
 , thread as (
 SELECT h.id as id_thread
   , h.conversation_id
-  , h.action_type
-  , datetime(h.created_at, 'America/Phoenix') as date_thread
-  , h.opened_at as date_thread_open
-  , h.body
+  -- , h.action_type
+  -- , datetime(h.created_at, 'America/Phoenix') as date_thread
+  -- , h.opened_at as date_thread_open
+  -- , h.body
 -- for thread source: "customer" and "user"
-  , h.source_via as thread_source
-  , h.state as thread_states
+  -- , h.source_via as thread_source
+  -- , h.state as thread_states
 -- thread status: null if not a message
-  , h.status as status_thread
+  -- , h.status as status_thread
 -- for the type:
 -- "customer" is a message from the customer
 -- "message" is a message from the employee
-  , h.type as type_thread
+  -- , h.type as type_thread
 
-  , h.conversation_updated_at as date_conversation_updated_thread
+  -- , h.conversation_updated_at as date_conversation_updated_thread
   -- , u.email_user as closed_by
   -- , cu.email_customer
   -- , uu.first_name as assigned_to
-  , h.assigned_to_id
-  , row_number() over(partition by h.conversation_id, h.type order by h.created_at asc)
+  -- , h.assigned_to_id
+  , row_number() over(partition by h.conversation_id order by h.created_at asc) as message_num
   , case when h.type = 'customer' then row_number() over(partition by h.conversation_id, h.type order by h.created_at asc) else null end as message_num_customer
   , case when h.type = 'message' then row_number() over(partition by h.conversation_id, h.type order by h.created_at asc) else null end as message_num_user
 FROM `bbg-platform.helpscout.conversation_thread_history` h
@@ -148,18 +198,24 @@ select --c.*,
   , th3.user_created_at as last_user_response
   , case when th3.user_created_at is null then 0 else 1 end as is_responded
  -- , th2.customer_thread_recency
---  , u.first_name as assigned_to
-  , case when u.email_user is not null or (first_name is null AND closed_at is not null) then 1 else 0 end as is_support_handled
-  , case when first_name is null then 'Unassigned' else first_name end as assigned_to
-  , case when first_name is not null then 1 else 0 end as is_assigned
+--  , u.name as assigned_to
+  , case when u.email_user is not null or (name is null AND closed_at is not null) then 1 else 0 end as is_support_handled
+  , case when name is null then 'Unassigned' else name end as assigned_to
+  , case when name is not null then 1 else 0 end as is_assigned
   , case when closed_at is not null then 1 else 0 end as is_closed
   , case when source_type = 'beacon-v2' then 1 else 0 end as is_beacon 
   , m.mailbox
+  , coalesce(team, "Not Assigned") as team
+  , max(bc.message_num) as messages
+  , max(bc.message_num_customer) as customer_messages
+  , max(bc.message_num_user) as user_messages
+  , case when c.customer_waiting_since_time is not null and closed_at is not null then 0 else 1 end as is_waiting
+  , x.num_cancelled
 --  , cu.email_customer
 --  , case when cu.email_customer like 'info@%' or cu.email_customer like "%systemmessage%" or cu.email_customer like "%noreply%" or cu.email_customer = 'quarantine@ess.barracudanetworks.com' or cu.email_customer like "%no-reply%" or cu.email_customer like "%do_not_reply%" or cu.email_customer = 'postmaster@outlook.com' or cu.email_customer = 'support@gohighlevelassist.freshdesk.com' or cu.email_customer like '%@replies.mastermind.com' or cu.email_customer like "%@deangraziosi.com" or cu.email_customer like "%@mastermind.com" then 1 else 0 end as is_notification
 from `bbg-platform.helpscout.conversation_history` c
--- left join thread bc
---   on c.id = bc.conversation_id
+left join thread bc
+  on c.id = bc.conversation_id
 --   and bc.message_num_customer = 1
 -- left join thread bu
 --   on c.id = bu.conversation_id
@@ -181,13 +237,15 @@ left join user u
   on th3.assigned_to_id = u.id_user
 left join customer cu
   on c.primary_customer_id = cu.id_customer
+left join cancels x
+  on c.id = x.id
 where true
 -- and date(c.created_at) >= date('2022-01-01')
 -- and source_via = 'customer'
 
  -- and c.number = 408274
  -- and c.number = 1262526
- -- and c.id = 2701113180
+  and c.id = 2691929272
 --  and source_via = 'customer'
 -- and name_mailbox = 'DG/ Mastermind.com Customer Support'
 -- and name_folder != 'Notifications'

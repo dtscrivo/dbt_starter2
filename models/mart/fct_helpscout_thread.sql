@@ -1,5 +1,6 @@
 {{ config(materialized='table') }}
 
+
 -- Latest Customer Update
 with customer as (
   select h.id as id_customer
@@ -66,19 +67,57 @@ else u.first_name end as team
 qualify row_number() over(partition by id order by updated_at desc) = 1
 )
 
+-- Mailboxes: join on id_folder
+, mailbox as (
+  select m.id as id_mailbox 
+  , f.id as id_folder
+  , m.name as name_mailbox 
+  , f.name as name_folder
+  , f.type as type_folder
+  , m.email as mailbox
+  from `bbg-platform.helpscout.mailbox_history` m
+  LEFT JOIN `bbg-platform.helpscout.mailbox_folder_history` f
+  on m.id = f.mailbox_id
+)
+
+, last_thread AS (
+  select conversation_id
+     , assigned_to_id
+    , case when assigned_to_id = 1 then "Unassigned" 
+        --  when t.type = "lineitem" then "lineitem"
+         else coalesce(u2.team, "Not Assigned") end as team
+  FROM `helpscout.conversation_thread_history`
+  LEFT JOIN user u2
+  on assigned_to_id = u2.id_user
+  qualify row_number() over(partition by conversation_id order by created_at desc) = 1
+)
 
 SELECT 
     t.conversation_id as id_conversation
   , t.id as id_thread
   , t.assigned_to_id as id_assigned
-  , coalesce(u2.name, "Not Assigned") as assigned_to
-  , u2.team
+  , t.created_by_customer_id AS id_created_by
+  , case when t.assigned_to_id = 1 then "Unassigned" 
+        --  when t.type = "lineitem" then "lineitem"
+         else coalesce(u2.name, "Not Assigned") end as assigned_to
+  , case when t.assigned_to_id = 1 then "Unassigned" 
+        --  when t.type = "lineitem" then "lineitem"
+         else coalesce(u2.team, "Not Assigned") end as team
 
-  , case when t.type = 'lineitem' then action_text else null end as message 
+  , action_text
+  , case when lower(action_text) like "%assigned%" then "assigned" 
+         when lower(action_text) like "%close%" then "closed"
+         when lower(action_text) like "%moved%" then "moved"
+         when lower(action_text) like "%%triggered%" then "workflow"
+         when lower(action_text) like "%merged%" then "merged"
+         else action_text end as action
+  , case when t.type = "customer" then 1 else 0 end as is_customer
+  , case when lower(action_text) like "%close%" OR t.status = "closed" then 1 else 0 end as is_close 
   , DATETIME(t.created_at, 'America/Phoenix') as date_thread
   , FORMAT_DATETIME('%I%p', DATETIME(t.created_at, 'America/Phoenix')) AS hour_thread
   -- , coalesce(cu.email_customer, u.email_user, u.name) as thread_created_by
-  , coalesce(u.email_user, u.name, "customer") as thread_created_by
+  , case when t.type = "customer" then "Customer" else coalesce(u.email_user, u.name, "customer") end as created_by
+  , case when t.type = "customer" then "Customer" else u.name end as thread_creator
   , t.status as status_thread
   , t.type as type_thread
   , DATETIME(h.rating_created_at, 'America/Phoenix') as date_rating
@@ -88,12 +127,16 @@ SELECT
          when rating_id = 2 then "Okay"
          when rating_id = 3 then "Not Good"
          else "Not Rated" end as rating
-  , rank() over(partition by t.conversation_id order by t.created_at desc) as recency
-  , rank() over(partition by t.conversation_id order by t.created_at asc) as message_number
-  , rank() over(partition by t.conversation_id, t.created_by_type order by t.created_at desc) recency_by_type
-  , rank() over(partition by t.conversation_id, t.created_by_type order by t.created_at asc) message_number_by_type
+  , dense_rank() over(partition by t.conversation_id order by t.created_at desc) as recency
+  , dense_rank() over(partition by t.conversation_id order by t.created_at asc) as message_number
+  , dense_rank() over(partition by t.conversation_id, t.created_by_type order by t.created_at desc) recency_by_type
+  , dense_rank() over(partition by t.conversation_id, t.created_by_type order by t.created_at asc) message_number_by_type
   , created_by_type
   , c.number as convo_number
+  , m.name_folder
+  , m.name_mailbox
+  , c.number
+  , l.team
 FROM `bbg-platform.helpscout.conversation_thread_history` t
 LEFT JOIN `bbg-platform.helpscout.happiness_rating` h
   on t.id = h.thread_id
@@ -105,12 +148,18 @@ LEFT JOIN user u2
 --   on t.created_by_customer_id = cu.id_customer
 LEFT JOIN `bbg-platform.helpscout.conversation_history` c
   on t.conversation_id = c.id
+LEFT JOIN mailbox m
+  on c.folder_id = m.id_folder
+LEFT JOIN last_thread l
+  on t.conversation_id = l.conversation_id
 
 
 where true
-  and t.type IN ('message', 'customer', 'lineitem')
-  and DATE(t.created_at) >= DATE('2023-01-01')
- -- and c.number = 1253953
+ -- and t.type IN ('message', 'customer', 'lineitem')
+ -- and DATE(t.created_at) >= DATE('2023-01-01')
+ -- and c.number = 1266873
 --  and u2.team is not null
+ -- and  t.conversation_id =2706087172
+  -- and case when lower(action_text) like "%close%" then 1 else 0 end = 1
 qualify row_number() over(partition by t.conversation_id, t.id) = 1
-ORDER BY t.created_at asc
+ORDER BY t.created_at desc, t.conversation_id
