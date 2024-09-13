@@ -245,7 +245,7 @@ where true
 
  -- and c.number = 408274
  -- and c.number = 1262526
-  and c.id = 2691929272
+-
 --  and source_via = 'customer'
 -- and name_mailbox = 'DG/ Mastermind.com Customer Support'
 -- and name_folder != 'Notifications'
