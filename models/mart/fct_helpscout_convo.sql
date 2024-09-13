@@ -211,6 +211,7 @@ select --c.*,
   , max(bc.message_num_user) as user_messages
   , case when c.customer_waiting_since_time is not null and closed_at is not null then 0 else 1 end as is_waiting
   , x.num_cancelled
+  , case when th.status = "closed" then 1 else 0 end as is_first_closed
 --  , cu.email_customer
 --  , case when cu.email_customer like 'info@%' or cu.email_customer like "%systemmessage%" or cu.email_customer like "%noreply%" or cu.email_customer = 'quarantine@ess.barracudanetworks.com' or cu.email_customer like "%no-reply%" or cu.email_customer like "%do_not_reply%" or cu.email_customer = 'postmaster@outlook.com' or cu.email_customer = 'support@gohighlevelassist.freshdesk.com' or cu.email_customer like '%@replies.mastermind.com' or cu.email_customer like "%@deangraziosi.com" or cu.email_customer like "%@mastermind.com" then 1 else 0 end as is_notification
 from `bbg-platform.helpscout.conversation_history` c
