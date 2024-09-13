@@ -136,7 +136,7 @@ SELECT
   , m.name_folder
   , m.name_mailbox
   , c.number
-  , l.team_convo
+  , l.team as team_convo
 FROM `bbg-platform.helpscout.conversation_thread_history` t
 LEFT JOIN `bbg-platform.helpscout.happiness_rating` h
   on t.id = h.thread_id
