@@ -85,6 +85,7 @@ WITH ranked_threads AS (
   SELECT
     conversation_id,
     created_at,
+    status,
     assigned_to_id, 
     source_via as thread_source,
     LEAD(created_at) OVER (
@@ -109,6 +110,7 @@ SELECT
   DATETIME_DIFF(next_created_at, created_at, hour) AS response_time_hours,
   row_number() over(partition by conversation_id order by created_at asc) as customer_thread_num,
   row_number() over(partition by conversation_id order by created_at desc) as customer_thread_recency
+  , status
 FROM ranked_threads
 WHERE thread_source = 'customer'
   AND (next_thread_source = 'user' OR next_thread_source is null)
