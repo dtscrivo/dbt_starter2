@@ -128,12 +128,44 @@ GROUP BY ALL
 -- and conversation_id = 2701113180
 )
 
+, assigned as (
+SELECT h.id as id_thread
+  , h.conversation_id
+  , h.status
+  , case when assigned_to_id = 1 then "Unassigned" 
+        --  when t.type = "lineitem" then "lineitem"
+         else coalesce(u.team, "Not Assigned") end as team
+  , assigned_to_id
+  , dense_rank() over(partition by conversation_id order by created_at asc) as num_assignment
+  , dense_rank() over(partition by conversation_id order by created_at desc) as recency
+
+  -- , row_number() over(partition by h.conversation_id order by h.created_at asc) as message_num
+  -- , case when h.type = 'customer' then row_number() over(partition by h.conversation_id, h.type order by h.created_at asc) else null end as message_num_customer
+  -- , case when h.type = 'message' then row_number() over(partition by h.conversation_id, h.type order by h.created_at asc) else null end as message_num_user
+  -- , case when h.type = 'customer' then row_number() over(partition by h.conversation_id, h.type order by h.created_at desc) else null end as recency
+FROM `bbg-platform.helpscout.conversation_thread_history` h
+LEFT JOIN user u
+  on h.assigned_to_id = u.id_user
+
+WHERE true 
+   -- and h.type in ('customer','message')
+ -- and h.conversation_id = 858142865
+  and assigned_to_id is not null and assigned_to_id != 1
+  -- and cast(assigned_to_id as string) != '1')
+order by h.conversation_id desc
+)
+
 
 -- thread detail CTE
 , thread as (
 SELECT h.id as id_thread
   , h.conversation_id
   , h.status
+  , case when assigned_to_id = 1 then "Unassigned" 
+        --  when t.type = "lineitem" then "lineitem"
+         else coalesce(u.team, "Not Assigned") end as team
+  , assigned_to_id
+  , case when assigned_to_id is not null then dense_rank() over(partition by conversation_id order by created_at) else null end as adsf
   -- , h.action_type
   -- , datetime(h.created_at, 'America/Phoenix') as date_thread
   -- , h.opened_at as date_thread_open
@@ -153,17 +185,18 @@ SELECT h.id as id_thread
   -- , cu.email_customer
   -- , uu.first_name as assigned_to
   -- , h.assigned_to_id
-  , row_number() over(partition by h.conversation_id order by h.created_at asc) as message_num
+  , case when h.type IN ('message','customer') then row_number() over(partition by h.conversation_id order by h.created_at asc) end as message_num
   , case when h.type = 'customer' then row_number() over(partition by h.conversation_id, h.type order by h.created_at asc) else null end as message_num_customer
   , case when h.type = 'message' then row_number() over(partition by h.conversation_id, h.type order by h.created_at asc) else null end as message_num_user
+  , row_number() over(partition by h.conversation_id order by h.created_at desc)  as recency
 FROM `bbg-platform.helpscout.conversation_thread_history` h
--- LEFT JOIN user u
---   on c.closed_by = u.id_user
+LEFT JOIN user u
+  on h.assigned_to_id = u.id_user
 -- LEFT JOIN customer cu
 --   on c.primary_customer_id = cu.id_customer
 -- LEFT JOIN user uu
 --   on h.assigned_to_id = uu.id_user
-WHERE h.type in ('customer','message')
+--WHERE h.type in ('customer','message')
  -- and h.conversation_id = 858142865
 order by h.conversation_id desc
 )
@@ -208,7 +241,9 @@ select --c.*,
   , case when closed_at is not null then 1 else 0 end as is_closed
   , case when source_type = 'beacon-v2' then 1 else 0 end as is_beacon 
   , m.mailbox
-  , coalesce(team, "Not Assigned") as team
+  , coalesce(bc2.team, "Not Assigned") as team
+  , a.team as first_team
+  , a2.team as last_team
   , max(bc.message_num) as messages
   , max(bc.message_num_customer) as customer_messages
   , max(bc.message_num_user) as user_messages
@@ -224,10 +259,9 @@ left join thread bc
 left join thread bc1
   on c.id = bc1.conversation_id
   and bc1.message_num_customer = 1
---   and bc.message_num_customer = 1
--- left join thread bu
---   on c.id = bu.conversation_id
---   and bu.message_num_user = 1
+left join thread bc2
+  on c.id = bc2.conversation_id
+  and bc2.recency = 1
 left join mailbox m
   on c.folder_id = m.id_folder
 -- first customer message & user response
@@ -247,12 +281,19 @@ left join customer cu
   on c.primary_customer_id = cu.id_customer
 left join cancels x
   on c.id = x.id
+left join assigned a
+  on c.id = a.conversation_id
+  and a.num_assignment = 1
+left join assigned a2
+  on c.id = a2.conversation_id
+  and a2.recency = 1
 where true
 -- and date(c.created_at) >= date('2022-01-01')
 -- and source_via = 'customer'
-
+  -- and c.id = 2705633258
  -- and c.number = 408274
- -- and c.number = 1262526
+ -- and c.number = 789723
+
 --  and source_via = 'customer'
 -- and name_mailbox = 'DG/ Mastermind.com Customer Support'
 -- and name_folder != 'Notifications'
