@@ -147,7 +147,7 @@ LEFT JOIN user u
 LEFT JOIN user u2
   on t.assigned_to_id = u2.id_user
  LEFT JOIN customer cu
--  on t.created_by_customer_id = cu.id_customer
+  on t.created_by_customer_id = cu.id_customer
 LEFT JOIN `bbg-platform.helpscout.conversation_history` c
   on t.conversation_id = c.id
 LEFT JOIN mailbox m
