@@ -18,16 +18,17 @@ SELECT  e.id as id_engagement
   , coalesce(ee.property_hs_email_subject, m.property_hs_meeting_title,t.property_hs_task_subject, ec.property_hs_call_title) as subject
   , coalesce(ec.property_hubspot_owner_id, ee.property_hubspot_owner_id, cc.property_hubspot_owner_id, m.property_hubspot_owner_id, n.property_hubspot_owner_id, t.property_hubspot_owner_id) as id_owner
   , case when ec.property_hs_call_disposition = "73a0d17f-1163-4015-bdd5-ec830791da20" then "no answer" 
-         when ec.property_hs_call_disposition = 'f240bbac-87c9-4f6e-bf70-924b57d47db7' then "connected"
+         when ec.property_hs_call_disposition = 'f240bbac-87c9-4f6e-bf70-924b57d47db7' then "connected"--
          when ec.property_hs_call_disposition = 'b2cf5968-551e-4856-9783-52b3da59a7d0' then "left voicemail"
          when ec.property_hs_call_disposition = '9d9162e7-6cf3-4944-bf63-4dff82258764' then "busy"
-         when ec.property_hs_call_disposition = '2a2764ef-b09f-46fa-a8ec-3d49cbf7b647' then "contact hung up"
+         when ec.property_hs_call_disposition = '2a2764ef-b09f-46fa-a8ec-3d49cbf7b647' then "contact hung up"--
          when ec.property_hs_call_disposition = '17b47fee-58de-441e-a44c-c6300d46f273' then "wrong number"
-         when ec.property_hs_call_disposition = '7ed6cbc9-a685-425c-a734-5df0c807fafb' then "discovery call booked"
-         when ec.property_hs_call_disposition = 'aebe017d-4f05-4cc7-9197-0760b5bdee14' then "follow up booked"
-         when ec.property_hs_call_disposition = 'e5400998-ce41-46b5-8b04-462c3dc2cf3e' then "disqualified"
-         when ec.property_hs_call_disposition = 'fd306d26-ee79-4d4a-b572-09f814c8a8f5' then "follow up offered"
-         when ec.property_hs_call_disposition = 'b88923eb-6bfc-4f64-976a-7b68c9bd5ce9' then "discovery call offered"
+         when ec.property_hs_call_disposition = '7ed6cbc9-a685-425c-a734-5df0c807fafb' then "discovery call booked"--
+         when ec.property_hs_call_disposition = 'aebe017d-4f05-4cc7-9197-0760b5bdee14' then "follow up booked"--
+         when ec.property_hs_call_disposition = 'e5400998-ce41-46b5-8b04-462c3dc2cf3e' then "disqualified"--
+         when ec.property_hs_call_disposition = 'fd306d26-ee79-4d4a-b572-09f814c8a8f5' then "follow up offered"--
+         when ec.property_hs_call_disposition = 'b88923eb-6bfc-4f64-976a-7b68c9bd5ce9' then "discovery call offered"--
+         when ec.property_hs_call_disposition = '083aa06e-b77a-49f2-b863-12993e520411' then "voicemail-didn't leave"
          else ec.property_hs_call_disposition end
          as disposition
   , case when ec.property_hs_call_disposition IN ('f240bbac-87c9-4f6e-bf70-924b57d47db7','2a2764ef-b09f-46fa-a8ec-3d49cbf7b647',
@@ -35,6 +36,7 @@ SELECT  e.id as id_engagement
                                                   'e5400998-ce41-46b5-8b04-462c3dc2cf3e','fd306d26-ee79-4d4a-b572-09f814c8a8f5',
                                                   'b88923eb-6bfc-4f64-976a-7b68c9bd5ce9')
                                                    then 1 else 0 end as is_call_connected
+  , ec.property_hs_call_disposition as id_disposition
   , co.property_outbound_lead_source as source_lead
   , co.property_hs_lead_status as status_lead
   , (ec.property_hs_call_duration / 1000) / 60 as call_duration
