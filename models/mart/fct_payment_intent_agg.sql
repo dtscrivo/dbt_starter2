@@ -252,6 +252,7 @@ UNION ALL
     c.statement_descriptor,
     c.metadata,
     JSON_EXTRACT_SCALAR(c.metadata, "$.product_id") AS object_id,
+    JSON_EXTRACT_SCALAR(c.metadata, "$.rep_id") AS rep_id,
     c.refunded,
     COALESCE(CAST(m.deal_id AS STRING), JSON_EXTRACT_SCALAR(c.metadata, "$.deal_id")) AS deal_id,
     DATETIME(MAX(r.created), 'America/Phoenix') AS date_refund,  -- Max refund date
@@ -295,6 +296,8 @@ WITH charges_with_refunds AS (
     c.statement_descriptor,
     c.metadata,
     JSON_EXTRACT_SCALAR(c.metadata, "$.product_id") AS object_id,
+    JSON_EXTRACT_SCALAR(c.metadata, "$.rep_id") AS rep_id,
+
     c.refunded,
     COALESCE(CAST(m.deal_id AS STRING), JSON_EXTRACT_SCALAR(c.metadata, "$.deal_id")) AS deal_id,
     DATETIME(MAX(r.created), 'America/Phoenix') AS date_refund,  -- Max refund date
@@ -434,6 +437,9 @@ END as amount_retained
          when p.name LIKE "%High Ticket Coaching%" then "HTC"
          when p.name LIKE "%High Ticket Academy%" then "HTA"
          else "" end as program
+
+  , coalesce(c.rep_id, cast(d.owner_id as string)) as id_owner
+
   FROM `bbg-platform.stripe_mastermind.payment_intent` pi
   LEFT JOIN mastermind_charge c ON pi.id = c.payment_intent_id
   LEFT JOIN `bbg-platform.stripe_mastermind.invoice` i ON pi.id = i.payment_intent_id
@@ -545,6 +551,9 @@ END as amount_retained
          when coalesce(p.property_name,pro.name) LIKE "%High Ticket Coaching%" then "HTC"
          when coalesce(p.property_name,pro.name) LIKE "%High Ticket Academy%" then "HTA"
          else "" end as program
+
+  , case when c.rep_id != "" then coalesce(c.rep_id, cast(d2.owner_id as string), cast(d4.owner_id as string),cast(d.owner_id as string), cast(d5.owner_id as string), cast(d6.owner_id as string), cast(d3.owner_id as string)) else coalesce(cast(d2.owner_id as string), cast(d4.owner_id as string),cast(d.owner_id as string), cast(d5.owner_id as string), cast(d6.owner_id as string), cast(d3.owner_id as string)) end as id_owner
+
   FROM `bbg-platform.stripe_mindmint.payment_intent` pi
   LEFT JOIN mindmint_charge c ON pi.id = c.payment_intent_id
   LEFT JOIN `bbg-platform.stripe_mindmint.invoice` i ON pi.id = i.payment_intent_id
