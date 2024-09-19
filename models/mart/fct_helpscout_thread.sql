@@ -164,8 +164,8 @@ SELECT
         when t.type = 'message' and coalesce(u.name,ut.name) is null then 'Not Found' else coalesce(u.name,ut.name) end AS creator
  , case when coalesce(l.team, a.team, u.team, ua.team) is null then 'Not Assigned' else coalesce(l.team, a.team, u.team, ua.team) end AS team
  , case when case when lower(action_text) like "%close%" OR t.status = "closed" OR c.status = 'closed' then 1 else 0 end = 1 and 
-        case when t.type IN ('message','customer') then dense_rank() over(partition by t.conversation_id order by t.created_at desc) else null end = 1 and
-        case when t.type IN ('message','customer') then dense_rank() over(partition by t.conversation_id order by t.created_at asc) else null end = 1
+        case when t.type = 'customer' then dense_rank() over(partition by t.conversation_id, t.created_by_type order by t.created_at desc) else null end = 1 and
+        case when t.type = 'customer' then dense_rank() over(partition by t.conversation_id, t.created_by_type order by t.created_at asc) else null end = 1
         then 1 else 0 end as is_closed_unresponded
 FROM `bbg-platform.helpscout.conversation_thread_history` t
 LEFT JOIN `bbg-platform.helpscout.happiness_rating` h
@@ -188,5 +188,6 @@ LEFT JOIN action a
   on t.conversation_id = a.conversation_id
 
 where true
+ --and c.number = 1212454
 qualify row_number() over(partition by t.conversation_id, t.id) = 1
 ORDER BY t.created_at desc, t.conversation_id
