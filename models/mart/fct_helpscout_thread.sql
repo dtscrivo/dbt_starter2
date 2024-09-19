@@ -132,7 +132,7 @@ SELECT
          when lower(action_text) like "%merged%" then "merged"
          else action_text end as action
   , case when t.type = "customer" then 1 else 0 end as is_customer
-  , case when lower(action_text) like "%close%" OR t.status = "closed" then 1 else 0 end as is_closed 
+  , case when lower(action_text) like "%close%" OR t.status = "closed" OR c.status = 'closed' then 1 else 0 end as is_closed 
   , DATETIME(t.created_at, 'America/Phoenix') as date_thread
   , FORMAT_DATETIME('%I%p', DATETIME(t.created_at, 'America/Phoenix')) AS hour_thread
   -- , coalesce(cu.email_customer, u.email_user, u.name) as thread_created_by
