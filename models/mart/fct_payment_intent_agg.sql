@@ -550,7 +550,7 @@ END as amount_retained
          when coalesce(p.property_name,pro.name) LIKE "%The Coaching Academy%" then "TCA"
          when coalesce(p.property_name,pro.name) LIKE "%High Ticket Coaching%" then "HTC"
          when coalesce(p.property_name,pro.name) LIKE "%High Ticket Academy%" then "HTA"
-         else "" end as program
+         else null end as program
 
   , case when c.rep_id != "" then coalesce(c.rep_id, cast(d2.owner_id as string), cast(d4.owner_id as string),cast(d.owner_id as string), cast(d5.owner_id as string), cast(d6.owner_id as string), cast(d3.owner_id as string)) else coalesce(cast(d2.owner_id as string), cast(d4.owner_id as string),cast(d.owner_id as string), cast(d5.owner_id as string), cast(d6.owner_id as string), cast(d3.owner_id as string)) end as id_owner
 
