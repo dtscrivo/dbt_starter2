@@ -202,7 +202,7 @@ SELECT d.*
    , t.status_retention
    , pp.amount_refund
  --  , hsp.property_price as amount_product_price
-  , right(d.id_price, 1) as num_plan_payments
+  , case when lower(d.id_price) like "%affirm%" then '1' else right(d.id_price, 1) end as num_plan_payments
   , cf.id_funnel
   , case when coalesce(pn.processor, cf.processor) = "inperson" then "inperson"
          --when cf.funnel_id = "13216474" then "clickfunnel"
