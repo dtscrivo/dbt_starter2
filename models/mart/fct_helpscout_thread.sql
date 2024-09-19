@@ -163,7 +163,7 @@ SELECT
  , case when t.type = 'customer' then 'customer' 
         when t.type = 'message' and coalesce(u.name,ut.name) is null then 'Not Found' else coalesce(u.name,ut.name) end AS creator
  , case when coalesce(l.team, a.team, u.team, ua.team) is null then 'Not Assigned' else coalesce(l.team, a.team, u.team, ua.team) end AS team
- , case when case when lower(action_text) like "%close%" OR t.status = "closed" then 1 else 0 end = 1 and 
+ , case when case when lower(action_text) like "%close%" OR t.status = "closed" OR c.status = 'closed' then 1 else 0 end = 1 and 
         dense_rank() over(partition by t.conversation_id order by t.created_at asc) = 1 and
         dense_rank() over(partition by t.conversation_id order by t.created_at desc) = 1
         then 1 else 0 end as is_closed_unresponded
