@@ -515,10 +515,10 @@ UNION ALL
   , ps.label as pipeline_stage
   , s.funnel_id
   , c.metadata
-  , coalesce(c.deal_id, cast(d2.deal_id as string)) as id_deal
+  , coalesce(c.deal_id, cast(d2.deal_id as string), cast(d4.deal_id as string),cast(d.deal_id as string), cast(d5.deal_id as string), cast(d6.deal_id as string), cast(d3.deal_id as string)) as id_deal
   , d2.property_createdate
   -- , e.email_prime
-  , right(coalesce(p.property_pricing_id, il.price_id),1) as pay_type
+  , case when lower(coalesce(p.property_pricing_id, il.price_id)) like "%affirm%" then '1' else right(coalesce(p.property_pricing_id, il.price_id),1)end as pay_type
   , c.amount_dispute
   , c.date_dispute
   ,  CASE
@@ -564,9 +564,18 @@ END as amount_retained
   LEFT JOIN `hubspot2.product` p2
     on il.price_id = p2.property_pricing_id
   LEFT JOIN `hubspot2.deal` d3
-    on concat(json_extract_scalar(c.metadata, "$.product_id"), email) = concat(d3.property_product_id, d3.property_email_address_of_contact)
+    on concat(c.object_id, email) = concat(d3.property_product_id, d3.property_email_address_of_contact)
+  LEFT JOIN `hubspot2.deal` d4
+    on concat(coalesce(p.property_pricing_id, il.price_id), email) = concat(d4.property_pricing_id, d4.property_email_address_of_contact)
+  LEFT JOIN `hubspot2.deal` d5
+    on pi.customer_id = d5.property_stripe_customer_id 
+  LEFT JOIN `hubspot2.deal` d6
+    on i.subscription_id = d6.property_subscription_id 
+   
   -- left join `dbt_tscrivo.dim_email` e
   --   on email = e.email_all
   WHERE TRUE
+  --  and pi.id = 'pi_3PwqRbLYbD2uWeLi1UBs5C78'
     and analytics.fnEmail_IsTest(cu.email) = false
+
   qualify row_number() over(partition by id_payment_intent order by property_createdate desc) = 1
