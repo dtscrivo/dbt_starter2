@@ -147,8 +147,8 @@ SELECT
          else "Not Rated" end as rating
   , case when t.type IN ('message','customer') then dense_rank() over(partition by t.conversation_id order by t.created_at desc) else null end as recency
   , case when t.type IN ('message','customer') then dense_rank() over(partition by t.conversation_id order by t.created_at asc) else null end as message_number
-  , dense_rank() over(partition by t.conversation_id, t.created_by_type order by t.created_at desc) recency_by_type
-  , dense_rank() over(partition by t.conversation_id, t.created_by_type order by t.created_at asc) message_number_by_type
+  , dense_rank() over(partition by t.conversation_id, t.type order by t.created_at desc) recency_by_type
+  , dense_rank() over(partition by t.conversation_id, t.type order by t.created_at asc) message_number_by_type
   , created_by_type
   , c.number as convo_number
   , m.name_folder
