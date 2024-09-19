@@ -379,6 +379,7 @@ SELECT *
          when lower(name_deal) LIKE ('%in-person%') then "In-Person"
       --   when lower(name_deal) LIKE ('%plus%') then "Plus"
          else "Virtual" end as product_type
+  , case when lower(id_price) like "%plus%" then 1 else 0 end as is_plus_plan
 
 from hubspot h
 WHERE (analytics.fnEmail_IsTest(email) = false or email = 'chrisj@remotestaff.com')
