@@ -145,8 +145,8 @@ SELECT
          when rating_id = 2 then "Okay"
          when rating_id = 3 then "Not Good"
          else "Not Rated" end as rating
-  , dense_rank() over(partition by t.conversation_id order by t.created_at desc) as recency
-  , dense_rank() over(partition by t.conversation_id order by t.created_at asc) as message_number
+  , case when t.type IN ('message','customer') then dense_rank() over(partition by t.conversation_id order by t.created_at desc) else null end as recency
+  , case when t.type IN ('message','customer') then dense_rank() over(partition by t.conversation_id order by t.created_at asc) else null end as message_number
   , dense_rank() over(partition by t.conversation_id, t.created_by_type order by t.created_at desc) recency_by_type
   , dense_rank() over(partition by t.conversation_id, t.created_by_type order by t.created_at asc) message_number_by_type
   , created_by_type
