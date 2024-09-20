@@ -322,7 +322,7 @@ SELECT *
   , date_diff(date_refund, date_closed, day) as dob_refund
   , case when name_product LIKE "%Hybrid%" then 1 else 0 end as VIP
 
-  , case when lower(pipeline_stage) IN ('cancelled', 'paused student', 'current declines', 'cancelled student', 'closed won') then 1 else 0 end as is_buyer
+  , case when lower(pipeline_stage) IN ('cancelled', 'paused student', 'current declines', 'cancelled student', 'closed won') and date_closed is not null then 1 else 0 end as is_buyer
   , case when lower(pipeline_stage) LIKE '%cancelled%' then 1 else 0 end as is_cancelled
   , case when lower(pipeline_stage) IN ('paused student') then 1 else 0 end  as is_paused
   , case when lower(pipeline_stage) IN ('paused student', 'current declines', 'closed won') then 1 else 0 end as is_enrolled
