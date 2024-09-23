@@ -302,9 +302,9 @@ SELECT *
          else "" end as program
 
   , case when pay_type = "PIF" AND num_payments_made > 1 then 1 else 0 end as pif2
-  , date_diff(date_charge, date_closed, day) as dob_charge
+  , date_diff(datetime(date_charge), date_closed, day) as dob_charge
 
-  , date_diff(date_first_charge, date_closed, day) as dob_first_charge
+  , date_diff(datetime(date_first_charge), date_closed, day) as dob_first_charge
 
   , date_diff(date_charge,date_first_charge, day) as first_to_last_dob
 
@@ -319,7 +319,7 @@ SELECT *
   , CEIL(date_diff(date(date_ticket_resolved), DATE(date_closed), day) / 30) as mob_resolved
 
 
-  , date_diff(date_refund, date_closed, day) as dob_refund
+  , date_diff(datetime(date_refund), date_closed, day) as dob_refund
   , case when name_product LIKE "%Hybrid%" then 1 else 0 end as VIP
 
   , case when lower(pipeline_stage) IN ('cancelled', 'paused student', 'current declines', 'cancelled student', 'closed won') and date_closed is not null then 1 else 0 end as is_buyer
