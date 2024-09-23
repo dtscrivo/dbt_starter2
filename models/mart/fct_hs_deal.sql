@@ -52,7 +52,7 @@ Select d.deal_id as id_deal
    , property_initial_discovery_call_scheduled_for_date as date_initial_discovery_call_meeting
    , property_initial_meeting_date as date_discovery_call_meeting
    , property_initial_meeting_type_create_date as date_initial_discovery_call_booked
-   , property_closedate as date_closed
+   , DATETIME(property_closedate, 'America/Phoenix') as date_closed
    , property_hs_date_entered_292741310 as date_paused
    , property_hs_date_exited_292741310 as date_unpaused
    , property_hs_date_entered_38716614 as date_scheduled
