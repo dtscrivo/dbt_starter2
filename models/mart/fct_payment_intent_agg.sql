@@ -238,7 +238,7 @@ UNION ALL
 
 
 
-     WITH mindmint_charge AS (
+       WITH mindmint_charge AS (
   WITH charges_with_refunds AS (
   SELECT 
     c.payment_intent_id,
@@ -521,8 +521,10 @@ UNION ALL
   , ps.label as pipeline_stage
   , s.funnel_id
   , c.metadata
-  , coalesce(c.deal_id, cast(d2.deal_id as string), cast(d4.deal_id as string),cast(d.deal_id as string), cast(d5.deal_id as string), cast(d6.deal_id as string), cast(d3.deal_id as string)) as id_deal
-  , d2.property_createdate
+   , coalesce(cast(d.deal_id as string), cast(d4.deal_id as string),cast(d6.deal_id as string), cast(d2.deal_id as string), cast(d3.deal_id as string)) as id_deal
+ -- , cast(d5.deal_id as string) as id_deal
+  
+  ,  d3.property_createdate
   -- , e.email_prime
   , case when lower(coalesce(p.property_pricing_id, il.price_id)) like "%affirm%" then '1' else right(coalesce(p.property_pricing_id, il.price_id),1)end as pay_type
   , c.amount_dispute
@@ -558,7 +560,7 @@ END as amount_retained
   LEFT JOIN mindmint_charge c ON pi.id = c.payment_intent_id
   LEFT JOIN `bbg-platform.stripe_mindmint.invoice` i ON pi.id = i.payment_intent_id
   LEFT JOIN `bbg-platform.stripe_mindmint.invoice_line_item` il ON i.id = il.invoice_id
-  LEFT JOIN `bbg-platform.stripe_mindmint.price` pr ON il.price_id = pr.id
+  LEFT JOIN `bbg-platform.stripe_mindmint.price` pr ON pi.description = pr.nickname
   LEFT JOIN `bbg-platform.stripe_mindmint.product` pro ON pr.product_id = pro.id
   LEFT JOIN `bbg-platform.stripe_mindmint.customer` cu ON pi.customer_id = cu.id
   LEFT JOIN mindmint_subs s ON i.subscription_id = s.id
@@ -571,11 +573,11 @@ END as amount_retained
   LEFT JOIN `bbg-platform.hubspot2.deal_pipeline_stage` ps
   ON coalesce(cast(d.deal_pipeline_stage_id as string),cast(d2.deal_pipeline_stage_id as string)) = ps.stage_id
   LEFT JOIN `hubspot2.product` p2
-    on il.price_id = p2.property_pricing_id
+    on pr.id = p2.property_pricing_id
   LEFT JOIN `hubspot2.deal` d3
     on concat(c.object_id, email) = concat(d3.property_product_id, d3.property_email_address_of_contact)
   LEFT JOIN `hubspot2.deal` d4
-    on concat(coalesce(p.property_pricing_id, il.price_id), email) = concat(d4.property_pricing_id, d4.property_email_address_of_contact)
+    on concat(coalesce(p.property_pricing_id, pr.id), email) = concat(d4.property_pricing_id, d4.property_email_address_of_contact)
   LEFT JOIN `hubspot2.deal` d5
     on pi.customer_id = d5.property_stripe_customer_id 
   LEFT JOIN `hubspot2.deal` d6
