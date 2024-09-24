@@ -511,8 +511,8 @@ UNION ALL
     coalesce(p.property_recurringbillingfrequency,pr.recurring_interval) as recurring_interval,
     case when s.id is null then "no sub" else s.id end as id_subscription,
     -- "DATETIME(i.next_payment_attempt, 'America/Phoenix')" AS next_attempt
-  case when c.status = 'succeeded' then (dense_rank() over(partition by email, coalesce(p.property_product_id,pro.id), c.status order by pi.created)) else null end as num_payment,
-  case when c.status = 'succeeded' then (dense_rank() over(partition by email, coalesce(p.property_product_id,pro.id), c.status order by pi.created desc)) else null end as recency,
+  case when c.status = 'succeeded' then (dense_rank() over(partition by email, coalesce(coalesce(p.property_product_id,pro.id),coalesce(p.property_pricing_id, il.price_id)), c.status order by pi.created)) else null end as num_payment,
+  case when c.status = 'succeeded' then (dense_rank() over(partition by email, coalesce(coalesce(p.property_product_id,pro.id),coalesce(p.property_pricing_id, il.price_id)), c.status order by pi.created desc)) else null end as recency,
   dense_rank() over(partition by email, coalesce(p.property_product_id,pro.id) order by pi.created) as num_attempt
   , "BBG" as stripe_account
   , coalesce(p.property_hs_folder_name, p2.property_hs_folder_name) as group_product
