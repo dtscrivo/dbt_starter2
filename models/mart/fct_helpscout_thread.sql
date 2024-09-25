@@ -167,6 +167,7 @@ SELECT
         (case when t.type IN ('message','customer') then dense_rank() over(partition by t.conversation_id order by t.created_at desc) else null end = 1) and
         (case when t.type IN ('message','customer') then dense_rank() over(partition by t.conversation_id order by t.created_at asc) else null end = 1))
         then 1 else 0 end as is_closed_unresponded
+ , DATETIME(_fivetran_synced, 'America/Phoenix') as date_fivetran_refresh
 FROM `bbg-platform.helpscout.conversation_thread_history` t
 --LEFT JOIN `core-shard-286816.helpscoutstitchmigration.happiness_ratings_report` h
 --  on t.id = h.thread_id
