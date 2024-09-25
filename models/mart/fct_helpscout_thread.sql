@@ -168,7 +168,7 @@ SELECT
         (case when t.type IN ('message','customer') then dense_rank() over(partition by t.conversation_id order by t.created_at asc) else null end = 1))
         then 1 else 0 end as is_closed_unresponded
 FROM `bbg-platform.helpscout.conversation_thread_history` t
-LEFT JOIN `bbg-platform.helpscout.happiness_rating` h
+LEFT JOIN `core-shard-286816.helpscoutstitchmigration.happiness_ratings_report` h
   on t.id = h.thread_id
 LEFT JOIN user u
   on t.created_by_customer_id = u.id_user
