@@ -138,13 +138,13 @@ SELECT
   , coalesce(cu.email_customer, u.email_user, u.name) as thread_created_by
   , t.status as status_thread
   , t.type as type_thread
-  , DATETIME(h.rating_created_at, 'America/Phoenix') as date_rating
-  , h.rating_comment
-  , rating_id as id_rating
-  , case when rating_id = 1 then "Great"
-         when rating_id = 2 then "Okay"
-         when rating_id = 3 then "Not Good"
-         else "Not Rated" end as rating
+ -- , DATETIME(h.rating_created_at, 'America/Phoenix') as date_rating
+ -- , h.rating_comment
+ -- , rating_id as id_rating
+ -- , case when rating_id = 1 then "Great"
+ --        when rating_id = 2 then "Okay"
+ --        when rating_id = 3 then "Not Good"
+ --        else "Not Rated" end as rating
   , case when t.type IN ('message','customer') then dense_rank() over(partition by t.conversation_id order by t.created_at desc) else null end as recency
   , case when t.type IN ('message','customer') then dense_rank() over(partition by t.conversation_id order by t.created_at asc) else null end as message_number
   , dense_rank() over(partition by t.conversation_id, t.type order by t.created_at desc) recency_by_type
@@ -168,8 +168,8 @@ SELECT
         (case when t.type IN ('message','customer') then dense_rank() over(partition by t.conversation_id order by t.created_at asc) else null end = 1))
         then 1 else 0 end as is_closed_unresponded
 FROM `bbg-platform.helpscout.conversation_thread_history` t
-LEFT JOIN `core-shard-286816.helpscoutstitchmigration.happiness_ratings_report` h
-  on t.id = h.thread_id
+--LEFT JOIN `core-shard-286816.helpscoutstitchmigration.happiness_ratings_report` h
+--  on t.id = h.thread_id
 LEFT JOIN user u
   on t.created_by_customer_id = u.id_user
 LEFT JOIN user ua
