@@ -373,6 +373,7 @@ SELECT *
 
 
   ,   case when lower(name_deal) LIKE ('%hybrid%') then "Hybrid"
+         when lower(name_deal) LIKE ('%plus%') then "Plus"
          when lower(name_deal) LIKE ('%virtual%') then "Virtual"
          when lower(name_deal) LIKE ('%affirm%') then "Affirm"
          when lower(name_deal) LIKE ('%lite%') then "Lite"
