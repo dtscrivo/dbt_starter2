@@ -72,7 +72,7 @@ WITH emails AS (
   FROM example_data
 )
 
-SELECT property_email as email_prime, property_email AS email_all FROM emails WHERE email_1 IS NOT NULL
+SELECT property_email as email_prime, property_email AS email_all FROM emails
 UNION ALL
 SELECT property_email as email_prime, email_1 AS email_all FROM emails WHERE email_1 IS NOT NULL
 UNION ALL
