@@ -52,6 +52,7 @@ SELECT
 FROM
   contact #}
 
+WITH base as (
 WITH emails AS (
   WITH example_data AS (
     SELECT property_hs_additional_emails AS email_string,
@@ -91,3 +92,9 @@ UNION ALL
 SELECT property_email, email_8 AS email FROM emails WHERE email_8 IS NOT NULL
 UNION ALL
 SELECT property_email, email_9 AS email FROM emails WHERE email_9 IS NOT NULL
+)
+
+Select *
+FROM base
+qualify row_number() over(partition by email_prime, email_all) = 1
+
