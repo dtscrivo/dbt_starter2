@@ -160,7 +160,7 @@ SELECT
   , case when l.team = "Notifications" or cu.email_customer like "%systemmessage%" or cu.email_customer like "%noreply%" or cu.email_customer = 'quarantine@ess.barracudanetworks.com' or cu.email_customer like "%no-reply%" or cu.email_customer like "%do_not_reply%" or cu.email_customer = 'postmaster@outlook.com' or cu.email_customer = 'support@gohighlevelassist.freshdesk.com' or cu.email_customer like '%@replies.mastermind.com' or cu.email_customer like "%@deangraziosi.com" or cu.email_customer like "%@mastermind.com" then 1 else 0 end as is_notification
 
 
- , case when t.type = 'customer' then 'customer' 
+ , case when t.type = 'customer' then cu.email_customer 
         when t.type = 'message' and coalesce(u.name,ut.name) is null then 'Not Found' else coalesce(u.name,ut.name) end AS creator
  , case when coalesce(l.team, a.team, u.team, ua.team) is null then 'Not Assigned' else coalesce(l.team, a.team, u.team, ua.team) end AS team
  , case when ((case when lower(action_text) like "%close%" OR t.status = "closed" OR c.status = 'closed' then 1 else 0 end = 1) and 
