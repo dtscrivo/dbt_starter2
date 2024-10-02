@@ -344,7 +344,7 @@ SELECT *
          else null end as workshop
 
 
-  , case when id_owner in (597349110,626163393,980534468,597349111,626162146,1018920904,1018935239,1211781353,143772806,1332303547,1066123713,746781400,1376975821,1332303546,2027067907,1153145590,1222041825,1278796899,1300856784,1696602043,285218002,285218005,411194086,493792977,746781399,767527108) 
+  , case when id_owner in (455035854,2035145442,1845545878,597349110,626163393,980534468,597349111,626162146,1018920904,1018935239,1211781353,143772806,1332303547,1066123713,746781400,1376975821,1332303546,2027067907,1153145590,1222041825,1278796899,1300856784,1696602043,285218002,285218005,411194086,493792977,746781399,767527108) 
     OR
    (case when id_owner = 1426033370 AND (date(date_closed) > date('2024-08-23') AND date(date_closed) < date('2024-08-28')) then "Charlotte"
          when id_owner = 1426033370 AND (date(date_closed) > date('2024-08-16') AND date(date_closed) <= date('2024-08-22')) then "Raleigh"
@@ -363,11 +363,30 @@ SELECT *
    ((case when name_product LIKE "%The Action Academy%" then "TAA"  -- all
          when name_product LIKE "%Mastermind Business Academy%" then "MBA" -- all
          when name_product LIKE "%1:1 Coaching%" then "1:1" -- all
-         when name_product LIKE "%The Edge%" then "Edge" -- team only
+         --when name_product LIKE "%The Edge%" then "Edge" -- team only
          when name_product LIKE "%The Coaching Academy%" then "TCA" -- all
+         --when name_product LIKE "%High Ticket Coaching%" then "HTC" --team
+         --when name_product LIKE "%High Ticket Academy%" then "HTA" -- team
+         else null end) is not null and id_owner != 1426033370)
+
+    OR 
+    ((case --when name_product LIKE "%The Action Academy%" then "TAA"  -- all
+         --when name_product LIKE "%Mastermind Business Academy%" then "MBA" -- all
+         --when name_product LIKE "%1:1 Coaching%" then "1:1" -- all
+         when name_product LIKE "%The Edge%" then "Edge" -- team only
+         --when name_product LIKE "%The Coaching Academy%" then "TCA" -- all
          when name_product LIKE "%High Ticket Coaching%" then "HTC" --team
          when name_product LIKE "%High Ticket Academy%" then "HTA" -- team
-         else null end) is not null and id_owner != 1426033370)
+         else null end) is not null and id_owner in (455035854,2035145442,1845545878,597349110,626163393,980534468,597349111,626162146,1018920904,1018935239,1211781353,143772806,1332303547,1066123713,746781400,1376975821,1332303546,2027067907,1153145590,1222041825,1278796899,1300856784,1696602043,285218002,285218005,411194086,493792977,746781399,767527108))
+
+
+
+
+
+
+
+
+
 
          then 1 else 0 end as team_sales
 
