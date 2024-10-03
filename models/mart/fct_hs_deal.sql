@@ -30,7 +30,6 @@ Select d.deal_id as id_deal
    , property_oncehub_meeting_type as meeting_type
    , d.property_offer_made as is_offermade
    , property_objection_reason as objection_reason
-   , property_setter_name as name_setter
 --   , property_hs_was_imported as is_imported
    , property_payment_status as status_payment
 --   , property_contract_status as status_contract
@@ -86,6 +85,8 @@ Select d.deal_id as id_deal
    , date(c.property_mba_orientation_date) as date_mba_orientation
    , c.id as id_contact
    , d.property_amount as amount_hubspot
+   , d.property_test_setter_user_name as id_setter
+   , sn.name_owner as name_setter
 FROM `bbg-platform.hubspot2.deal` d
 LEFT JOIN `bbg-platform.hubspot2.merged_deal` m
    on d.deal_id = m.merged_deal_id
@@ -99,6 +100,8 @@ LEFT JOIN `bbg-platform.hubspot2.owner` se
   ON d.property_member_success_advisor = se.owner_id
 LEFT JOIN `bbg-platform.hubspot2.owner` sa
   ON d.property_save_owner = sa.owner_id
+LEFT JOIN `bbg-platform.hubspot2.owner` sn
+  ON d.property_test_setter_user_name = sn.owner_id
 LEFT JOIN `hubspot2.deal_contact` dc
   ON d.deal_id = dc.deal_id
 LEFT JOIN `hubspot2.contact` c

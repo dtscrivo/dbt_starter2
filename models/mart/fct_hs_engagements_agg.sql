@@ -40,6 +40,7 @@ SELECT  e.id as id_engagement
   , co.property_outbound_lead_source as source_lead
   , co.property_hs_lead_status as status_lead
   , (ec.property_hs_call_duration / 1000) / 60 as call_duration
+  , coalesce(ee.property_hs_activity_type, ec.property_hs_activity_type, cc.property_hs_activity_type, m.property_hs_activity_type) as type_activity
 FROM `bbg-platform.hubspot2.engagement` e
 LEFT JOIN `bbg-platform.hubspot2.engagement_email` ee
   on e.id = ee.engagement_id
