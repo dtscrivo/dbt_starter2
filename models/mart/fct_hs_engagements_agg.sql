@@ -40,7 +40,7 @@ SELECT  e.id as id_engagement
   , co.property_outbound_lead_source as source_lead
   , co.property_hs_lead_status as status_lead
   , (ec.property_hs_call_duration / 1000) / 60 as call_duration
-  , coalesce(ec.property_hs_activity_type, cc.property_hs_activity_type, m.property_hs_activity_type) as type_activity
+  , coalesce(ec.property_hs_activity_type, m.property_hs_activity_type) as type_activity
   , case when m.property_hs_activity_type like "%Triage%" then "Triage" else "Not Triage" end as is_triage
 FROM `bbg-platform.hubspot2.engagement` e
 LEFT JOIN `bbg-platform.hubspot2.engagement_email` ee
