@@ -577,7 +577,7 @@ END as amount_retained
   LEFT JOIN `hubspot2.deal` d3
     on concat(c.object_id, email) = concat(d3.property_product_id, d3.property_email_address_of_contact)
   LEFT JOIN `hubspot2.deal` d4
-   on lower(concat(coalesce(p.property_pricing_id, il.price_id, pr.id), email)) = lower(concat(d4.property_pricing_id, d4.property_email_address_of_contact))  LEFT JOIN `hubspot2.deal` d5
+   on lower(concat(case when coalesce(p.property_pricing_id, il.price_id, pr.id) = 'MBA_affirm_pp_7997' then 'MBA_Affirm_pp_9497' elsecoalesce(p.property_pricing_id, il.price_id, pr.id) end, email)) = lower(concat(d4.property_pricing_id, d4.property_email_address_of_contact))  LEFT JOIN `hubspot2.deal` d5
     on pi.customer_id = d5.property_stripe_customer_id 
   LEFT JOIN `hubspot2.deal` d6
     on i.subscription_id = d6.property_subscription_id 
