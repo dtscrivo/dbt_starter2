@@ -557,34 +557,39 @@ END as amount_retained
   , case when c.rep_id != "" then coalesce(c.rep_id, cast(d2.owner_id as string), cast(d4.owner_id as string),cast(d.owner_id as string), cast(d5.owner_id as string), cast(d6.owner_id as string), cast(d3.owner_id as string)) else coalesce(cast(d2.owner_id as string), cast(d4.owner_id as string),cast(d.owner_id as string), cast(d5.owner_id as string), cast(d6.owner_id as string), cast(d3.owner_id as string)) end as id_owner
 
   FROM `bbg-platform.stripe_mindmint.payment_intent` pi
+
   LEFT JOIN mindmint_charge c ON pi.id = c.payment_intent_id
   LEFT JOIN `bbg-platform.stripe_mindmint.invoice` i ON pi.id = i.payment_intent_id
   LEFT JOIN `bbg-platform.stripe_mindmint.invoice_line_item` il ON i.id = il.invoice_id
   LEFT JOIN `bbg-platform.stripe_mindmint.price` pr ON pi.description = pr.nickname
   LEFT JOIN `bbg-platform.stripe_mindmint.product` pro ON pr.product_id = pro.id
   LEFT JOIN `bbg-platform.stripe_mindmint.customer` cu ON pi.customer_id = cu.id
+
+  LEFT JOIN `dbt_tscrivo.dim_email` e on cu.email = e.email_all
+
   LEFT JOIN mindmint_subs s ON i.subscription_id = s.id
   LEFT JOIN `hubspot2.product` p
     on c.object_id = cast(p.id as string)
   LEFT JOIN `hubspot2.deal` d
     on c.deal_id = cast(d.deal_id as string)
   LEFT JOIN `hubspot2.deal` d2
-    on concat(coalesce(p.property_product_id, pro.id), email) = concat(d2.property_product_id, d2.property_email_address_of_contact)
+    on concat(coalesce(p.property_product_id, pro.id), email_all) = concat(d2.property_product_id, d2.property_email_address_of_contact)
   LEFT JOIN `bbg-platform.hubspot2.deal_pipeline_stage` ps
   ON coalesce(cast(d.deal_pipeline_stage_id as string),cast(d2.deal_pipeline_stage_id as string)) = ps.stage_id
   LEFT JOIN `hubspot2.product` p2
     on pr.id = p2.property_pricing_id
   LEFT JOIN `hubspot2.deal` d3
-    on concat(c.object_id, email) = concat(d3.property_product_id, d3.property_email_address_of_contact)
+    on concat(c.object_id, email_prime) = concat(d3.property_product_id, d3.property_email_address_of_contact)
   LEFT JOIN `hubspot2.deal` d4
    on lower(concat(
     case when coalesce(p.property_pricing_id, il.price_id, pr.id) = 'MBA_affirm_pp_7997' then 'MBA_Affirm_pp_9497' 
          when coalesce(p.property_pricing_id, il.price_id, pr.id) = 'MBA_plus_pif_15494_1' then 'MBA_Affirm_pp_15494' 
-   else coalesce(p.property_pricing_id, il.price_id, pr.id) end, email_prime)) = lower(concat(d4.property_pricing_id, d4.property_email_address_of_contact))   
-   LEFT JOIN `hubspot2.deal` d5
+   else coalesce(p.property_pricing_id, il.price_id, pr.id) end, email_prime)) = lower(concat(d4.property_pricing_id, d4.property_email_address_of_contact))  
+  LEFT JOIN `hubspot2.deal` d5
     on pi.customer_id = d5.property_stripe_customer_id 
   LEFT JOIN `hubspot2.deal` d6
     on i.subscription_id = d6.property_subscription_id 
+   
    
   -- left join `dbt_tscrivo.dim_email` e
   --   on email = e.email_all
