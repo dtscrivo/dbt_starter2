@@ -87,6 +87,7 @@ Select d.deal_id as id_deal
    , d.property_amount as amount_hubspot
    , d.property_test_setter_user_name as id_setter
    , concat(sn.first_name," ",sn.last_name) as name_setter
+   , c.property_mm_lead_score as lead_score
 FROM `bbg-platform.hubspot2.deal` d
 LEFT JOIN `bbg-platform.hubspot2.merged_deal` m
    on d.deal_id = m.merged_deal_id
