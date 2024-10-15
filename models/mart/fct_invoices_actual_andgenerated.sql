@@ -1,5 +1,6 @@
 {{ config(materialized='table') }}
 
+
 WITH invoices as (
 with asdf as (
   with initial_payments AS (
@@ -8,14 +9,15 @@ with asdf as (
         id_customer,
         id_price,
         date(date_pi_created) AS date_invoice,
-        case when id_price IN ('MBA_pif_inpersonpackage_5997', 'bf22') then 1 else SAFE_CAST(plan_type AS INT64) end AS plan_type -- Using SAFE_CAST to avoid errors
-        , amount_charge as amount_collected
+        case when id_price IN ('MBA_pif_inpersonpackage_5997', 'bf22') then 1 else SAFE_CAST(pay_type AS INT64) end AS plan_type -- Using SAFE_CAST to avoid errors
+        , amount_retained as amount_collected
         , name_product
+        , id_deal
     FROM
-        `dbt_tscrivo.fct_deal_payments`
+        `dbt_tscrivo.fct_payment_intent_agg`
     WHERE
         num_payment = 1
-        AND SAFE_CAST(plan_type AS INT64) IS NOT NULL -- Ensuring only valid integer values
+        AND SAFE_CAST(pay_type AS INT64) IS NOT NULL -- Ensuring only valid integer values
         AND name_product not like "%@%"
 )
 
@@ -36,6 +38,7 @@ with asdf as (
         n + 1 AS payment_number
         , amount_collected
         , name_product
+        , id_deal
     FROM
         initial_payments,
         UNNEST(GENERATE_ARRAY(0, plan_type - 1)) AS n
@@ -50,6 +53,7 @@ SELECT
     , amount_collected
     , name_product
     , 1 as is_generated
+    , id_deal
 FROM
     generated_payments
  --   where email = 'adiyb@adiybmuhammad.com'
@@ -72,6 +76,7 @@ SELECT email
   , status_charge
   , amount_collected
   , name_product
+  , id_deal
 FROM `dbt_tscrivo.fct_payment_intent_agg`
 WHERE name_product NOT LIKE "%@%"
  -- and email = 'Egyn98grl@hotmail.com'
@@ -87,7 +92,7 @@ SELECT i.email
   , i.status_invoice as status_charge
   , i.amount_collected
   , i.name_product
-
+  , i.id_deal
 FROM asdf i
 WHERE true
   and date(payment_date) > current_date()
@@ -110,6 +115,7 @@ SELECT b.email
   , b.num_payment
   , b.is_generated
   , b.status_charge
+  , id_deal
 FROM base b
 LEFT JOIN first_payment f
   on concat(b.email, b.id_price) = concat(f.email, f.id_price) 
@@ -126,5 +132,5 @@ FROM invoices
 where true
   and analytics.fnEmail_IsTest(email) = false
  -- and (lower(id_price) like "%mba%" or lower(id_price) like "%taa%")
-GROUP BY ALL
-ORDER BY email, id_price, num_payment
+ and status_charge = 'succeeded'
+ --and id_deal = '15764293313'
