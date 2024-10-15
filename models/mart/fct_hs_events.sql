@@ -43,9 +43,9 @@ WITH events AS (
         MAX(case when name LIKE "%Preview Event%" and name LIKE "%In-Person%" and name like "Attended%" then added_at else null end) as IPPE,
         MAX(case when name LIKE "%Preview Event%" and name NOT LIKE "%In-Person%" and name like "Attended%" then added_at else null end) as VPE
         
-        , case when name like "Attended%" then REGEXP_EXTRACT(name, r'\(([^0-9]*)\)') else null end as city_attended
-        , case when name like "Registered%" then REGEXP_EXTRACT(name, r'\(([^0-9]*)\)') else null end as city_registered
-        , case when name like "Attended%" then REGEXP_EXTRACT(name, r'\((.*?)([0-9].*)\)') else null end as date_event
+        CASE WHEN name LIKE "Attended%" THEN REGEXP_EXTRACT(name, r'\(([^0-9]*)') ELSE NULL END AS city_attended,
+        CASE WHEN name LIKE "Registered%" THEN REGEXP_EXTRACT(name, r'\(([^0-9]*)') ELSE NULL END AS city_registered,
+        CASE WHEN name LIKE "Attended%" THEN REGEXP_EXTRACT(name, r'\([^\)]*([0-9].*)\)') ELSE NULL END AS date_event
     FROM `bbg-platform.hubspot2.contact` c
     LEFT JOIN `bbg-platform.hubspot2.contact_list_member` m
       on c.id = m.contact_id
