@@ -132,5 +132,5 @@ FROM invoices
 where true
   and analytics.fnEmail_IsTest(email) = false
  -- and (lower(id_price) like "%mba%" or lower(id_price) like "%taa%")
- and status_charge = 'succeeded'
- --and id_deal = '15764293313'
+ --and status_charge = 'succeeded'
+ --and id_deal = '16267352789'
