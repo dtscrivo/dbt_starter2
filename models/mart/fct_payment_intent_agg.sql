@@ -521,7 +521,7 @@ UNION ALL
   , ps.label as pipeline_stage
   , s.funnel_id
   , c.metadata
-   , coalesce(cast(d.deal_id as string), cast(d4.deal_id as string),cast(d6.deal_id as string), cast(d2.deal_id as string), cast(d3.deal_id as string)) as id_deal
+   , coalesce(cast(d4.deal_id as string), cast(d.deal_id as string),cast(d6.deal_id as string), cast(d2.deal_id as string), cast(d3.deal_id as string)) as id_deal
  -- , cast(d5.deal_id as string) as id_deal
   
   ,  d3.property_createdate
