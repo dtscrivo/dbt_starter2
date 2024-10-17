@@ -494,7 +494,7 @@ UNION ALL
       WHEN c.status = "succeeded" AND charge_num != 1 THEN 'fail_recovered'
       ELSE "fail_not_recovered"
     END AS category,
-    case when i.subscription_id is null then "no invoice" else i.subscription_id end AS id_subscription_invoice,
+    case when i.subscription_id is null then "no sub" else i.subscription_id end AS id_subscription_invoice,
     analytics.fnEmail(cu.email) as email,
     cu.name,
     case when i.id is null then "no invoice" else i.id end AS id_invoice,
