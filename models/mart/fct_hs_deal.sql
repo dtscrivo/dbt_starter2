@@ -90,6 +90,7 @@ Select d.deal_id as id_deal
    , c.property_mm_lead_score as lead_score
    , c.property_state as home_state
    , c.property_ip_state as home_state_ip
+   , cast(min(coalesce(c.property_setter_contact_owner_assigned_date, c.property_closer_contact_owner_assigned_date, c.property_hubspot_owner_assigneddate)) as date) as date_assigned
 FROM `bbg-platform.hubspot2.deal` d
 LEFT JOIN `bbg-platform.hubspot2.merged_deal` m
    on d.deal_id = m.merged_deal_id
