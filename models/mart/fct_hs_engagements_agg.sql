@@ -14,7 +14,7 @@ SELECT  e.id as id_engagement
     NULL
   )) AS detail
   , datetime(coalesce(t.property_hs_timestamp,n.property_hs_timestamp,m.property_hs_timestamp,ee.property_hs_timestamp, ec.property_hs_timestamp, cc.property_hs_timestamp), 'America/Phoenix') as timestamp
-  , coalesce(ec.property_hs_call_direction, case when ee.property_hs_email_direction = 'EMAIL' then "outbound" else "inbound" end, case when left(cc.property_hs_body_preview, 1) = "+" then 'inbound' else 'outbound' end) as direction
+  , lower(coalesce(ec.property_hs_call_direction, case when ee.property_hs_email_direction = 'EMAIL' then "outbound" else "inbound" end, case when left(cc.property_hs_body_preview, 1) = "+" and e.type = 'COMMUNICATION' then 'inbound' else 'outbound' end)) as direction
   , coalesce(ee.property_hs_email_subject, m.property_hs_meeting_title,t.property_hs_task_subject, ec.property_hs_call_title) as subject
   , coalesce(ec.property_hubspot_owner_id, ee.property_hubspot_owner_id, cc.property_hubspot_owner_id, m.property_hubspot_owner_id, n.property_hubspot_owner_id, t.property_hubspot_owner_id) as id_owner
   , case when ec.property_hs_call_disposition = "73a0d17f-1163-4015-bdd5-ec830791da20" then "no answer" 
@@ -42,7 +42,7 @@ SELECT  e.id as id_engagement
   , (ec.property_hs_call_duration / 1000) / 60 as call_duration
   , coalesce(ec.property_hs_activity_type, m.property_hs_activity_type) as type_activity
   , case when m.type = 'MEETING' and m.property_hs_activity_type like "%Triage%" then "Triage" else "Not Triage" end as is_triage
-  , case when e.type = 'COMMUNICATIONL' then 1 else 0 end as is_text
+  , case when e.type = 'COMMUNICATION' then 1 else 0 end as is_text
   , case when e.type = 'EMAIL' then 1 else 0 end as is_email
   , case when e.type = 'MEETING' then 1 else 0 end as is_meeting
   , case when e.type = 'NOTE' then 1 else 0 end as is_note
