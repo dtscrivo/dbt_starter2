@@ -47,6 +47,7 @@ SELECT  e.id as id_engagement
   , case when e.type = 'MEETING' then 1 else 0 end as is_meeting
   , case when e.type = 'NOTE' then 1 else 0 end as is_note
   , case when e.type = 'TASK' then 1 else 0 end as is_task
+  , case when e.type = 'CALL' then 1 else 0 end as is_call
 FROM `bbg-platform.hubspot2.engagement` e
 LEFT JOIN `bbg-platform.hubspot2.engagement_email` ee
   on e.id = ee.engagement_id
