@@ -93,6 +93,7 @@ Select d.deal_id as id_deal
   , c.property_setter_contact_owner_assigned_date
   , c.property_closer_contact_owner_assigned_date
   , c.property_hubspot_owner_assigneddate
+FROM `bbg-platform.hubspot2.deal` d
 LEFT JOIN `bbg-platform.hubspot2.merged_deal` m
    on d.deal_id = m.merged_deal_id
 LEFT JOIN `bbg-platform.hubspot2.deal_pipeline_stage` p
@@ -230,9 +231,7 @@ SELECT d.*
   , t.id_ticket
   , t.ticket_pipeline
   , t.ticket_pipeline_stage
-  , d.property_setter_contact_owner_assigned_date
-  , d.property_closer_contact_owner_assigned_date
-  , d.property_hubspot_owner_assigneddate
+
 FROM  deal_source d
 LEFT JOIN payments pp
   ON cast(d.id_deal as string) = pp.deal_id
