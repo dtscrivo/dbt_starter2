@@ -18,6 +18,8 @@ select amount_collected as amount_gross
   , recency
   , date_closed
   , program
+  , type_card
+  , statement_descriptor
 from `bbg-platform.dbt_tscrivo.fct_payment_intent_agg`
 
 union all
@@ -38,7 +40,9 @@ select -amount_dispute
   , id_invoice
   , recency
   , date_closed
-  , program
+  , program  
+  , type_card
+  , statement_descriptor
 from `bbg-platform.dbt_tscrivo.fct_payment_intent_agg`
 
 union all
@@ -60,6 +64,8 @@ select -amount_refund
   , recency
   , date_closed
   , program
+  , type_card
+  , statement_descriptor
 from `bbg-platform.dbt_tscrivo.fct_payment_intent_agg`
 
 union all
@@ -88,6 +94,8 @@ SELECT sum(property_amount) as amount_collected
          when coalesce(property_product_name) LIKE "%High Ticket Coaching%" then "HTC"
          when coalesce(property_product_name) LIKE "%High Ticket Academy%" then "HTA"
          else null end as program
+          , "wire" as type_card
+  , "wire" as statement_descriptor
 FROM `bbg-platform.hubspot2.deal`
 WHERE true
   and property_wire_payment_ = TRUE
