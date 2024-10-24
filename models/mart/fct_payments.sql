@@ -114,3 +114,5 @@ WHERE true
   and b.email is not null
   and b.status_charge = 'succeeded'
   and b.date_transaction is not null
+  and b.id_payment_intent = 'pi_3Pb9gOISjDEJDDVR0oKLpFjA'
+qualify row_number() over(partition by id_payment_intent, type, date_transaction) = 1
