@@ -263,6 +263,7 @@ UNION ALL
     d.reason AS reason_dispute,
     DATETIME(d.created, 'America/Phoenix') AS date_dispute,
     case when d.status IN ("won","warning_closed") then null else d.amount/100 end AS amount_dispute
+    , cd.brand as type_card
   FROM `bbg-platform.stripe_mindmint.charge` c
   LEFT JOIN `bbg-platform.hubspot2.merged_deal` m
     ON CAST(JSON_EXTRACT_SCALAR(c.metadata, "$.deal_id") AS STRING) = CAST(m.merged_deal_id AS STRING)
@@ -271,10 +272,12 @@ UNION ALL
     and r.status = "succeeded"
   LEFT JOIN `bbg-platform.stripe_mindmint.dispute` d
     ON c.id = d.charge_id
+  LEFT JOIN `bbg-platform.stripe_mindmint.card` cd
+    ON c.payment_method_id = cd.id
  -- WHERE c.id = 'ch_3PS6nPLYbD2uWeLi1p24nBqM'
   GROUP BY 
     c.payment_intent_id, c.created, c.status, c.id, c.outcome_reason, c.metadata, c.amount, 
-    c.refunded, m.deal_id, c.statement_descriptor, d.status, d.reason, d.created, d.amount
+    c.refunded, m.deal_id, c.statement_descriptor, d.status, d.reason, d.created, d.amount, cd.brand
 )
 SELECT *
 FROM charges_with_refunds
@@ -308,6 +311,7 @@ WITH charges_with_refunds AS (
     d.reason AS reason_dispute,
     DATETIME(d.created, 'America/Phoenix') AS date_dispute,
     case when d.status IN ("won","warning_closed") then null else d.amount/100 end AS amount_dispute
+    , cd.brand as type_card
   FROM `bbg-platform.stripe_mastermind.charge` c
   LEFT JOIN `bbg-platform.hubspot2.merged_deal` m
     ON CAST(JSON_EXTRACT_SCALAR(c.metadata, "$.deal_id") AS STRING) = CAST(m.merged_deal_id AS STRING)
@@ -316,10 +320,12 @@ WITH charges_with_refunds AS (
     and r.status = "succeeded"
   LEFT JOIN `bbg-platform.stripe_mastermind.dispute` d
     ON c.id = d.charge_id
+  LEFT JOIN `bbg-platform.stripe_mastermind.card` cd
+    ON c.payment_method_id = cd.id
   --WHERE c.id = 'ch_3PS6nPLYbD2uWeLi1p24nBqM'
   GROUP BY 
     c.payment_intent_id, c.created, c.status, c.id, c.outcome_reason, c.metadata, c.amount, 
-    c.refunded, m.deal_id, c.statement_descriptor, d.status, d.reason, d.created, d.amount
+    c.refunded, m.deal_id, c.statement_descriptor, d.status, d.reason, d.created, d.amount, cd.brand
 )
 SELECT *
 FROM charges_with_refunds
@@ -439,7 +445,7 @@ END as amount_retained
          else "" end as program
 
   , coalesce(c.rep_id, cast(d.owner_id as string)) as id_owner
-
+  , c.type_card
   FROM `bbg-platform.stripe_mastermind.payment_intent` pi
   LEFT JOIN mastermind_charge c ON pi.id = c.payment_intent_id
   LEFT JOIN `bbg-platform.stripe_mastermind.invoice` i ON pi.id = i.payment_intent_id
@@ -555,7 +561,7 @@ END as amount_retained
          else null end as program
 
   , case when c.rep_id != "" then coalesce(c.rep_id, cast(d2.owner_id as string), cast(d4.owner_id as string),cast(d.owner_id as string), cast(d5.owner_id as string), cast(d6.owner_id as string), cast(d3.owner_id as string)) else coalesce(cast(d2.owner_id as string), cast(d4.owner_id as string),cast(d.owner_id as string), cast(d5.owner_id as string), cast(d6.owner_id as string), cast(d3.owner_id as string)) end as id_owner
-
+  , c.type_card
   FROM `bbg-platform.stripe_mindmint.payment_intent` pi
 
   LEFT JOIN mindmint_charge c ON pi.id = c.payment_intent_id
