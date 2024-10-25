@@ -249,7 +249,7 @@ UNION ALL
     c.id,
     c.outcome_reason,
     JSON_EXTRACT_SCALAR(c.metadata, "$.processor") AS processor,
-    c.calculated_statement_descriptor as statement_descriptor,
+    COALESCE(c.statement_descriptor,c.calculated_statement_descriptor) as statement_descriptor,
     c.metadata,
     JSON_EXTRACT_SCALAR(c.metadata, "$.product_id") AS object_id,
     JSON_EXTRACT_SCALAR(c.metadata, "$.rep_id") AS rep_id,
@@ -277,7 +277,7 @@ UNION ALL
  -- WHERE c.id = 'ch_3PS6nPLYbD2uWeLi1p24nBqM'
   GROUP BY 
     c.payment_intent_id, c.created, c.status, c.id, c.outcome_reason, c.metadata, c.amount, 
-    c.refunded, m.deal_id, c.calculated_statement_descriptor, d.status, d.reason, d.created, d.amount, cd.brand
+    c.refunded, m.deal_id, c.calculated_statement_descriptor, c.statement_descriptor, d.status, d.reason, d.created, d.amount, cd.brand
 )
 SELECT *
 FROM charges_with_refunds
@@ -296,7 +296,7 @@ WITH charges_with_refunds AS (
     c.id,
     c.outcome_reason,
     JSON_EXTRACT_SCALAR(c.metadata, "$.processor") AS processor,
-    c.calculated_statement_descriptor as statement_descriptor,
+    COALESCE(c.statement_descriptor,c.calculated_statement_descriptor) as statement_descriptor,
     c.metadata,
     JSON_EXTRACT_SCALAR(c.metadata, "$.product_id") AS object_id,
     JSON_EXTRACT_SCALAR(c.metadata, "$.rep_id") AS rep_id,
@@ -325,7 +325,7 @@ WITH charges_with_refunds AS (
   --WHERE c.id = 'ch_3PS6nPLYbD2uWeLi1p24nBqM'
   GROUP BY 
     c.payment_intent_id, c.created, c.status, c.id, c.outcome_reason, c.metadata, c.amount, 
-    c.refunded, m.deal_id, c.calculated_statement_descriptor, d.status, d.reason, d.created, d.amount, cd.brand
+    c.refunded, m.deal_id, c.calculated_statement_descriptor, c.statement_descriptor, d.status, d.reason, d.created, d.amount, cd.brand
 )
 SELECT *
 FROM charges_with_refunds
@@ -370,7 +370,7 @@ where cast(_fivetran_end as string) LIKE "9999%"
     pi.description,
     pi.payment_method_id AS id_payment_method_id,
     pi.status AS status_payment_intent,
-    pi.statement_descriptor,
+    c.statement_descriptor,
     DATETIME(pi.created, 'America/Phoenix') AS date_pi_created,
     c.charge_num,
     c.charge_success_num,
@@ -484,7 +484,7 @@ UNION ALL
     pi.description,
     pi.payment_method_id AS id_payment_method_id,
     pi.status AS status_payment_intent,
-    pi.statement_descriptor,
+    c.statement_descriptor,
     DATETIME(pi.created, 'America/Phoenix') AS date_pi_created,
     c.charge_num,
     c.charge_success_num,
