@@ -90,8 +90,8 @@ Select d.deal_id as id_deal
    , c.property_mm_lead_score as lead_score
    , c.property_state as home_state
    , c.property_ip_state as home_state_ip
-  , coalesce(c.property_setter_contact_owner_assigned_date, d.property_hubspot_owner_assigneddate) as date_owner_assigned
-  , c.property_closer_contact_owner_assigned_date as date_setter_assigned
+  , coalesce(c.property_closer_contact_owner_assigned_date, d.property_hubspot_owner_assigneddate) as date_owner_assigned
+  , c.property_setter_contact_owner_assigned_date as date_setter_assigned
   , c.property_hubspot_owner_assigneddate
   , c.property_most_recent_date_assigned_outbound_lead_source as date_lead_assigned
 FROM `bbg-platform.hubspot2.deal` d
