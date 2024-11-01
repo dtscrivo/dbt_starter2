@@ -411,7 +411,7 @@ SELECT *
       --   when lower(name_deal) LIKE ('%plus%') then "Plus"
          else "Virtual" end as product_type
   , case when lower(id_price) like "%plus%" then 1 else 0 end as is_plus_plan
-  , cast(min(coalesce(property_setter_contact_owner_assigned_date, property_closer_contact_owner_assigned_date, property_hubspot_owner_assigneddate)) as date) as date_assigned
+  , cast(min(coalesce(date_setter_assigned, date_owner_assigned)) as date) as date_assigned
 from hubspot h
 WHERE (analytics.fnEmail_IsTest(email) = false or email = 'chrisj@remotestaff.com')
 group by all
