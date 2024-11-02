@@ -58,7 +58,7 @@ Select d.deal_id as id_deal
    , property_deal_lead_source_sales_ as source_saleslead
    , property_last_reached_out
 --   , property_action_academy_success_path
-   , d.property_hubspot_owner_assigneddate as date_owner_assigned
+ --  , d.property_hubspot_owner_assigneddate as date_owner_assigned
 --   , property_product_id as id_product
    , property_hs_acv as amount_contract
 --   , property_future_contracted_value as amount_owed
