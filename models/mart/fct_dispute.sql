@@ -43,7 +43,7 @@ with trans as (
   , json_extract_scalar(s.metadata, "$.netsuite_CF_funnel_id") as funnel_id
   , json_extract_scalar(s.metadata, "$.netsuite_CF_funnel_name") as funnel_name
   , cd.brand as type_card
-  , COALESCE(c.statement_descriptor,c.calculated_statement_descriptor) as statement_descriptor
+  , lower(COALESCE(c.statement_descriptor,c.calculated_statement_descriptor)) as statement_descriptor
 FROM `bbg-platform.stripe_mastermind.charge` c
 LEFT JOIN `bbg-platform.stripe_mastermind.dispute` d
   on c.id = d.charge_id
@@ -119,7 +119,7 @@ union all
   , ""
   , ""
   , cd.brand as type_card
-  , COALESCE(c.statement_descriptor,c.calculated_statement_descriptor) as statement_descriptor
+  , lower(COALESCE(c.statement_descriptor,c.calculated_statement_descriptor)) as statement_descriptor
 FROM `bbg-platform.stripe_mindmint.charge` c
 LEFT JOIN `bbg-platform.stripe_mindmint.dispute` d
   on c.id = d.charge_id
