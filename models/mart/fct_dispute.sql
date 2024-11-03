@@ -1,7 +1,7 @@
 {{ config(materialized='table') }}
 
 with trans as (
-  SELECT c.id as charge_id
+  SELECT c.id as id_charge
   , datetime(c.created, 'America/Phoenix') as date_charge
   , datetime(e.created, 'America/Phoenix') as date_fraud_warning
   , datetime(d.created, 'America/Phoenix') as date_dispute
@@ -17,12 +17,12 @@ with trans as (
   , bt.description
   , bt.net / 100 as net
   , bt.reporting_category
-  , bt.status as status_balance_
+  , bt.status as status_balance
   , bt.type as type_balance_trans
   , analytics.fnEmail(cu.email) as email
-  , pr.id as id_pricing
+  , pr.id as id_price
   , p.name as product
-  , pr.unit_amount / 100 as price
+  , pr.unit_amount / 100 as amount_price
   , pr.type
   , case when d.created is not null then 1 else 0 end as is_dispute
   , case when d.created is not null and d.status = "lost" then 1 else 0 end as is_dispute_lost
@@ -35,7 +35,7 @@ with trans as (
   , il.invoice_id as id_invoice
   , dense_rank() over(partition by c.id order by d.created asc) as num_dispute
   , "MM" as stripe_account
-  , c.refunded
+  , case when c.refunded = true then 1 else 0 end as is_refund
   , c.amount_refunded / 100 as amount_refunded
   , json_extract_scalar(s.metadata, "$.netsuite_CF_funnel_id") as funnel_id
   , json_extract_scalar(s.metadata, "$.netsuite_CF_funnel_name") as funnel_name
@@ -68,7 +68,7 @@ qualify row_number() over(partition by c.id, d.id) = 1
 union all
 
 
-  SELECT c.id as charge_id
+  SELECT c.id as id_charge
   , datetime(c.created, 'America/Phoenix') as date_charge
   , datetime(e.created, 'America/Phoenix') as date_fraud_warning
   , datetime(d.created, 'America/Phoenix') as date_dispute
@@ -84,12 +84,12 @@ union all
   , bt.description
   , bt.net / 100 as net
   , bt.reporting_category
-  , bt.status as status_balance_
+  , bt.status as status_balance
   , bt.type as type_balance_trans
   , analytics.fnEmail(cu.email) as email
-  , pr.id as id_pricing
+  , pr.id as id_price
   , p.name as product
-  , pr.unit_amount / 100 as price
+  , pr.unit_amount / 100 as amount_price
   , pr.type
   , case when d.created is not null then 1 else 0 end as is_dispute
   , case when d.created is not null and d.status = "lost" then 1 else 0 end as is_dispute_lost
@@ -102,7 +102,7 @@ union all
   , il.invoice_id as id_invoice
   , dense_rank() over(partition by c.id order by d.created asc) as num_dispute
   , "BBG" as stripe_account
-  , c.refunded
+  , case when c.refunded = true then 1 else 0 end as is_refund
   , c.amount_refunded / 100 as amount_refunded
   , ""
   , ""
