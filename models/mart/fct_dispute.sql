@@ -5,12 +5,14 @@ with trans as (
   , datetime(c.created, 'America/Phoenix') as date_charge
   , datetime(e.created, 'America/Phoenix') as date_fraud_warning
   , datetime(d.created, 'America/Phoenix') as date_dispute
+  , datetime(r.created, 'America/Phoenix') as date_refund
   , coalesce(date_diff(d.created,e.created,day), 9999) as dob_warning_to_dispute
   , c.metadata
   , d.status as status_dispute
   , d.reason as reason_dispute
   , e.fraud_type
   , e.actionable
+  , r.amount / 100 as amount_refund
   , bt.fee / 100 as amount_fee
   , d.amount / 100 as amount_dispute
   , c.amount / 100 as amount_charge
@@ -59,6 +61,8 @@ LEFT JOIN `bbg-platform.stripe_mastermind.product` p
   on pr.product_id = p.id
 LEFT JOIN `bbg-platform.stripe_mastermind.subscription_history` s
   on il.subscription_id = s.id
+LEFT JOIN `bbg-platform.stripe_mastermind.refund` r
+  on c.id = r.charge_id
 WHERE c.status = "succeeded"
  -- and (d.created IS NOT NULL or e.created is not null)
  -- and cu.email = "eviegonline@gmail.com"
@@ -73,12 +77,14 @@ union all
   , datetime(c.created, 'America/Phoenix') as date_charge
   , datetime(e.created, 'America/Phoenix') as date_fraud_warning
   , datetime(d.created, 'America/Phoenix') as date_dispute
+  , datetime(r.created, 'America/Phoenix') as date_refund
   , coalesce(date_diff(d.created,e.created,day), 9999) as dob_warning_to_dispute
   , c.metadata
   , d.status as status_dispute
   , d.reason as reason_dispute
   , e.fraud_type
   , e.actionable
+  , r.amount / 100 as amount_refund
   , bt.fee / 100 as amount_fee
   , d.amount / 100 as amount_dispute
   , c.amount / 100 as amount_charge
@@ -125,6 +131,8 @@ LEFT JOIN `bbg-platform.stripe_mindmint.price` pr
   on il.price_id = pr.id
 LEFT JOIN `bbg-platform.stripe_mindmint.product` p
   on pr.product_id = p.id
+LEFT JOIN `bbg-platform.stripe_mindmint.refund` r
+  on c.id = r.charge_id
 WHERE c.status = "succeeded"
  -- and (d.created IS NOT NULL or e.created is not null)
  -- and cu.email = "eviegonline@gmail.com"
