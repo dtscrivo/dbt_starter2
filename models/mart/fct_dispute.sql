@@ -44,6 +44,7 @@ with trans as (
   , json_extract_scalar(s.metadata, "$.netsuite_CF_funnel_name") as funnel_name
   , lower(cd.brand) as type_card
   , lower(COALESCE(c.statement_descriptor,c.calculated_statement_descriptor)) as statement_descriptor
+  , DATETIME(pi.created, 'America/Phoenix') as date_payment_intent
 FROM `bbg-platform.stripe_mastermind.charge` c
 LEFT JOIN `bbg-platform.stripe_mastermind.dispute` d
   on c.id = d.charge_id
@@ -67,6 +68,8 @@ LEFT JOIN `bbg-platform.stripe_mastermind.refund` r
   on c.id = r.charge_id
 LEFT JOIN `bbg-platform.stripe_mastermind.card` cd
   ON c.payment_method_id = cd.id
+LEFT JOIN `bbg-platform.stripe_mastermind.payment_intent` pi
+  ON c.payment_intent_id = pi.id
 WHERE c.status = "succeeded"
  -- and (d.created IS NOT NULL or e.created is not null)
  -- and cu.email = "eviegonline@gmail.com"
@@ -120,6 +123,7 @@ union all
   , ""
   , lower(cd.brand) as type_card
   , lower(COALESCE(c.statement_descriptor,c.calculated_statement_descriptor)) as statement_descriptor
+  , DATETIME(pi.created, 'America/Phoenix') as date_payment_intent
 FROM `bbg-platform.stripe_mindmint.charge` c
 LEFT JOIN `bbg-platform.stripe_mindmint.dispute` d
   on c.id = d.charge_id
@@ -141,6 +145,8 @@ LEFT JOIN `bbg-platform.stripe_mindmint.refund` r
   on c.id = r.charge_id
 LEFT JOIN `bbg-platform.stripe_mindmint.card` cd
   ON c.payment_method_id = cd.id
+LEFT JOIN `bbg-platform.stripe_mindmint.payment_intent` pi
+  ON c.payment_intent_id = pi.id
 WHERE c.status = "succeeded"
  -- and (d.created IS NOT NULL or e.created is not null)
  -- and cu.email = "eviegonline@gmail.com"
