@@ -6,7 +6,7 @@ with trans as (
   , datetime(e.created, 'America/Phoenix') as date_fraud_warning
   , datetime(d.created, 'America/Phoenix') as date_dispute
   , coalesce(date_diff(d.created,e.created,day), 9999) as dob_warning_to_dispute
-  , d.metadata
+  , c.metadata
   , d.status as status_dispute
   , d.reason as reason_dispute
   , e.fraud_type
@@ -37,6 +37,8 @@ with trans as (
   , "MM" as stripe_account
   , c.refunded
   , c.amount_refunded / 100 as amount_refunded
+  , json_extract_scalar(s.metadata, "$.netsuite_CF_funnel_id") as funnel_id
+  , json_extract_scalar(s.metadata, "$.netsuite_CF_funnel_name") as funnel_name
 FROM `bbg-platform.stripe_mastermind.charge` c
 LEFT JOIN `bbg-platform.stripe_mastermind.dispute` d
   on c.id = d.charge_id
@@ -54,6 +56,8 @@ LEFT JOIN `bbg-platform.stripe_mastermind.price` pr
   on il.price_id = pr.id
 LEFT JOIN `bbg-platform.stripe_mastermind.product` p
   on pr.product_id = p.id
+LEFT JOIN `bbg-platform.stripe_mastermind.subscription_history` s
+  on il.subscription_id = s.id
 WHERE c.status = "succeeded"
  -- and (d.created IS NOT NULL or e.created is not null)
  -- and cu.email = "eviegonline@gmail.com"
@@ -69,7 +73,7 @@ union all
   , datetime(e.created, 'America/Phoenix') as date_fraud_warning
   , datetime(d.created, 'America/Phoenix') as date_dispute
   , coalesce(date_diff(d.created,e.created,day), 9999) as dob_warning_to_dispute
-  , d.metadata
+  , c.metadata
   , d.status as status_dispute
   , d.reason as reason_dispute
   , e.fraud_type
@@ -100,6 +104,8 @@ union all
   , "BBG" as stripe_account
   , c.refunded
   , c.amount_refunded / 100 as amount_refunded
+  , ""
+  , ""
 FROM `bbg-platform.stripe_mindmint.charge` c
 LEFT JOIN `bbg-platform.stripe_mindmint.dispute` d
   on c.id = d.charge_id
