@@ -45,6 +45,8 @@ with trans as (
   , lower(cd.brand) as type_card
   , lower(COALESCE(c.statement_descriptor,c.calculated_statement_descriptor)) as statement_descriptor
   , DATETIME(pi.created, 'America/Phoenix') as date_payment_intent
+  , pi.status as status_pi
+  , i.status as status_invoice
 FROM `bbg-platform.stripe_mastermind.charge` c
 LEFT JOIN `bbg-platform.stripe_mastermind.dispute` d
   on c.id = d.charge_id
@@ -70,6 +72,8 @@ LEFT JOIN `bbg-platform.stripe_mastermind.card` cd
   ON c.payment_method_id = cd.id
 LEFT JOIN `bbg-platform.stripe_mastermind.payment_intent` pi
   ON c.payment_intent_id = pi.id
+LEFT JOIN `bbg-platform.stripe_mastermind.invoice` i
+  ON c.invoice_id = i.id
 WHERE c.status = "succeeded"
  -- and (d.created IS NOT NULL or e.created is not null)
  -- and cu.email = "eviegonline@gmail.com"
@@ -124,6 +128,8 @@ union all
   , lower(cd.brand) as type_card
   , lower(COALESCE(c.statement_descriptor,c.calculated_statement_descriptor)) as statement_descriptor
   , DATETIME(pi.created, 'America/Phoenix') as date_payment_intent
+  , pi.status as status_pi
+  , i.status as status_invoice
 FROM `bbg-platform.stripe_mindmint.charge` c
 LEFT JOIN `bbg-platform.stripe_mindmint.dispute` d
   on c.id = d.charge_id
@@ -147,6 +153,8 @@ LEFT JOIN `bbg-platform.stripe_mindmint.card` cd
   ON c.payment_method_id = cd.id
 LEFT JOIN `bbg-platform.stripe_mindmint.payment_intent` pi
   ON c.payment_intent_id = pi.id
+LEFT JOIN `bbg-platform.stripe_mindmint.invoice` i
+  ON c.invoice_id = i.id
 WHERE c.status = "succeeded"
  -- and (d.created IS NOT NULL or e.created is not null)
  -- and cu.email = "eviegonline@gmail.com"
@@ -159,3 +167,4 @@ select * from trans
 where true
  -- and stripe_account = "MM"
  -- and date(date_dispute) = date('2024-09-19')
+  and status_pi != "canceled"
