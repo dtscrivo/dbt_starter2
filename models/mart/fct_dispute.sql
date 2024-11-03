@@ -11,11 +11,12 @@ with trans as (
   , d.reason as reason_dispute
   , e.fraud_type
   , e.actionable
-  , bt.fee / 100 as fee
-  , d.amount / 100 as amount
+  , bt.fee / 100 as amount_fee
+  , d.amount / 100 as amount_dispute
+  , c.amount / 100 as amount_charge
   , bt.created as date_balance_trans
   , bt.description
-  , bt.net / 100 as net
+  , bt.net / 100 as amount_trans_net
   , bt.reporting_category
   , bt.status as status_balance
   , bt.type as type_balance_trans
@@ -78,11 +79,12 @@ union all
   , d.reason as reason_dispute
   , e.fraud_type
   , e.actionable
-  , bt.fee / 100 as fee
-  , d.amount / 100 as amount
+  , bt.fee / 100 as amount_fee
+  , d.amount / 100 as amount_dispute
+  , c.amount / 100 as amount_charge
   , bt.created as date_balance_trans
   , bt.description
-  , bt.net / 100 as net
+  , bt.net / 100 as amount_trans_net
   , bt.reporting_category
   , bt.status as status_balance
   , bt.type as type_balance_trans
