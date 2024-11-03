@@ -42,7 +42,7 @@ with trans as (
   , c.amount_refunded / 100 as amount_refunded
   , json_extract_scalar(s.metadata, "$.netsuite_CF_funnel_id") as funnel_id
   , json_extract_scalar(s.metadata, "$.netsuite_CF_funnel_name") as funnel_name
-  , cd.brand as type_card
+  , lower(cd.brand) as type_card
   , lower(COALESCE(c.statement_descriptor,c.calculated_statement_descriptor)) as statement_descriptor
 FROM `bbg-platform.stripe_mastermind.charge` c
 LEFT JOIN `bbg-platform.stripe_mastermind.dispute` d
@@ -118,7 +118,7 @@ union all
   , c.amount_refunded / 100 as amount_refunded
   , ""
   , ""
-  , cd.brand as type_card
+  , lower(cd.brand) as type_card
   , lower(COALESCE(c.statement_descriptor,c.calculated_statement_descriptor)) as statement_descriptor
 FROM `bbg-platform.stripe_mindmint.charge` c
 LEFT JOIN `bbg-platform.stripe_mindmint.dispute` d
