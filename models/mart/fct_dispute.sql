@@ -42,6 +42,8 @@ with trans as (
   , c.amount_refunded / 100 as amount_refunded
   , json_extract_scalar(s.metadata, "$.netsuite_CF_funnel_id") as funnel_id
   , json_extract_scalar(s.metadata, "$.netsuite_CF_funnel_name") as funnel_name
+  , cd.brand as type_card
+  , COALESCE(c.statement_descriptor,c.calculated_statement_descriptor) as statement_descriptor
 FROM `bbg-platform.stripe_mastermind.charge` c
 LEFT JOIN `bbg-platform.stripe_mastermind.dispute` d
   on c.id = d.charge_id
@@ -63,6 +65,8 @@ LEFT JOIN `bbg-platform.stripe_mastermind.subscription_history` s
   on il.subscription_id = s.id
 LEFT JOIN `bbg-platform.stripe_mastermind.refund` r
   on c.id = r.charge_id
+LEFT JOIN `bbg-platform.stripe_mastermind.card` cd
+  ON c.payment_method_id = cd.id
 WHERE c.status = "succeeded"
  -- and (d.created IS NOT NULL or e.created is not null)
  -- and cu.email = "eviegonline@gmail.com"
@@ -114,6 +118,8 @@ union all
   , c.amount_refunded / 100 as amount_refunded
   , ""
   , ""
+  , cd.brand as type_card
+  , COALESCE(c.statement_descriptor,c.calculated_statement_descriptor) as statement_descriptor
 FROM `bbg-platform.stripe_mindmint.charge` c
 LEFT JOIN `bbg-platform.stripe_mindmint.dispute` d
   on c.id = d.charge_id
@@ -133,6 +139,8 @@ LEFT JOIN `bbg-platform.stripe_mindmint.product` p
   on pr.product_id = p.id
 LEFT JOIN `bbg-platform.stripe_mindmint.refund` r
   on c.id = r.charge_id
+LEFT JOIN `bbg-platform.stripe_mindmint.card` cd
+  ON c.payment_method_id = cd.id
 WHERE c.status = "succeeded"
  -- and (d.created IS NOT NULL or e.created is not null)
  -- and cu.email = "eviegonline@gmail.com"
