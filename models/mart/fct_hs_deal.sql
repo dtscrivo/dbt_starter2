@@ -94,6 +94,8 @@ Select d.deal_id as id_deal
   , c.property_setter_contact_owner_assigned_date as date_setter_assigned
   , c.property_hubspot_owner_assigneddate
   , c.property_most_recent_date_assigned_outbound_lead_source as date_lead_assigned
+  , DATETIME(property_hs_date_entered_38716614, 'America/Phoenix') as date_entered_appt_scheduled
+  
 FROM `bbg-platform.hubspot2.deal` d
 LEFT JOIN `bbg-platform.hubspot2.merged_deal` m
    on d.deal_id = m.merged_deal_id
