@@ -92,6 +92,7 @@ SELECT t.id as id_ticket
         t.property_closed_date ASC
 ) AS recency
    , row_number() over(partition by h.deal_id,t.property_hs_pipeline order by t.property_createdate asc) as ticket_number
+   , concat(r.first_name," ",r.last_name) as name_sales_rep
 FROM `bbg-platform.hubspot2.ticket` t
 LEFT JOIN `bbg-platform.hubspot2.ticket_deal` d
   on t.id = d.ticket_id
@@ -107,6 +108,8 @@ LEFT JOIN `bbg-platform.hubspot2.deal` h
   on d.deal_id = h.deal_id
 LEFT JOIN `bbg-platform.hubspot2.owner` se
   ON h.property_member_success_advisor = se.owner_id
+LEFT JOIN `bbg-platform.hubspot2.owner` r
+  ON h.owner_id = r.owner_id
 --LEFT JOIN payment_source pp
 --on cast(h.property_payment_intent_id as string) = cast(pp.id as string)
 --  on d.deal_id = pp.id_deal
