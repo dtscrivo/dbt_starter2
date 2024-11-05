@@ -39,7 +39,6 @@ with trans as (
   , dense_rank() over(partition by c.id order by d.created asc) as num_dispute
   , "MM" as stripe_account
   , case when c.refunded = true then 1 else 0 end as is_refund
-  , c.amount_refunded / 100 as amount_refunded
   , json_extract_scalar(s.metadata, "$.netsuite_CF_funnel_id") as funnel_id
   , json_extract_scalar(s.metadata, "$.netsuite_CF_funnel_name") as funnel_name
   , lower(cd.brand) as type_card
@@ -47,6 +46,7 @@ with trans as (
   , DATETIME(pi.created, 'America/Phoenix') as date_payment_intent
   , pi.status as status_pi
   , i.status as status_invoice
+  , r.status as status_refund
 FROM `bbg-platform.stripe_mastermind.charge` c
 LEFT JOIN `bbg-platform.stripe_mastermind.dispute` d
   on c.id = d.charge_id
@@ -68,6 +68,7 @@ LEFT JOIN `bbg-platform.stripe_mastermind.subscription_history` s
   on il.subscription_id = s.id
 LEFT JOIN `bbg-platform.stripe_mastermind.refund` r
   on c.id = r.charge_id
+  and r.status = 'succeeded'
 LEFT JOIN `bbg-platform.stripe_mastermind.card` cd
   ON c.payment_method_id = cd.id
 LEFT JOIN `bbg-platform.stripe_mastermind.payment_intent` pi
@@ -122,7 +123,7 @@ union all
   , dense_rank() over(partition by c.id order by d.created asc) as num_dispute
   , "BBG" as stripe_account
   , case when c.refunded = true then 1 else 0 end as is_refund
-  , c.amount_refunded / 100 as amount_refunded
+
   , ""
   , ""
   , lower(cd.brand) as type_card
@@ -130,6 +131,7 @@ union all
   , DATETIME(pi.created, 'America/Phoenix') as date_payment_intent
   , pi.status as status_pi
   , i.status as status_invoice
+  , r.status as status_refund
 FROM `bbg-platform.stripe_mindmint.charge` c
 LEFT JOIN `bbg-platform.stripe_mindmint.dispute` d
   on c.id = d.charge_id
@@ -149,6 +151,7 @@ LEFT JOIN `bbg-platform.stripe_mindmint.product` p
   on pr.product_id = p.id
 LEFT JOIN `bbg-platform.stripe_mindmint.refund` r
   on c.id = r.charge_id
+  and r.status = 'succeeded'
 LEFT JOIN `bbg-platform.stripe_mindmint.card` cd
   ON c.payment_method_id = cd.id
 LEFT JOIN `bbg-platform.stripe_mindmint.payment_intent` pi
