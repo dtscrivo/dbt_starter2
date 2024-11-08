@@ -249,7 +249,7 @@ UNION ALL
     c.id,
     c.outcome_reason,
     JSON_EXTRACT_SCALAR(c.metadata, "$.processor") AS processor,
-    COALESCE(c.statement_descriptor,c.calculated_statement_descriptor) as statement_descriptor,
+    lower(COALESCE(c.statement_descriptor,c.calculated_statement_descriptor)) as statement_descriptor,
     c.metadata,
     JSON_EXTRACT_SCALAR(c.metadata, "$.product_id") AS object_id,
     JSON_EXTRACT_SCALAR(c.metadata, "$.rep_id") AS rep_id,
@@ -263,7 +263,7 @@ UNION ALL
     d.reason AS reason_dispute,
     DATETIME(d.created, 'America/Phoenix') AS date_dispute,
     case when d.status IN ("won","warning_closed") then null else d.amount/100 end AS amount_dispute
-    , cd.brand as type_card
+    , lower(cd.brand) as type_card
   FROM `bbg-platform.stripe_mindmint.charge` c
   LEFT JOIN `bbg-platform.hubspot2.merged_deal` m
     ON CAST(JSON_EXTRACT_SCALAR(c.metadata, "$.deal_id") AS STRING) = CAST(m.merged_deal_id AS STRING)
@@ -296,7 +296,7 @@ WITH charges_with_refunds AS (
     c.id,
     c.outcome_reason,
     JSON_EXTRACT_SCALAR(c.metadata, "$.processor") AS processor,
-    COALESCE(c.statement_descriptor,c.calculated_statement_descriptor) as statement_descriptor,
+    lower(COALESCE(c.statement_descriptor,c.calculated_statement_descriptor)) as statement_descriptor,
     c.metadata,
     JSON_EXTRACT_SCALAR(c.metadata, "$.product_id") AS object_id,
     JSON_EXTRACT_SCALAR(c.metadata, "$.rep_id") AS rep_id,
@@ -311,7 +311,7 @@ WITH charges_with_refunds AS (
     d.reason AS reason_dispute,
     DATETIME(d.created, 'America/Phoenix') AS date_dispute,
     case when d.status IN ("won","warning_closed") then null else d.amount/100 end AS amount_dispute
-    , cd.brand as type_card
+    , lower(cd.brand) as type_card
   FROM `bbg-platform.stripe_mastermind.charge` c
   LEFT JOIN `bbg-platform.hubspot2.merged_deal` m
     ON CAST(JSON_EXTRACT_SCALAR(c.metadata, "$.deal_id") AS STRING) = CAST(m.merged_deal_id AS STRING)
