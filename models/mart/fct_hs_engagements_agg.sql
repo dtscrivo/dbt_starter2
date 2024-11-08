@@ -51,10 +51,10 @@ SELECT  e.id as id_engagement
   , m.property_hs_createdate
   , m.property_hs_meeting_location
   , m.property_hs_meeting_outcome
-  , m.property_hs_email_open_rate
-  , m.property_hs_email_open_rate
-  , m.property_hs_email_click_count
-  , m.property_hs_email_click_rate
+  , ee.property_hs_email_open_rate
+  , ee.property_hs_email_open_count
+  , ee.property_hs_email_click_count
+  , ee.property_hs_email_click_rate
 FROM `bbg-platform.hubspot2.engagement` e
 LEFT JOIN `bbg-platform.hubspot2.engagement_email` ee
   on e.id = ee.engagement_id
