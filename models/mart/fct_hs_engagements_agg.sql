@@ -29,12 +29,13 @@ SELECT  e.id as id_engagement
          when ec.property_hs_call_disposition = 'fd306d26-ee79-4d4a-b572-09f814c8a8f5' then "follow up offered"--
          when ec.property_hs_call_disposition = 'b88923eb-6bfc-4f64-976a-7b68c9bd5ce9' then "discovery call offered"--
          when ec.property_hs_call_disposition = '083aa06e-b77a-49f2-b863-12993e520411' then "voicemail-didn't leave"
+         when ec.property_hs_call_disposition = '95cce8dc-046f-4f2a-aa87-a98420cd72cb' then "follow up task"
          else ec.property_hs_call_disposition end
          as disposition
   , case when ec.property_hs_call_disposition IN ('f240bbac-87c9-4f6e-bf70-924b57d47db7','2a2764ef-b09f-46fa-a8ec-3d49cbf7b647',
                                                   '7ed6cbc9-a685-425c-a734-5df0c807fafb','aebe017d-4f05-4cc7-9197-0760b5bdee14',
                                                   'e5400998-ce41-46b5-8b04-462c3dc2cf3e','fd306d26-ee79-4d4a-b572-09f814c8a8f5',
-                                                  'b88923eb-6bfc-4f64-976a-7b68c9bd5ce9')
+                                                  'b88923eb-6bfc-4f64-976a-7b68c9bd5ce9','95cce8dc-046f-4f2a-aa87-a98420cd72cb')
                                                    then 1 else 0 end as is_call_connected
   , ec.property_hs_call_disposition as id_disposition
   , co.property_outbound_lead_source as source_lead

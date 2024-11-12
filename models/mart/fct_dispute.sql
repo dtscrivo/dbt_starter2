@@ -38,7 +38,7 @@ with trans as (
   , il.invoice_id as id_invoice
   , dense_rank() over(partition by c.id order by d.created asc) as num_dispute
   , "MM" as stripe_account
-  , case when c.refunded = true then 1 else 0 end as is_refund
+  , case when r.id is not null then 1 else 0 end as is_refund
   , json_extract_scalar(s.metadata, "$.netsuite_CF_funnel_id") as funnel_id
   , json_extract_scalar(s.metadata, "$.netsuite_CF_funnel_name") as funnel_name
   , lower(cd.brand) as type_card
@@ -122,7 +122,7 @@ union all
   , il.invoice_id as id_invoice
   , dense_rank() over(partition by c.id order by d.created asc) as num_dispute
   , "BBG" as stripe_account
-  , case when c.refunded = true then 1 else 0 end as is_refund
+  , case when r.id is not null then 1 else 0 end as is_refund
 
   , ""
   , ""
