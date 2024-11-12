@@ -17,4 +17,4 @@ from page_views p
     on p.user_id = t.ghl_id
   left join `core-shard-286816.mysql_mastermind_com.users` tu
     on t.owner_id = tu.id
-where coalesce(u.email, tu.email) is not null;
+where coalesce(u.email, tu.email) is not null
