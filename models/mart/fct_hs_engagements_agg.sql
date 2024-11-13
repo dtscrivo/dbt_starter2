@@ -56,6 +56,8 @@ SELECT  e.id as id_engagement
   , ee.property_hs_email_open_count
   , ee.property_hs_email_click_count
   , ee.property_hs_email_click_rate
+  , co.property_hubspot_owner_assigneddate
+  , co.property_most_recent_date_assigned_outbound_lead_source
 FROM `bbg-platform.hubspot2.engagement` e
 LEFT JOIN `bbg-platform.hubspot2.engagement_email` ee
   on e.id = ee.engagement_id
@@ -76,7 +78,6 @@ LEFT JOIN  `bbg-platform.hubspot2.engagement_contact` c
 LEFT JOIN  `bbg-platform.hubspot2.contact` co
   on c.contact_id = co.id
 --ORDER BY d.deal_id desc, coalesce(ee.property_hs_timestamp, ec.property_hs_timestamp, cc.property_hs_timestamp) desc
-
 
 
 
