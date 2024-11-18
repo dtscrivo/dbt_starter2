@@ -77,6 +77,8 @@ LEFT JOIN  `bbg-platform.hubspot2.engagement_contact` c
   on e.id = c.engagement_id
 LEFT JOIN  `bbg-platform.hubspot2.contact` co
   on c.contact_id = co.id
+WHERE TRUE
+  and analytics.fnEmail_IsTest(co.property_email) = false
 --ORDER BY d.deal_id desc, coalesce(ee.property_hs_timestamp, ec.property_hs_timestamp, cc.property_hs_timestamp) desc
 
 
