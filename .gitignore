@@ -22,3 +22,4 @@ load_members_spaces_tags.py
 circle
 models/staging/circle/load_comments_posts.py
 models/mart/deal_check.sql
+coursewatch.py
