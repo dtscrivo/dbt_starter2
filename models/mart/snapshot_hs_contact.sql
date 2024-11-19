@@ -25,5 +25,3 @@ SELECT
     DATETIME(property_hubspot_owner_assigneddate, 'America/Phoenix') as owner_assigned_date
 FROM {{ ref('bbg-platform.hubspot2.contact') }}  -- Source table to pull device data from
 {% endsnapshot %}
-
-------
