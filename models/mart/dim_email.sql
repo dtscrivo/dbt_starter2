@@ -52,12 +52,27 @@ SELECT
 FROM
   contact #}
 
-WITH base as (
+WITH ids_to_exclude AS (
+  SELECT DISTINCT CAST(id AS INT64) AS id
+  FROM `bbg-platform.hubspot2.contact`,
+  UNNEST(SPLIT(REPLACE(property_hs_merged_object_ids, ';', ','), ',')) AS id
+  WHERE SAFE_CAST(id AS INT64) IS NOT NULL
+)
+
+, base as (
 WITH emails AS (
   WITH example_data AS (
     SELECT property_hs_additional_emails AS email_string,
            property_email
     FROM `hubspot2.contact`
+    WHERE true
+  AND is_deleted = FALSE
+  and property_email is not null and property_email != ""
+  AND id NOT IN (
+    SELECT id 
+    FROM ids_to_exclude
+  )
+  
   )
   SELECT
     property_email,
@@ -97,4 +112,3 @@ SELECT property_email, email_9 AS email FROM emails WHERE email_9 IS NOT NULL
 Select *
 FROM base
 qualify row_number() over(partition by email_prime, email_all) = 1
-

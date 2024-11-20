@@ -23,3 +23,5 @@ circle
 models/staging/circle/load_comments_posts.py
 models/mart/deal_check.sql
 coursewatch.py
+fct_hs_contact.sql
+snapshot_hs_contact.sql
