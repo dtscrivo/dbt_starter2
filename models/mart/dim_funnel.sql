@@ -37,3 +37,4 @@ WHERE TRUE
   -- and se_action = 'optin'
   -- and funnel_id = 13529854
   GROUP BY all
+qualify row_number() over(partition by c.funnel_id, c.funnel_step_id order by max(collector_tstamp) desc) = 1
