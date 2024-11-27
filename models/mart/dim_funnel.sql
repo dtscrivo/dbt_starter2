@@ -23,8 +23,8 @@ from base
 
 SELECT distinct funnel_step_id
   , c.funnel_id
-  , coalesce(b.funnel_name, f.name)
-  , max(collector_tstamp)
+  , coalesce(b.funnel_name, f.name) as name_funnel
+  , max(collector_tstamp) as last_timestamp
 
 FROM `snowplow-348319.dbt_production.m_stg_conversions` c
 LEFT JOIN `analytics.dim_funnels` f
