@@ -340,7 +340,7 @@ SELECT *
   , case when lower(pipeline_stage) IN ('paused student') then 1 else 0 end  as is_paused
   , case when lower(pipeline_stage) IN ('paused student', 'current declines', 'closed won') then 1 else 0 end as is_enrolled
   , case when lower(pipeline_stage) IN ('current declines', 'closed won') then 1 else 0 end as is_active
-  , case when lower(name_deal) LIKE "%in-person%" then 1 else 0 end as is_inperson
+  , case when lower(name_deal) LIKE "%in-person%" OR lower(name_deal) LIKE "%independent launch lab%" then 1 else 0 end as is_inperson
 
 
   , case when id_owner = 1426033370 AND (date(date_closed) > date('2024-08-23') AND date(date_closed) < date('2024-08-28')) then "Charlotte_8/24"
