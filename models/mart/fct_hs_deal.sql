@@ -95,7 +95,8 @@ Select d.deal_id as id_deal
   , c.property_hubspot_owner_assigneddate
   , c.property_most_recent_date_assigned_outbound_lead_source as date_lead_assigned
   , DATETIME(property_hs_date_entered_38716614, 'America/Phoenix') as date_entered_appt_scheduled
-  
+  , c.property_hs_timezone
+  , c.property_hs_ip_timezone
 FROM `bbg-platform.hubspot2.deal` d
 LEFT JOIN `bbg-platform.hubspot2.merged_deal` m
    on d.deal_id = m.merged_deal_id
@@ -270,8 +271,8 @@ WHERE true
 SELECT *
 --  , count(*) as num_sales
   , case when date_ticket_created IS NOT NULL then 1 ELSE 0 end as is_requests
-  , case when date_ticket_resolved IS NOT NULL AND status_retention = "Cancelled" then 1 else 0 end as is_cancel
-  , case when date_ticket_resolved IS NOT NULL AND status_retention = "Saved" then 1 else 0 end as is_saved
+  , case when date_ticket_resolved IS NOT NULL AND ticket_pipeline_stage = "Cancelled" then 1 else 0 end as is_cancel
+  , case when date_ticket_resolved IS NOT NULL AND ticket_pipeline_stage = "Saved" then 1 else 0 end as is_saved
 
 -- thursday
 --  , DATE_ADD(cast(date_closed as date), INTERVAL MOD(5 - EXTRACT(DAYOFWEEK FROM date_closed) + 7, 7) DAY) AS order_week
