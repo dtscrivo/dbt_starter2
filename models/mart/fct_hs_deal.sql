@@ -415,6 +415,9 @@ SELECT *
          else "Virtual" end as product_type
   , case when lower(id_price) like "%plus%" then 1 else 0 end as is_plus_plan
   , cast(min(coalesce(date_setter_assigned, date_owner_assigned)) as date) as date_assigned
+  , CASE WHEN date_unpaused is null then date_diff(current_date, date(date_paused), day) 
+    ELSE date_diff(date_unpaused, date_paused, day) END as days_paused
+  , CASE WHEN date_unpaused = date_paused then 1 else 0 end as is_not_real_pause
 from hubspot h
 WHERE (analytics.fnEmail_IsTest(email) = false or email = 'chrisj@remotestaff.com')
 group by all
