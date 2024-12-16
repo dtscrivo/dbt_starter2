@@ -63,7 +63,7 @@ WITH ids_to_exclude AS (
 WITH emails AS (
   WITH example_data AS (
     SELECT property_hs_additional_emails AS email_string,
-           property_email
+           analytics.fnEmail(property_email) as property_email
     FROM `hubspot2.contact`
     WHERE true
   AND is_deleted = FALSE
