@@ -340,11 +340,11 @@ LEFT JOIN mindmint_emails cu ON pi.customer_id = cu.id_customer
     on coalesce(cast(m.deal_id as string), cast(b.id_deal as string)) = cast(d.deal_id as string)
   where analytics.fnEmail_IsTest(email) = false
      and extract(year from date_pi_created) = 2024
-       and status_charge = 'succeeded'
+   --    and status_charge = 'succeeded'
   --   and coalesce(cast(m.deal_id as string), cast(b.id_deal as string)) is not null
    --  and coalesce(b.id_owner, cast(d.owner_id as string)) is null
   -- and b.email = 'princepetra@yahoo.com'
-       and status_payment_intent = 'succeeded'
+     --  and status_payment_intent = 'succeeded'
    --    and email = 'info@thewellnessfix.com' #2 starter deals
   -- and email = 'carolynzacharias@aol.com'
    and name_product not in ('WORDPRESS_V1','wordpress','WHATSAPP_V1')
