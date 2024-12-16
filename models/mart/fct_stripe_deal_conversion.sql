@@ -341,7 +341,7 @@ LEFT JOIN mindmint_emails cu ON pi.customer_id = cu.id_customer
    , b.id_product
    , funnel_id
    , funnel_name
-   , d.property_hubspot_team_id
+   , d.property_hubspot_team_id as id_team
   from base b
   left join `hubspot2.merged_deal` m
     on cast(b.id_deal as string) = cast(m.merged_deal_id as string)
