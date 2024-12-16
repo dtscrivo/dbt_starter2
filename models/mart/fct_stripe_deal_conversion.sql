@@ -229,7 +229,7 @@ LEFT JOIN deals d2
 --       on email = e.email_all
 
   WHERE TRUE
-    and analytics.fnEmail_IsTest(cu.email) = false
+ --   and analytics.fnEmail_IsTest(cu.email) = false
 
 UNION ALL
 
@@ -305,7 +305,7 @@ LEFT JOIN mindmint_emails cu ON pi.customer_id = cu.id_customer
   --   on email = e.email_all
   WHERE TRUE
   --  and pi.id = 'pi_3PwqRbLYbD2uWeLi1UBs5C78'
-    and analytics.fnEmail_IsTest(cu.email) = false
+  --  and analytics.fnEmail_IsTest(cu.email) = false
 
   )
 
