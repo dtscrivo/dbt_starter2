@@ -93,6 +93,7 @@ left join dim_email e
     JSON_EXTRACT_SCALAR(c.metadata, "$.rep_id") AS rep_id,
     JSON_EXTRACT_SCALAR(c.metadata, "$.deal_id") AS deal_id
   FROM `bbg-platform.stripe_mindmint.charge` c
+ -- where c.id = 'ch_3Q5y62LYbD2uWeLi0CnTVqv3'
 )
 
   , mastermind_charge AS (
@@ -200,6 +201,8 @@ where cast(_fivetran_end as string) LIKE "9999%"
   , coalesce(cast(d.deal_id as string),cast(d6.deal_id as string), cast(d2.deal_id as string)) as id_deal
 
   , coalesce(c.rep_id, cast(d.owner_id as string)) as id_owner
+  , s.funnel_id
+  , s.funnel_name
   FROM `bbg-platform.stripe_mastermind.payment_intent` pi
   LEFT JOIN mastermind_charge c ON pi.id = c.payment_intent_id
   LEFT JOIN `bbg-platform.stripe_mastermind.invoice` i ON pi.id = i.payment_intent_id
@@ -257,7 +260,8 @@ UNION ALL
    , coalesce(cast(d4.deal_id as string), cast(d.deal_id as string),cast(d6.deal_id as string), cast(d2.deal_id as string), cast(d3.deal_id as string), cast(d7.deal_id as string)) as id_deal
 
   , case when c.rep_id != "" then coalesce(c.rep_id, cast(d2.owner_id as string), cast(d4.owner_id as string),cast(d.owner_id as string), cast(d5.owner_id as string), cast(d6.owner_id as string), cast(d3.owner_id as string)) else coalesce(cast(d2.owner_id as string), cast(d4.owner_id as string),cast(d.owner_id as string), cast(d5.owner_id as string), cast(d6.owner_id as string), cast(d3.owner_id as string)) end as id_owner
-
+  , s.funnel_id
+  , s.funnel_name
   FROM `bbg-platform.stripe_mindmint.payment_intent` pi
 
   LEFT JOIN mindmint_charge c ON pi.id = c.payment_intent_id
@@ -333,20 +337,26 @@ LEFT JOIN mindmint_emails cu ON pi.customer_id = cu.id_customer
    , d.property_pricing_id as id_price_hubspot
    , case when d.property_pricing_id = b.id_price then 1 else 0 end as is_hubspot_product_match
    , b.id_product
+   , funnel_id
+   , funnel_name
   from base b
   left join `hubspot2.merged_deal` m
     on cast(b.id_deal as string) = cast(m.merged_deal_id as string)
   left join `hubspot2.deal` d
     on coalesce(cast(m.deal_id as string), cast(b.id_deal as string)) = cast(d.deal_id as string)
-  where analytics.fnEmail_IsTest(email) = false
-     and extract(year from date_pi_created) = 2024
+ -- where analytics.fnEmail_IsTest(email) = false
+ --    and extract(year from date_pi_created) = 2024
    --    and status_charge = 'succeeded'
   --   and coalesce(cast(m.deal_id as string), cast(b.id_deal as string)) is not null
    --  and coalesce(b.id_owner, cast(d.owner_id as string)) is null
   -- and b.email = 'princepetra@yahoo.com'
-     --  and status_payment_intent = 'succeeded'
+  --     and (status_payment_intent = 'failed' or status_charge = 'failed')
    --    and email = 'info@thewellnessfix.com' #2 starter deals
   -- and email = 'carolynzacharias@aol.com'
-   and name_product not in ('WORDPRESS_V1','wordpress','WHATSAPP_V1')
+ --  and name_product not in ('WORDPRESS_V1','wordpress','WHATSAPP_V1')
  --  and coalesce(cast(m.deal_id as string), cast(b.id_deal as string)) = '12165329876'
+ -- and name_product like "%Mastermind Business%"
+--and funnel_id = '13216474'
+ --  where id_charge = 'ch_3Q5y62LYbD2uWeLi0CnTVqv3'
+ -- and stripe_account = "BBG"
 qualify row_number() over(partition by id_payment_intent) = 1
