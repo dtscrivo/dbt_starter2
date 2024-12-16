@@ -94,6 +94,7 @@ left join dim_email e
     JSON_EXTRACT_SCALAR(c.metadata, "$.deal_id") AS deal_id
   FROM `bbg-platform.stripe_mindmint.charge` c
  -- where c.id = 'ch_3Q5y62LYbD2uWeLi0CnTVqv3'
+  qualify row_number() over(partition by c.payment_intent_id order by c.created desc) = 1
 )
 
   , mastermind_charge AS (
@@ -105,6 +106,7 @@ left join dim_email e
     JSON_EXTRACT_SCALAR(c.metadata, "$.rep_id") AS rep_id,
     JSON_EXTRACT_SCALAR(c.metadata, "$.deal_id") AS deal_id
   FROM `bbg-platform.stripe_mastermind.charge` c
+  qualify row_number() over(partition by c.payment_intent_id order by c.created desc) = 1
 )
 
 
