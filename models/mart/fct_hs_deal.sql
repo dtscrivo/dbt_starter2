@@ -97,6 +97,7 @@ Select d.deal_id as id_deal
   , DATETIME(property_hs_date_entered_38716614, 'America/Phoenix') as date_entered_appt_scheduled
   , c.property_hs_timezone
   , c.property_hs_ip_timezone
+  , d.property_hubspot_team_id as id_team
 FROM `bbg-platform.hubspot2.deal` d
 LEFT JOIN `bbg-platform.hubspot2.merged_deal` m
    on d.deal_id = m.merged_deal_id
