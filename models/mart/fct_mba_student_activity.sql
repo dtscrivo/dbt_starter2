@@ -8,7 +8,7 @@ select type
 
 , email_prime as email
 , direction
--- , disposition
+-- , disposition 
 -- , subject
 from `dbt_tscrivo.fct_hs_engagements_agg` h
 LEFT JOIN `dbt_tscrivo.dim_email` e
@@ -312,7 +312,7 @@ bonus_logic AS (
 )
 
 
--- , countt as (
+ , countt as (
 SELECT email
 , pipeline_stage
 , id_deal
@@ -325,7 +325,7 @@ SELECT email
 , comments_count
   # ADD A DOB LESS THAN FOR SOME OF THESE??
   , CASE WHEN pipeline_stage = "Paused Student" then "Purple"
-         WHEN dob >= 90 then "Purple"
+       --  WHEN dob >= 90 then "Purple"
          WHEN dob >= 4 and circle_logged_in IS NULL then "Red"
          WHEN dob >= 4 and since_circle_login >= 14 then "Red"
          WHEN dob >= 14 and scheduled_first_office_hours is null then "Red"
@@ -341,14 +341,14 @@ SELECT email
 
          ELSE "Green" end as flag
   , CASE WHEN pipeline_stage = "Paused Student" then "On Pause"
-         WHEN dob >= 90 then ">90 Days"
+         
          
          WHEN dob >= 4 and circle_logged_in IS NULL then "No Community Login"
          WHEN dob >= 4 and since_circle_login >= 14 then "No Recent Community Login"
          WHEN dob >= 14 and scheduled_first_office_hours is null then "Office Hours Not Scheduled"
          WHEN dob >= 14 and scheduled_orientation is null then "Orientation Not Scheduled"
          WHEN dob >= 14 and circle_posted is null then "No Community Post"
-         
+         WHEN dob >= 90 then ">90 Days"
         
          WHEN dob >= 2 and circle_logged_in is null then "No Community Login" 
          WHEN dob >= 2 and since_circle_login >= 10 then "No Recent Community Login"       
@@ -375,3 +375,35 @@ SELECT email
 
 
 FROM bonus_logic
+
+where true
+  -- and CASE WHEN dob >= 4 and circle_logged_in IS NULL then "Red-login"
+  --        WHEN dob >= 2 and circle_logged_in is null then "Yellow- login"
+  --        WHEN dob >= 14 and circle_posted is null then "Red-first post"         
+  --        WHEN dob >= 7 and circle_posted is null then "Yellow-first post"
+  --        WHEN since_circle_login >= 14 then "Red-since login"
+  --        WHEN since_circle_login >= 10 then "Yellow- since login"
+  --        ELSE null end = "Red-login"
+   --    and pipeline_stage = 'Closed Won'
+       -- and email = 'chris@thephilosophylab.com'
+ )
+
+, final as (
+select email
+  , case when flag_reason = "On Pause" then "Purple"
+         when flag_reason IN ("Orientation Not Scheduled","Office Hours Not Scheduled") and score >= 80 then "Green"
+         when flag_reason IN ("Orientation Not Scheduled") and score >= 70 then "Green"
+         when dob >= 90 then "Purple"
+         else flag end as flag
+  , flag_reason
+  , score
+  , case when score > 85 and flag = "Red" then 1 else 0 end
+--from `dbt_tscrivo.fct_mba_student_activity`
+from countt
+)
+
+select email
+  , flag as property_student_flag
+  , flag_reason as property_student_flag_reason
+  , score as property_student_activity_score
+from final
