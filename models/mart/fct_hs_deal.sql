@@ -399,7 +399,8 @@ SELECT *
 
 
 
-
+    OR
+    ((case when id_owner = 1426033370 and (date(date_closed) > date('2024-8-4') and date(date_closed) < date('2024-8-2')) then 1 else null end) IS not null)
 
 
 
