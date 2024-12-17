@@ -371,6 +371,7 @@ SELECT *
          when id_owner = 1426033370 AND (date(date_closed) > date('2024-09-19') AND date(date_closed) <= date('2024-09-22')) AND name_product like "%Mastermind Business Academy%" then "Workshop_9/20"
          when id_owner = 1426033370 AND (date(date_closed) > date('2024-10-09') AND date(date_closed) <= date('2024-10-13')) AND name_product like "%Mastermind Business Academy%" then "Workshop_10/10"
          when id_owner = 1426033370 AND (EXTRACT(year from date_closed) = 2024 AND EXTRACT(month from date_closed)= 4) AND name_product like "%Mastermind Business Academy%" then "Tampa"
+         when id_owner = 1426033370 AND (date(date_closed) > date('2024-12-12') AND date(date_closed) <= date('2024-12-16')) AND name_product like "%Mastermind Business Academy%" then "BBW"
          
          else null end) is not null 
     OR
