@@ -343,6 +343,8 @@ LEFT JOIN mindmint_emails cu ON pi.customer_id = cu.id_customer
    , funnel_name
    , d.property_hubspot_team_id as id_team
    , d.property_dealname as name_deal
+   , property_product_name as name_product
+   , concat(property_first_name_of_contact_record, " ", property_last_name_of_contact_record) as name_client
   from base b
   left join `hubspot2.merged_deal` m
     on cast(b.id_deal as string) = cast(m.merged_deal_id as string)
@@ -356,7 +358,7 @@ LEFT JOIN mindmint_emails cu ON pi.customer_id = cu.id_customer
   -- and b.email = 'princepetra@yahoo.com'
   --     and (status_payment_intent = 'failed' or status_charge = 'failed')
    --    and email = 'info@thewellnessfix.com' #2 starter deals
-   where email = 'soltroutwarrior@gmail.com'
+  -- where email = 'soltroutwarrior@gmail.com'
  --  and name_product not in ('WORDPRESS_V1','wordpress','WHATSAPP_V1')
  --  and coalesce(cast(m.deal_id as string), cast(b.id_deal as string)) = '12165329876'
  -- and name_product like "%Mastermind Business%"
