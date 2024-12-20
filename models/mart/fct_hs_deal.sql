@@ -52,8 +52,9 @@ Select d.deal_id as id_deal
    , property_initial_meeting_date as date_discovery_call_meeting
    , property_initial_meeting_type_create_date as date_initial_discovery_call_booked
    , DATETIME(property_closedate, 'America/Phoenix') as date_closed
-   , property_hs_date_entered_292741310 as date_paused
-   , property_hs_date_exited_292741310 as date_unpaused
+   , case when DATE(property_hs_date_entered_292741310) != DATE(property_hs_date_exited_292741310) OR (property_hs_date_entered_292741310 is not null and property_hs_date_exited_292741310 is null)
+     then property_hs_date_entered_292741310 else null end as date_paused
+   , case when DATE(property_hs_date_entered_292741310) != DATE(property_hs_date_exited_292741310) OR (property_hs_date_entered_292741310 is not null and property_hs_date_exited_292741310 is null) then property_hs_date_exited_292741310 else null end as date_unpaused
    , property_hs_date_entered_38716614 as date_scheduled
    , property_deal_lead_source_sales_ as source_saleslead
    , property_last_reached_out
