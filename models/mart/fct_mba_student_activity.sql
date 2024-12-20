@@ -762,14 +762,14 @@ SELECT b.email
 
          ELSE "Green" end as flag
   , CASE WHEN pipeline_stage = "Paused Student" then "On Pause"
-         WHEN dob >= 90 then ">90 Days"
+         
          
          WHEN dob >= 4 and circle_logged_in IS NULL AND exclude_community_login IS NULL then "No Community Login"
          WHEN dob >= 4 and since_circle_login >= 14 AND exclude_recent_community_login IS NULL then "No Recent Community Login"
          WHEN dob >= 14 and scheduled_first_office_hours is null AND exclude_office_hours IS NULL then "Office Hours Not Scheduled"
          WHEN dob >= 14 and scheduled_orientation is null AND exclude_orientation IS NULL then "Orientation Not Scheduled"
          WHEN dob >= 14 and circle_posted is null AND excluded_post IS NULL then "No Community Post"
-         
+         WHEN dob >= 90 then ">90 Days"
         
          WHEN dob >= 2 and circle_logged_in is null AND exclude_community_login IS NULL then "No Community Login" 
          WHEN dob >= 2 and since_circle_login >= 10 AND exclude_recent_community_login IS NULL then "No Recent Community Login"       
