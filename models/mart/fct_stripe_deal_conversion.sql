@@ -79,6 +79,7 @@ left join `hubspot2.product` p
 left join dim_email e
   on analytics.fnEmail(property_email_address_of_contact) = email_all
    -- where deal_id = 10367994105
+   where d.is_deleted = FALSE
 ) 
  
  
@@ -219,10 +220,12 @@ where cast(_fivetran_end as string) LIKE "9999%"
     on p.id = cast(hp.property_product_id as string)
   LEFT JOIN `hubspot2.deal` d
     on c.deal_id = cast(d.deal_id as string)
+    and d.is_deleted = FALSE
 LEFT JOIN `bbg-platform.hubspot2.deal_pipeline_stage` ps
   ON cast(d.deal_pipeline_stage_id as string) = ps.stage_id
 LEFT JOIN `hubspot2.deal` d6
     on i.subscription_id = d6.property_subscription_id 
+    and d6.is_deleted = FALSE
 LEFT JOIN deals d2
   on concat(e.email_prime ,case when p.id = 'prod_OlvMv5no5FcGGX' then 'prod_O3DEZjh4Ib4yjK' else p.id end) = concat(d2.email, d2.id_product)
 -- left join `dbt_tscrivo.dim_email` e
@@ -280,23 +283,29 @@ LEFT JOIN mindmint_emails cu ON pi.customer_id = cu.id_customer
     on c.object_id = cast(p.id as string)
   LEFT JOIN `hubspot2.deal` d
     on c.deal_id = cast(d.deal_id as string)
+    and d.is_deleted = FALSE
   LEFT JOIN `hubspot2.deal` d2
     on concat(coalesce(p.property_product_id, pro.id), email_all) = concat(d2.property_product_id, d2.property_email_address_of_contact)
+    and d2.is_deleted = FALSE
   LEFT JOIN `bbg-platform.hubspot2.deal_pipeline_stage` ps
   ON coalesce(cast(d.deal_pipeline_stage_id as string),cast(d2.deal_pipeline_stage_id as string)) = ps.stage_id
   LEFT JOIN `hubspot2.product` p2
     on pr.id = p2.property_pricing_id
   LEFT JOIN `hubspot2.deal` d3
     on concat(c.object_id, email_all) = concat(d3.property_product_id, d3.property_email_address_of_contact)
+    and d3.is_deleted = FALSE
   LEFT JOIN `hubspot2.deal` d4
    on lower(concat(
     case when coalesce(p.property_pricing_id, il.price_id, pr.id) = 'MBA_affirm_pp_7997' then 'MBA_Affirm_pp_9497' 
          when coalesce(p.property_pricing_id, il.price_id, pr.id) = 'MBA_plus_pif_15494_1' then 'MBA_Affirm_pp_15494' 
    else coalesce(p.property_pricing_id, il.price_id, pr.id) end, email_all)) = lower(concat(d4.property_pricing_id, d4.property_email_address_of_contact))  
+   and d4.is_deleted = FALSE
   LEFT JOIN `hubspot2.deal` d5
     on pi.customer_id = d5.property_stripe_customer_id 
+    and d5.is_deleted = FALSE
   LEFT JOIN `hubspot2.deal` d6
     on i.subscription_id = d6.property_subscription_id 
+    and d6.is_deleted = FALSE
    left join deals d7
      on concat(e.email_prime,coalesce(p.property_product_id,pro.id)) = concat(d7.email,d7.id_product)
    
@@ -350,6 +359,7 @@ LEFT JOIN mindmint_emails cu ON pi.customer_id = cu.id_customer
     on cast(b.id_deal as string) = cast(m.merged_deal_id as string)
   left join `hubspot2.deal` d
     on coalesce(cast(m.deal_id as string), cast(b.id_deal as string)) = cast(d.deal_id as string)
+    and d.is_deleted = FALSE
  -- where analytics.fnEmail_IsTest(email) = false
  --    and extract(year from date_pi_created) = 2024
    --    and status_charge = 'succeeded'
