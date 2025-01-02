@@ -17,7 +17,6 @@ SELECT
   EXTRACT(QUARTER FROM date) AS quarter,
   FORMAT_DATE('%A', date) AS day_name,
   FORMAT_DATE('%B', date) AS month_name,
-  ISOWEEK(date) AS iso_week,
   DATE_ADD(date, INTERVAL (5 - EXTRACT(DAYOFWEEK FROM date)) DAY) AS week_ending_friday, -- Week ending Friday
   CASE
     WHEN FORMAT_DATE('%A', date) IN ('Saturday', 'Sunday') THEN TRUE
