@@ -1,8 +1,9 @@
 {{ config(materialized='table') }}
 
+CREATE TABLE `your_project.your_dataset.date_table` AS
 WITH date_range AS (
   SELECT
-    DATE_ADD(DATE('2020-01-01'), INTERVAL x DAY) AS date
+    DATE_ADD(DATE('2000-01-01'), INTERVAL x DAY) AS date
   FROM
     UNNEST(GENERATE_ARRAY(0, 36525)) AS x  -- Generates dates for 100 years (36525 days)
 )
@@ -17,7 +18,8 @@ SELECT
   EXTRACT(QUARTER FROM date) AS quarter,
   FORMAT_DATE('%A', date) AS day_name,
   FORMAT_DATE('%B', date) AS month_name,
-  DATE_ADD(date, INTERVAL (5 - EXTRACT(DAYOFWEEK FROM date)) DAY) AS week_ending_friday, -- Week ending Friday
+  ISOWEEK(date) AS iso_week,
+  DATE_ADD(date, INTERVAL (6 - EXTRACT(DAYOFWEEK FROM date)) % 7 DAY) AS week_ending_friday, -- Corrected Week Ending Friday
   CASE
     WHEN FORMAT_DATE('%A', date) IN ('Saturday', 'Sunday') THEN TRUE
     ELSE FALSE
