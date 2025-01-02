@@ -1,6 +1,5 @@
 {{ config(materialized='table') }}
 
-CREATE TABLE `your_project.your_dataset.date_table` AS
 WITH date_range AS (
   SELECT
     DATE_ADD(DATE('2000-01-01'), INTERVAL x DAY) AS date
