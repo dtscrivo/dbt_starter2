@@ -425,5 +425,7 @@ SELECT *
     ELSE date_diff(date_unpaused, date_paused, day) END as days_paused
   , CASE WHEN date_unpaused = date_paused then 1 else 0 end as is_not_real_pause
 from hubspot h
+LEFT JOIN `bbg-platform.dbt_tscrivo.dim_email` e
+  on h.email = e.email_all
 WHERE (analytics.fnEmail_IsTest(email) = false or email = 'chrisj@remotestaff.com')
 group by all
