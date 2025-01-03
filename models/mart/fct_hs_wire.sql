@@ -6,7 +6,6 @@ SELECT d.deal_id as id_deal
   , analytics.fnEmail(property_email_address_of_contact) as email
   , date(property_wire_date, 'America/Phoenix') as date
   , property_total_wire_amount as amount_wire
-  , is_deleted
   , property_wire_payment_
   , e.email_prime
 FROM `bbg-platform.hubspot2.deal` d

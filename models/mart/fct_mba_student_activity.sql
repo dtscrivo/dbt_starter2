@@ -431,7 +431,7 @@ order by email
 
 , office_hours as (
 select timestamp as first_office_hours
-, email_prime as email
+, e.email_prime as email
 -- , disposition
 , subject
 
@@ -475,7 +475,7 @@ WHERE row_num = 1
 
 , orientation as (
 select timestamp as orientation
-, email_prime as email
+, e.email_prime as email
 -- , disposition
 , subject
 
