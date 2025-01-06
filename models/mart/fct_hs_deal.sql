@@ -270,7 +270,7 @@ WHERE true
 )
 
 
-SELECT d.*
+SELECT h.*
 --  , count(*) as num_sales
   , case when date_ticket_created IS NOT NULL then 1 ELSE 0 end as is_requests
   , case when date_ticket_resolved IS NOT NULL AND ticket_pipeline_stage = "Cancelled" then 1 else 0 end as is_cancel
