@@ -825,8 +825,12 @@ select email
          when dob > 14 and score < 20 then "Red"
          else flag end as flag
 
-  , case when flag_reason = "Good" and score < 50 and dob > 14 then "Check Activity Score"
+  , case when flag_reason = "On Pause" then "On Pause"
+           when flag_reason IN ("Orientation Not Scheduled","Office Hours Not Scheduled",">90 Days") and score >= 80 then "Good"
+         when flag_reason IN ("Orientation Not Scheduled",">90 Days") and score >= 70 then "Good"
+  when flag_reason = "Good" and score < 50 and dob > 14 then "Check Activity Score"
         when flag_reason = "Good" and score < 20 and dob > 14 then "Check Activity Score"
+
         else flag_reason end as flag_reason
   , score
 --, case when score > 85 and flag = "Red" then 1 else 0 end
