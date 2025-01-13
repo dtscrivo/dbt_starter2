@@ -18,3 +18,4 @@ FROM `bbg-platform.dbt_production_hubspot_engagements.final_deal_engagement` f
 WHERE TRUE
   and type = 'EMAIL'
   and direction = 'OUTBOUND'
+  and source IN ('CONVERSATIONS','SALES')

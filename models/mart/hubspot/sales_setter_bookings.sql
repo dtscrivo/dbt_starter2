@@ -6,8 +6,8 @@ SELECT f.*
     REGEXP_EXTRACT(detail, r'Meeting type\s*([^\n\r]+)')) as type_meeting_activity
   , m.property_hs_meeting_location
   , l.date_setter_lead_assigned
-  , REGEXP_EXTRACT(detail, r'Setter:\s*([^,]+)') AS name_setter_booking
-  , REGEXP_EXTRACT(detail, r'Booking ID:\s*([^\n\r]+)') AS id_oncehub_booking
+  , TRIM(REGEXP_EXTRACT(detail, r'Setter:\s*([^,]+)')) AS name_setter_booking
+  , TRIM(REGEXP_EXTRACT(detail, r'Booking ID:\s*([^\n\r]+)')) AS id_oncehub_booking
   , b.status_meeting
   , f.date_created as date_booking
 FROM `bbg-platform.dbt_production_hubspot_engagements.final_deal_engagement` f
