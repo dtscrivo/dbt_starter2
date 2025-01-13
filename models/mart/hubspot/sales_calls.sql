@@ -59,6 +59,7 @@ SELECT id_engagement
   , email
   , call_num
   , is_qualified
+  , case when call_num = 1 AND contains_substr(type_activity, 'Triage') then 1 else 0 end as is_triage
 FROM base
 WHERE type = 'CALL'
   and direction = 'OUTBOUND'
