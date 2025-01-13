@@ -65,3 +65,4 @@ SELECT id_engagement
 FROM base
 where TRUE
   and type = "MEETING"
+  and contains_substr(type_activity, 'Triage') = false
