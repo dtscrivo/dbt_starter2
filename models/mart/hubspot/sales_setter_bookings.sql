@@ -9,6 +9,7 @@ SELECT f.*
   , REGEXP_EXTRACT(detail, r'Setter:\s*([^,]+)') AS name_setter_booking
   , REGEXP_EXTRACT(detail, r'Booking ID:\s*([^\n\r]+)') AS id_oncehub_booking
   , b.status_meeting
+  , f.date_created as date_booking
 FROM `bbg-platform.dbt_production_hubspot_engagements.final_deal_engagement` f
 LEFT JOIN `bbg-platform.hubspot2.engagement_meeting` m
   on f.id_engagement = m.engagement_id
