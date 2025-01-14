@@ -327,6 +327,7 @@ SELECT h.*
   -- EVENTS
   , case when payment_source = "clickfunnel" and date(date_closed) < DATE('2024-04-01') then "KBB" 
          when id_funnel = '13216474' and FORMAT_DATE('%y%m', date_closed) = '2408' then "ws24"
+         when id_funnel = '13216474' and FORMAT_DATE('%y%m', date_closed) = '2412' then "bbw24"
          else null end as event
 
   , DATE_ADD(cast(date_charge as date), INTERVAL MOD(5 - EXTRACT(DAYOFWEEK FROM date_charge) + 8, 7) DAY) AS week_charge
