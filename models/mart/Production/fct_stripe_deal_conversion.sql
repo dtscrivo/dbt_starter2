@@ -184,6 +184,7 @@ where cast(_fivetran_end as string) LIKE "9999%"
     pi.customer_id AS id_customer,
     pi.status AS status_payment_intent,
     DATETIME(pi.created, 'America/Phoenix') AS date_pi_created,
+    DATETIME(c.createed, 'America/Phoenix') as date_charge,
     c.status AS status_charge,
     i.status AS status_invoice,
     i.subscription_id AS id_subscription_invoice,
@@ -245,6 +246,7 @@ UNION ALL
     pi.customer_id AS id_customer,
     pi.status AS status_payment_intent,
     DATETIME(pi.created, 'America/Phoenix') AS date_pi_created,
+    DATETIME(c.createed, 'America/Phoenix') as date_charge,
     c.status AS status_charge,
     case when i.status is null then "no invoice" else i.status end AS status_invoice,
     case when i.subscription_id is null then "no sub" else i.subscription_id end AS id_subscription_invoice,
@@ -324,6 +326,7 @@ LEFT JOIN mindmint_emails cu ON pi.customer_id = cu.id_customer
   , b.status_invoice
   , b.status_payment_intent
   , date_pi_created
+  , date_charge
   , email as email_trx
   , email_prime as email_primary
   , b.id_charge
