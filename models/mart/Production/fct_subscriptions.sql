@@ -7,6 +7,7 @@
   , json_extract_scalar(s.metadata, "$.netsuite_CF_funnel_id") as id_funnel
   , json_extract_scalar(s.metadata, "$.netsuite_CF_funnel_name") as name_funnel
   , DATETIME(s.canceled_at, 'America/Phoenix') as date_canceled
+  , DATETIME(coalesce(s.cancel_at, s.ended_at), 'America/Phoenix') as date_sub_end
   , DATETIME(s.current_period_end, 'America/Phoenix') as date_period_end
   , DATETIME(s.current_period_start, 'America/Phoenix') as date_period_start
   , s.customer_id as id_customer
@@ -23,9 +24,12 @@
   , case when s.cancellation_details_reason = 'cancellation_requested' then 1 else 0 end as is_cancel_requested
   , analytics.fnEmail(c.email) as email
   , case when analytics.fnEmail_IsTest(c.email) = TRUE then 1 else 0 end as is_test
+  , i.plan_id
 FROM `bbg-platform.stripe_mastermind.subscription_history` s
 LEFT JOIN `stripe_mastermind.customer` c
   on s.customer_id = c.id
+LEFT JOIN `bbg-platform.stripe_mastermind.subscription_item` i
+  on s.id = i.subscription_id
 where cast(_fivetran_end as string) LIKE "9999%"
 qualify row_number() over(partition by s.id) = 1
 
@@ -38,6 +42,7 @@ UNION ALL
   , json_extract_scalar(s.metadata, "$.netsuite_CF_funnel_id") as id_funnel
   , json_extract_scalar(s.metadata, "$.netsuite_CF_funnel_name") as name_funnel
   , DATETIME(s.canceled_at, 'America/Phoenix') as date_canceled
+  , DATETIME(coalesce(s.cancel_at, s.ended_at), 'America/Phoenix') as date_sub_end
   , DATETIME(s.current_period_end, 'America/Phoenix') as date_period_end
   , DATETIME(s.current_period_start, 'America/Phoenix') as date_period_start
   , s.customer_id as id_customer
@@ -54,8 +59,11 @@ UNION ALL
   , case when s.cancellation_details_reason = 'cancellation_requested' then 1 else 0 end as is_cancel_requested
   , analytics.fnEmail(c.email) as email
   , case when analytics.fnEmail_IsTest(c.email) = TRUE then 1 else 0 end as is_test
+  , i.plan_id
 FROM `bbg-platform.stripe_mindmint.subscription_history` s
-LEFT JOIN `stripe_mastermind.customer` c
+LEFT JOIN `stripe_mindmint.customer` c
   on s.customer_id = c.id
+LEFT JOIN `bbg-platform.stripe_mindmint.subscription_item` i
+  on s.id = i.subscription_id
 where cast(_fivetran_end as string) LIKE "9999%"
 qualify row_number() over(partition by s.id) = 1
