@@ -92,7 +92,8 @@ left join dim_email e
     c.id,
     JSON_EXTRACT_SCALAR(c.metadata, "$.product_id") AS object_id,
     JSON_EXTRACT_SCALAR(c.metadata, "$.rep_id") AS rep_id,
-    JSON_EXTRACT_SCALAR(c.metadata, "$.deal_id") AS deal_id
+    JSON_EXTRACT_SCALAR(c.metadata, "$.deal_id") AS deal_id,
+    DATETIME(c.created, 'America/Phoenix') as date_charge
   FROM `bbg-platform.stripe_mindmint.charge` c
  -- where c.id = 'ch_3Q5y62LYbD2uWeLi0CnTVqv3'
   qualify row_number() over(partition by c.payment_intent_id order by c.created desc) = 1
@@ -105,7 +106,8 @@ left join dim_email e
     c.id,
     JSON_EXTRACT_SCALAR(c.metadata, "$.product_id") AS object_id,
     JSON_EXTRACT_SCALAR(c.metadata, "$.rep_id") AS rep_id,
-    JSON_EXTRACT_SCALAR(c.metadata, "$.deal_id") AS deal_id
+    JSON_EXTRACT_SCALAR(c.metadata, "$.deal_id") AS deal_id,
+    DATETIME(c.created, 'America/Phoenix') as date_charge
   FROM `bbg-platform.stripe_mastermind.charge` c
   qualify row_number() over(partition by c.payment_intent_id order by c.created desc) = 1
 )
@@ -184,7 +186,7 @@ where cast(_fivetran_end as string) LIKE "9999%"
     pi.customer_id AS id_customer,
     pi.status AS status_payment_intent,
     DATETIME(pi.created, 'America/Phoenix') AS date_pi_created,
-    DATETIME(c.created, 'America/Phoenix') as date_charge,
+    c.date_charge,
     c.status AS status_charge,
     i.status AS status_invoice,
     i.subscription_id AS id_subscription_invoice,
@@ -246,7 +248,7 @@ UNION ALL
     pi.customer_id AS id_customer,
     pi.status AS status_payment_intent,
     DATETIME(pi.created, 'America/Phoenix') AS date_pi_created,
-    DATETIME(c.created, 'America/Phoenix') as date_charge,
+    c.date_charge,
     c.status AS status_charge,
     case when i.status is null then "no invoice" else i.status end AS status_invoice,
     case when i.subscription_id is null then "no sub" else i.subscription_id end AS id_subscription_invoice,
