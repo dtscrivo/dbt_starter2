@@ -1,4 +1,7 @@
-{{ config(materialized='table') }}
+{{ config(
+    materialized='table',
+    schema = 'hubspot_engagements'
+) }}
 
 SELECT f.*
   , DATE(f.dt) as date_activity
@@ -10,8 +13,8 @@ SELECT f.*
   , TRIM(REGEXP_EXTRACT(detail, r'Booking ID:\s*([^\n\r]+)')) AS id_oncehub_booking
   , b.status_meeting
   , f.date_created as date_booking
-FROM `bbg-platform.dbt_production_hubspot_engagements.final_deal_engagement` f
-LEFT JOIN `bbg-platform.hubspot2.engagement_meeting` m
+FROM {{ ref('final_deal_engagement') }} f
+LEFT JOIN {{ source('hubspot2', 'engagement_meeting') }} m
   on f.id_engagement = m.engagement_id
 LEFT JOIN `bbg-platform.dbt_production_hubspot_lead_deals.final_leads_present_status` l
   on f.id_contact = l.id_contact
