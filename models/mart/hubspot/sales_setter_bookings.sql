@@ -1,6 +1,4 @@
-{{ config(
-    materialized='table'
-) }}
+{{ config(materialized='table') }}
 
 SELECT f.*
   , DATE(f.dt) as date_activity
