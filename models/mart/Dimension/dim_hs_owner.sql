@@ -1,4 +1,7 @@
-{{ config(materialized='table') }}
+{{ config(
+    materialized='table',
+    schema='dimension'
+) }}
 
   SELECT owner_id as id_owner
   , active_user_id

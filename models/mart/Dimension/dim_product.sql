@@ -1,4 +1,7 @@
-{{ config(materialized='table') }}
+{{ config(
+    materialized='table',
+    schema='dimension'
+) }}
 
 SELECT mm.id as id_product_stripe
   , mm.active as is_active

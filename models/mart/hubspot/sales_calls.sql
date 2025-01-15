@@ -1,4 +1,7 @@
-{{ config(materialized='table') }}
+{{ config(
+    materialized='table',
+    schema='hubspot_sales'
+) }}
 
 WITH base as (
 WITH meeting_type AS (

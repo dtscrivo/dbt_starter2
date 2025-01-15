@@ -1,4 +1,7 @@
-{{ config(materialized='table') }}
+{{ config(
+    materialized='table',
+    schema='dimension'
+) }}
 
 with base as (
 with base as (

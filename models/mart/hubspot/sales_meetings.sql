@@ -1,31 +1,7 @@
-{{ config(materialized='table') }}
-
-WITH base as (
--- WITH meeting_type AS (
---   SELECT e.*,
---          COALESCE(e.direction,
---                   REGEXP_EXTRACT(e.detail, r'Meeting type\s*([^\n\r]+)')) AS type_activity
---   FROM `bbg-platform.dbt_production_hubspot_engagements.final_deal_engagement` e
---   WHERE e.type = "MEETING"
--- ),
--- meeting_type_with_ranks AS (
---   SELECT 
---     f.*,
---     t.type_activity,
---     ABS(TIMESTAMP_DIFF(f.dt, t.dt, MINUTE)) AS time_diff_minutes,
---     ROW_NUMBER() OVER (PARTITION BY f.id_engagement ORDER BY ABS(TIMESTAMP_DIFF(f.dt, t.dt, MINUTE))) AS rank_closest
---   FROM `bbg-platform.dbt_production_hubspot_engagements.final_deal_engagement` f
---   JOIN meeting_type t
---     ON f.email = t.email
---     AND f.type = "CALL"
---     AND f.direction = "OUTBOUND"
---     AND DATE(f.dt) = DATE(t.dt)
--- ),
--- filtered_meeting_type AS (
---   SELECT *
---   FROM meeting_type_with_ranks
---   WHERE rank_closest = 1
--- )
+{{ config(
+    materialized='table',
+    schema='hubspot_sales'
+) }}
 
 SELECT 
   f.*,

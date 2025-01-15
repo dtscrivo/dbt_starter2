@@ -1,6 +1,6 @@
 {{ config(
     materialized='table',
-    schema='dbt_tscrivo_hubspot'
+    schema='hubspot_sales'
 ) }}
 
 SELECT f.*

@@ -1,4 +1,7 @@
-{{ config(materialized='table') }}
+{{ config(
+    materialized='table',
+    schema='dimension'
+) }}
 
 WITH date_range AS (
   SELECT
