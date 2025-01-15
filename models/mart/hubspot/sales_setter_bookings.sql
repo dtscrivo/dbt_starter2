@@ -1,6 +1,5 @@
 {{ config(
-    materialized='table',
-    schema = 'hubspot_engagements'
+    materialized='table'
 ) }}
 
 SELECT f.*
