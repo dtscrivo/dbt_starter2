@@ -3,6 +3,7 @@
     schema='hubspot_sales'
 ) }}
 
+with base as (
 SELECT 
   f.*,
   DATE(f.dt) AS date_activity,
