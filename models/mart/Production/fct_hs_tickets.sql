@@ -29,7 +29,8 @@ GROUP BY 1,6,7
 
 -- most recent ticket note
 , notes as (
-SELECT n.property_hs_body_preview as note_preview
+SELECT n.property_hs_body_preview as note_preview  
+   , REGEXP_EXTRACT(n.property_hs_body_preview, r'Notes: ([^:]+): ') AS note
    , n.property_hs_timestamp
    , t.ticket_id
    , row_number() over (partition by t.ticket_id order by n.property_hs_timestamp asc) as num_notes_engagement
