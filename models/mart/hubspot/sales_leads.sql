@@ -15,6 +15,8 @@ select id_contact
         ELSE name_setter end as name_setter
   , name_closer
   , name_owner
+  , name_setter
+  , id_closer
   , id_owner
   , id_setter
   , analytics.fnEmail(c.property_email) as email
