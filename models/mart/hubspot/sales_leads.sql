@@ -24,4 +24,4 @@ select id_contact
 from `dbt_production_hubspot_lead_deals.final_leads_present_status` l
 left join `hubspot2.contact` c
   on l.id_contact = c.id
-WHERE date_setter_lead_assigned IS NOT NULL
+WHERE (date_setter_lead_assigned IS NOT NULL OR id_owner = 2039569549)
