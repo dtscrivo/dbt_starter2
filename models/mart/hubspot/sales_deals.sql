@@ -17,7 +17,6 @@ SELECT pipeline_stage
   , l.id_contact
   , d.name_owner as deal_owner
   , l.name_owner as lead_owner
-  , l.name_closer as lead_closer
   , l.name_setter as lead_setter
   , d.name_setter as deal_setter
 FROM `dbt_tscrivo_hubspot_sales.sales_leads` l
@@ -25,7 +24,7 @@ LEFT JOIN `dbt_tscrivo.fct_hs_deal` d
   on l.id_contact = d.id_contact
  -- and d.date_closed IS NULL
   and (d.name_deal LIKE "%Phone Setter Booked Discovery Call" OR d.name_deal LIKE "%Mastermind Business Academy%")
-  and l.id_owner = d.id_owner
+--  and l.id_owner = d.id_owner
 where pipeline = "1:1 Sales Pipeline"
  -- and CAST(l.date_lead_setter_assigned as DATE) = '2024-11-13'
  -- and l.email = 'kotsy.krisztina@gmail.com'
