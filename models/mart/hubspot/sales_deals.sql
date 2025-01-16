@@ -26,7 +26,7 @@ LEFT JOIN `dbt_tscrivo.fct_hs_deal` d
  -- and d.date_closed IS NULL
   and (d.name_deal LIKE "%Phone Setter Booked Discovery Call" OR d.name_deal LIKE "%Mastermind Business Academy%")
 --  and l.id_owner = d.id_owner
-where pipeline = "1:1 Sales Pipeline"
+    and pipeline = "1:1 Sales Pipeline"
  -- and CAST(l.date_lead_setter_assigned as DATE) = '2024-11-13'
  -- and l.email = 'kotsy.krisztina@gmail.com'
  -- and l.name_owner = 'R & C Team'
