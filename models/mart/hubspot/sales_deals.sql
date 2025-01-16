@@ -3,18 +3,17 @@
     schema='hubspot_sales'
 ) }}
 
-SELECT pipeline_stage
-  , CAST(l.date_lead_setter_assigned as DATE) as date_lead_setter_assigned
-  , count(d.id_deal) as num_deals
+SELECT  l.id_contact
+  , pipeline_stage
   , d.email
+  , CAST(l.date_lead_setter_assigned as DATE) as date_lead_setter_assigned
   , d.id_deal
   , d.name_deal
-
-  , l.id_closer
-  , CAST(d.date_entered_appt_scheduled as DATE) as appt_date
   , d.is_buyer
+  , l.id_closer
+  , CAST(d.date_entered_appt_scheduled as DATE) as date_entered_appt_scheduled
   , d.date_deal_created
-  , l.id_contact
+
   , l.name_owner as contact_owner
   , d.name_owner as deal_owner
   , l.name_setter as contact_setter
