@@ -4,8 +4,8 @@
 ) }}
 
 SELECT pipeline_stage
-  , CAST(l.date_lead_setter_assigned as DATE)
-  , count(d.id_deal)
+  , CAST(l.date_lead_setter_assigned as DATE) as date_lead_setter_assigned
+  , count(d.id_deal) as num_deals
   , d.email
   , d.id_deal
   , d.name_deal
