@@ -19,7 +19,7 @@ SELECT  l.id_contact
   , l.name_setter as contact_setter
   , d.name_setter as deal_setter
   , l.name_closer as contact_closer
-  , d.name_closer as deal_closer
+
 FROM `dbt_tscrivo_hubspot_sales.sales_leads` l
 LEFT JOIN `dbt_tscrivo.fct_hs_deal` d
   on l.id_contact = d.id_contact
