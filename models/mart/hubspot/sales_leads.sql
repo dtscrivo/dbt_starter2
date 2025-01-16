@@ -18,6 +18,8 @@ select id_contact
   , id_owner
   , id_setter
   , analytics.fnEmail(c.property_email) as email
+  , date_closer_assigned
+  , date_owner_assigned
 from `dbt_production_hubspot_lead_deals.final_leads_present_status` l
 left join `hubspot2.contact` c
   on l.id_contact = c.id
