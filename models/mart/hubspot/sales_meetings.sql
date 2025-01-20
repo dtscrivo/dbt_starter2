@@ -33,7 +33,7 @@ SELECT id_engagement
   , team
   , id_contact
   , type_activity
-  , property_hs_meeting_location as meeting_location
+  , location as meeting_location
   , name_setter_booking
   , id_oncehub_booking
   , email
