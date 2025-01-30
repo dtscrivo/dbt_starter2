@@ -337,9 +337,10 @@ SELECT b.email
 , comments_count
   # ADD A DOB LESS THAN FOR SOME OF THESE??
   , CASE WHEN pipeline_stage = "Paused Student" then "Orange"
-         WHEN dob >= 30 then "Purple"
+
          WHEN dob >= 4 and circle_logged_in IS NULL AND exclude_community_login IS NULL then "Red"
          WHEN dob >= 4 and since_circle_login >= 14 AND exclude_recent_community_login IS NULL then "Red"
+             WHEN dob >= 30 then "Purple"
          WHEN dob >= 14 and scheduled_first_office_hours is null AND exclude_office_hours IS NULL then "Red"
          WHEN dob >= 14 and circle_posted is null AND excluded_post IS NULL then "Red"
          
