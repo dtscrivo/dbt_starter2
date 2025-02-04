@@ -120,7 +120,7 @@ SELECT b.email
 
          WHEN dob >= 4 and circle_logged_in IS NULL AND exclude_community_login IS NULL then "Red"
          WHEN dob >= 4 and since_circle_login >= 14 AND exclude_recent_community_login IS NULL then "Red"
-         WHEN dob >= 30 and score >= 80 then 'Green'
+         WHEN dob >= 30 and adjusted_inactivity_score >= 80 then 'Green'
              WHEN dob >= 30 then "Purple"
          WHEN dob >= 14 and scheduled_first_office_hours is null AND exclude_office_hours IS NULL then "Red"
          WHEN dob >= 14 and circle_posted is null AND excluded_post IS NULL then "Red"
@@ -139,7 +139,7 @@ SELECT b.email
          
          WHEN dob >= 4 and circle_logged_in IS NULL AND exclude_community_login IS NULL then "No Community Login"
          WHEN dob >= 4 and since_circle_login >= 14 AND exclude_recent_community_login IS NULL then "No Recent Community Login"
-           WHEN dob >= 30 and score >= 80 then "Good"
+           WHEN dob >= 30 and adjusted_inactivity_score >= 80 then "Good"
            WHEN dob >= 30 then "Older than 30 days"
          WHEN dob >= 14 and scheduled_first_office_hours is null AND exclude_office_hours IS NULL then "Office Hours Not Scheduled"
          WHEN dob >= 14 and scheduled_orientation is null AND exclude_orientation IS NULL then "Orientation Not Scheduled"
