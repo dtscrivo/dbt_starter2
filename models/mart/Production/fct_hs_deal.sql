@@ -340,12 +340,12 @@ SELECT h.*
   , date_diff(datetime(date_refund), date_closed, day) as dob_refund
   , case when name_product LIKE "%Hybrid%" then 1 else 0 end as VIP
 
-  , case when lower(pipeline_stage) IN ('cancelled', 'paused student', 'current declines', 'cancelled student', 'closed won','mba membership completed','active retention save deal','active') and date_closed is not null then 1 else 0 end as is_buyer
+  , case when lower(pipeline_stage) IN ('cancelled', 'paused student', 'current declines', 'cancelled student', 'closed won','mba membership completed','active retention save deal','active','mba deal completed') and date_closed is not null then 1 else 0 end as is_buyer
   , case when lower(pipeline_stage) LIKE '%cancelled%' then 1 else 0 end as is_cancelled
   , case when lower(pipeline_stage) IN ('paused student') then 1 else 0 end  as is_paused
   , case when lower(pipeline_stage) IN ('paused student', 'current declines', 'closed won','mba membership completed','active retention save deal','active') then 1 else 0 end as is_enrolled
   , case when lower(pipeline_stage) IN ('current declines', 'closed won','active') then 1 else 0 end as is_active
-  , case when lower(name_deal) LIKE "%in-person%" OR lower(name_deal) LIKE "%independent launch lab%" then 1 else 0 end as is_inperson
+  , case when lower(name_deal) LIKE "%in-person%" OR lower(name_deal) LIKE "%independent launch lab%" OR lower(name_deal) LIKE "%launch lab%" then 1 else 0 end as is_inperson
 
 
   , case when id_owner = 1426033370 AND (date(date_closed) > date('2024-08-23') AND date(date_closed) < date('2024-08-28')) then "Charlotte_8/24"
