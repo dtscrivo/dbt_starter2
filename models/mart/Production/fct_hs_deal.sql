@@ -311,6 +311,7 @@ SELECT h.*
 
   , case when name_product LIKE "%The Action Academy%" then "TAA" 
          when name_product LIKE "%Mastermind Business Academy%" then "MBA"
+         when name_product LIKE "%Launch Lab%" OR name_product LIKE "%In-Person%" THEN "LL"
          when name_product LIKE "%1:1 Coaching%" then "1:1"
          when name_product LIKE "%The Edge%" then "Edge"
          when name_product LIKE "%The Coaching Academy%" then "TCA"
