@@ -359,6 +359,7 @@ LEFT JOIN mindmint_emails cu ON pi.customer_id = cu.id_customer
    , d.property_dealname as name_deal
    , property_product_name as name_product
    , concat(property_first_name_of_contact_record, " ", property_last_name_of_contact_record) as name_client
+   , d.property_test_setter_user_name AS id_setter
   from base b
   left join `hubspot2.merged_deal` m
     on cast(b.id_deal as string) = cast(m.merged_deal_id as string)
