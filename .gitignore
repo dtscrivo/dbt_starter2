@@ -26,3 +26,4 @@ fct_hs_contact.sql
 snapshot_hs_contact.sql
 fct_mm_pageviews.sql
 /target
+fct_mba_student_activity.sql
