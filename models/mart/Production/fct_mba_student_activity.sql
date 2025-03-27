@@ -20,7 +20,7 @@ SELECT email
 , date_diff(date(orientation), date(date_closed), day) as scheduled_orientation
 , CAST(posts_count AS INTEGER) AS posts_count
 , CAST(comments_count AS INTEGER) AS comments_count
-FROM bbg-platform.dbt_production_mba.stg_mba_activity_dates,
+FROM bbg-platform.dbt_production_mba.stg_mba_activity_dates2,
 (SELECT 500 AS max_days) 
 WHERE pipeline_stage != 'Cancelled Student'
 -- and email IN ('ran5js@hotmail.com','burtonrubyann@gmail.com')
