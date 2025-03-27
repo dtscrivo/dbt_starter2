@@ -223,4 +223,4 @@ select email
 from final #}
 
 SELECT *
-FROM `bbg-platform.dbt_production_mba.fct_mba_student_activity`
+FROM `dbt_production_mba.fct_mba_student_activity`
