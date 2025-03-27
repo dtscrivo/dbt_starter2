@@ -1,5 +1,5 @@
 {{ config(materialized='table') }}
-
+{# 
 with all_days as (
 SELECT email
 --, other_email
@@ -220,4 +220,7 @@ select email
   , flag as property_student_flag
   , flag_reason as property_student_flag_reason
   , score as property_student_activity_score
-from final
+from final #}
+
+SELECT *
+FROM `bbg-platform.dbt_production_mba.fct_mba_student_activity`
