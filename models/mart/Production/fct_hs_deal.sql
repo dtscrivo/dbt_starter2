@@ -317,6 +317,8 @@ SELECT h.*
          when name_product LIKE "%The Coaching Academy%" then "TCA"
          when name_product LIKE "%High Ticket Coaching%" then "HTC"
          when name_product LIKE "%High Ticket Academy%" then "HTA"
+         when name_product LIKE "%Zenith%" then "Zenith"
+
          else "" end as program
 
   , case when pay_type = "PIF" AND num_payments_made > 1 then 1 else 0 end as pif2
