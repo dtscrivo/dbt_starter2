@@ -403,7 +403,7 @@ SELECT h.*
          --when name_product LIKE "%The Coaching Academy%" then "TCA" -- all
          when name_product LIKE "%High Ticket Coaching%" then "HTC" --team
          when name_product LIKE "%High Ticket Academy%" then "HTA" -- team
-         when name_product LIKE "Zenith" THEN "Zenith"
+         when name_product LIKE "%Zenith%" THEN "Zenith"
          else null end) is not null and id_owner in (746781400,597349111,285218005,746781399,1376975821,77523048,1957265727,597349111,1845545878,1211781353,980534468,1018935239,1018920904,626162146,455035854,626163393,1066123713,597349110,035145442,77523049,76677382,1332303546,78033661,1332303547,1211781353,77268027,143772806,455035854,1066123713,77268026,793323737,2027067907,76677381,78033660,358610520,2035145442))
 
 
