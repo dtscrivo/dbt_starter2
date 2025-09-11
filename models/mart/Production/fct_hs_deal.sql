@@ -365,6 +365,8 @@ SELECT h.*
          when id_owner = 1426033370 AND (date(date_closed) > date('2024-12-12') AND date(date_closed) <= date('2024-12-16')) AND name_product like "%Mastermind Business Academy%" then "BBW"
          when id_owner = 1426033370 AND FORMAT_DATE('%y%m', date_closed) = '2408' AND name_product like "%Mastermind Business Academy%" then "WS24"
          when id_owner = 1426033370 AND (date(date_closed) > date('2025-3-5') AND date(date_closed) <= date('2025-3-8')) AND name_product like "%Mastermind Business Academy%" then "KBB-3/25"
+        when d.id_owner IN (1426033370,368848093,400703992,746953962,863704292,399470310,1297927104) AND (date(date_closed) >= date('2025-7-24') AND date(date_closed) <= date('2025-8-11')) AND name_product like "%Mastermind Business Academy%" THEN "WS25"
+
          else null end as workshop
 
 
@@ -383,6 +385,8 @@ SELECT h.*
          when id_owner = 1426033370 AND (EXTRACT(year from date_closed) = 2024 AND EXTRACT(month from date_closed)= 4) AND name_product like "%Mastermind Business Academy%" then "Tampa"
          when id_owner = 1426033370 AND (date(date_closed) > date('2024-12-12') AND date(date_closed) <= date('2024-12-16')) AND name_product like "%Mastermind Business Academy%" then "BBW"
          when id_owner = 1426033370 AND (date(date_closed) > date('2025-3-5') AND date(date_closed) <= date('2025-3-8')) AND name_product like "%Mastermind Business Academy%" then "KBB-3/25"
+        when d.id_owner IN (1426033370,368848093,400703992,746953962,863704292,399470310,1297927104) AND (date(date_closed) >= date('2025-7-24') AND date(date_closed) <= date('2025-8-11')) AND name_product like "%Mastermind Business Academy%" THEN "WS25"
+
          else null end) is not null 
     OR
    ((case when name_product LIKE "%The Action Academy%" then "TAA"  -- all
